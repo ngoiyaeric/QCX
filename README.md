@@ -8,7 +8,8 @@ Language to Maps:
 Welcome! Please see the issues for items that need attention, and below for some tools to aid in development and debugging.
 
 Visit our roadmap for more information.
-[Roadmap] (https://draw.roadmap.sh/664d9e21d6b907c7f745be36)
+
+(https://draw.roadmap.sh/664d9e21d6b907c7f745be36)
 
 ### Running the app on your own machine
 1. Install the Python dependencies, and run the tile server proxy.
