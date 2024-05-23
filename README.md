@@ -3,12 +3,22 @@
 ### (Maps) + (Chat) 
 
 
+V1
+
+<img width="793" alt="Screen Shot 2024-05-23 at 6 34 54 AM" src="https://github.com/QueueLab/MapGPT/assets/115367894/e5da805e-5bd8-4b39-b706-11e13dce96ee">
+
+
+
 ## Contributing
 
 Welcome! Please see the issues for items that need attention, and below for some tools to aid in development and debugging. We're working to interpolate chat functionality onto the map module.
 
 
 ### Map module 
+
+Visit our roadmap for more information.
+
+(https://draw.roadmap.sh/664d9e21d6b907c7f745be36)
 
 ### Running the app on your own machine
 
