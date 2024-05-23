@@ -2,10 +2,10 @@
 Language to Maps:
 
 V1
+
 <img width="793" alt="Screen Shot 2024-05-23 at 6 34 54 AM" src="https://github.com/QueueLab/MapGPT/assets/115367894/e5da805e-5bd8-4b39-b706-11e13dce96ee">
 
-V2
-![Design](https://github.com/QueueLab/MapGPT/assets/115367894/d8cb6eca-83f8-4efc-ac5c-417271f777e1)
+
 
 ## Contributing
 
