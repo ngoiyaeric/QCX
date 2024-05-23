@@ -1,4 +1,4 @@
-#!/Users/karibu/Desktop/soundscape-web-client/server/env/bin/python
+#!/Users/karibu/Desktop/MapGPT/server/env/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
