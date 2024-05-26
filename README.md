@@ -1,11 +1,11 @@
 # MapGPT
 
-### (Maps) + (Chat) 
+### Language to Maps
 
 
-V1
+V1 (In Progress)
 
-<img width="793" alt="Screen Shot 2024-05-23 at 6 34 54 AM" src="https://github.com/QueueLab/MapGPT/assets/115367894/e5da805e-5bd8-4b39-b706-11e13dce96ee">
+![Design](https://github.com/QueueLab/MapGPT/assets/115367894/40ea0a4f-354b-4486-b873-114bbab411d8)
 
 
 
@@ -46,13 +46,6 @@ Visit our roadmap for more information.
 Move the chat folder out of MapGPT as it has not been interpolated yet. This module is standalone at the moment. 
 
 An AI-powered search engine with a generative UI.
-
-## 🔍 Overview
-
-- 🧱 [Stack](#-stack)
-- 🚀 [Quickstart](#-quickstart)
-- 🌐 [Deploy](#-deploy)
-- ✅ [Verified models](#-verified-models)
 
 
 ## 🧱 Stack
