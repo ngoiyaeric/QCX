@@ -1,5 +1,4 @@
-// Copyright (c) Daniel W. Steinbrook.
-// with many thanks to ChatGPT
+
 
 export const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 

@@ -1,5 +1,4 @@
-// Copyright (c) Daniel W. Steinbrook.
-// with many thanks to ChatGPT
+
 
 import cache from './cache.js'
 import config from '../config.js'

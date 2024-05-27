@@ -1,6 +1,3 @@
-# Copyright (c) Daniel W. Steinbrook.
-# with many thanks to ChatGPT
-
 """
 This script runs a server that proxies requests to a tile server. It is
 necessary because CORS headers are required by modern browsers to allow

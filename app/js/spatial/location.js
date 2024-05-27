@@ -1,5 +1,3 @@
-// Copyright (c) Daniel W. Steinbrook.
-// with many thanks to ChatGPT
 
 import { geoToXY } from './geo.js'
 

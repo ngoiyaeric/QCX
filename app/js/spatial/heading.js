@@ -1,5 +1,4 @@
-// Copyright (c) Daniel W. Steinbrook.
-// with many thanks to ChatGPT
+
 
 // Cross-platform compass heading
 // https://stackoverflow.com/a/75792197

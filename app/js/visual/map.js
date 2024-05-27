@@ -1,6 +1,3 @@
-// Copyright (c) Daniel W. Steinbrook.
-// with many thanks to ChatGPT
-
 function createMap(id) {
   var map = L.map(id);
 

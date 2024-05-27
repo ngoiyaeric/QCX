@@ -1,5 +1,3 @@
-// Copyright (c) Daniel W. Steinbrook.
-// with many thanks to ChatGPT
 
 // This file is called "notabeacon.js" because "beacon.js" is blocked by some ad blockers.
 

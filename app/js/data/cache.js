@@ -1,5 +1,3 @@
-// Copyright (c) Daniel W. Steinbrook.
-// with many thanks to ChatGPT
 
 // Bump this when changing schema (e.g. adding an index)
 const dbVersion = 1;

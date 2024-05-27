@@ -1,6 +1,3 @@
-// Copyright (c) Daniel W. Steinbrook.
-// with many thanks to ChatGPT
-
 const productionConfig = {
   tileServer: 'https://tiles.soundscape.services',
 }

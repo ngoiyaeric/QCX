@@ -1,6 +1,3 @@
-// Copyright (c) Daniel W. Steinbrook.
-// with many thanks to ChatGPT
-
 function createVoiceControls(audioQueue) {
   // Fetch available voices
   const voiceSelect = document.getElementById('voice');

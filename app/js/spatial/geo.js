@@ -1,5 +1,4 @@
-// Copyright (c) Daniel W. Steinbrook.
-// with many thanks to ChatGPT
+
 
 // Function to create a half-kilometer bounding box around a point
 export function createBoundingBox(latitude, longitude, radiusMeters) {
