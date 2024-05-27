@@ -1,6 +1,3 @@
-// Copyright (c) Daniel W. Steinbrook.
-// with many thanks to ChatGPT
-
 import { createBeacon } from '../audio/notabeacon.js';
 
 const maxRecentCount = 25;
