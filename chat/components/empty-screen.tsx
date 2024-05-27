@@ -3,20 +3,16 @@ import { ArrowRight } from 'lucide-react'
 
 const exampleMessages = [
   {
-    heading: "What's new with the iPad Pro?",
-    message: "What's new with the iPad Pro?"
+    heading: "What are some of the tallest trees?",
+    message: "What are some of the tallest trees?"
   },
   {
-    heading: 'Why is Nvidia growing rapidly?',
-    message: 'Why is Nvidia growing rapidly?'
+    heading: 'When is the next lunar eclipse?',
+    message: 'When is the next lunar eclipse?'
   },
   {
-    heading: 'How does the Vercel AI SDK work?',
-    message: 'How does the Vercel AI SDK work?'
-  },
-  {
-    heading: 'Tesla vs Rivian',
-    message: 'Tesla vs Rivian'
+    heading: 'How far is mars?',
+    message: 'How far is mars?'
   }
 ]
 export function EmptyScreen({
