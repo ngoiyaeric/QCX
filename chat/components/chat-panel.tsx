@@ -24,6 +24,7 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [showEmptyScreen, setShowEmptyScreen] = useState(false)
   const router = useRouter()
+
   // Focus on input when button is pressed
   useEffect(() => {
     if (isButtonPressed) {
@@ -62,14 +63,14 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   }
 
   useEffect(() => {
-    // focus on input when the page loads
+    // Focus on input when the page loads
     inputRef.current?.focus()
   }, [])
 
   // If there are messages and the new button has not been pressed, display the new Button
   if (messages.length > 0 && !isButtonPressed) {
     return (
-      <div className="fixed bottom-2 md:bottom-8 left-0 right-0 flex justify-center items-center mx-auto pointer-events-none">
+      <div className="fixed bottom-2 md:bottom-8 left-2 flex justify-start items-center mx-auto pointer-events-none">
         <Button
           type="button"
           variant={'secondary'}
@@ -86,13 +87,9 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   }
 
   return (
-    <div
-      className={
-        'fixed bottom-8 left-0 right-0 top-10 mx-auto h-screen flex flex-col items-center justify-center'
-      }
-    >
-      <form onSubmit={handleSubmit} className="max-w-2xl w-full px-6">
-        <div className="relative flex items-center w-full">
+    <div className="fixed top-10 left-2 bottom-8 w-1/2 flex flex-col items-start justify-center">
+      <form onSubmit={handleSubmit} className="max-w-full w-full px-6">
+        <div className="relative flex items-start w-full">
           <Textarea
             ref={inputRef}
             name="input"

@@ -4,14 +4,19 @@ import { enumerateTilesAround } from '../data/tile.js'
 
 function createCalloutAnnouncer(audioQueue) {
   // Avoid repeating myself, by maintaining a list of the most recent POIs announced
+  /**
+   * Manages a cache of recently spoken callout IDs to avoid repeating callouts.
+   * The cache has a maximum size and uses a first-in, first-out (FIFO) queue to
+   * evict the oldest entries when the cache is full.
+   */
   const spokenRecently = {
-    keys: new Set(),  // for quick lookups
-    queue: [],        // for first in, first out
+    keys: new Set(), // for quick lookups
+    queue: [], // for first in, first out
     max_size: 100,
     // feature can have multiple osm_ids (e.g. intersections)
-    key: osm_ids => osm_ids.join("|"),
+    key: (osm_ids) => osm_ids.join("|"),
 
-    add: function(osm_ids) {
+    add: function (osm_ids) {
       if (this.keys.size > this.max_size) {
         const oldestKey = this.queue.shift();
         this.keys.delete(oldestKey);
@@ -20,10 +25,10 @@ function createCalloutAnnouncer(audioQueue) {
       this.queue.push(this.key(osm_ids));
     },
 
-    has: function(osm_ids) {
+    has: function (osm_ids) {
       return this.keys.has(this.key(osm_ids));
-    }
-  }
+    },
+  };
 
   function playSoundAndSpeech(sound, text, sourceLocation, includeDistance) {
     audioQueue.addToQueue({
