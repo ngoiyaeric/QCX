@@ -30,9 +30,11 @@ export function Chat({ id }: ChatProps) {
   }, [aiState, router])
 
   return (
-    <div className="px-8 sm:px-12 pt-12 md:pt-14 pb-14 md:pb-24 max-w-3xl mx-auto flex flex-col space-y-3 md:space-y-4">
+    <div className="flex justify-start items-start">
+    <div className="w-1/2 flex flex-col space-y-3 md:space-y-4 px-8 sm:px-12 pt-12 md:pt-14 pb-14 md:pb-24">
       <ChatMessages messages={messages} />
       <ChatPanel messages={messages} />
+    </div>
     </div>
   )
 }
