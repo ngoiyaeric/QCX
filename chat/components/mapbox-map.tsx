@@ -3,14 +3,13 @@
 import { useState, useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+
 export const Mapbox: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const [is3D, setIs3D] = useState(false);
 
   useEffect(() => {
-    mapboxgl.accessToken = 
-      'pk.eyJ1IjoidG1hbG9uZXkiLCJhIjoiY2x3ZnF6MTR3MDBvczJrczdycHRldzAzMCJ9.o492x_ZQTRZiuqt8-r6YxA';
-
     if (mapContainer.current) {
       const map = new mapboxgl.Map({
         container: mapContainer.current,
