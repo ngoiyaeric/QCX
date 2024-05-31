@@ -1,9 +1,11 @@
 # MapGPT
 
-### Language to Maps
+### Language to Maps 
 
 
-V1 (In Progress)
+MapGPT is a AI based web application to control maps based on a user's input. It also searches the internet. 
+It's a fun way to explore the world through the eyes of a computer.
+
 
 ![Design](https://github.com/QueueLab/MapGPT/assets/115367894/40ea0a4f-354b-4486-b873-114bbab411d8)
 
@@ -14,38 +16,11 @@ V1 (In Progress)
 Welcome! Please see the issues for items that need attention, and below for some tools to aid in development and debugging. We're working to interpolate chat functionality onto the map module.
 
 
-### Map module 
-
 Visit our roadmap for more information.
 
 (https://draw.roadmap.sh/664d9e21d6b907c7f745be36)
 
 ### Running the app on your own machine
-
-1. Install the Python dependencies, and run the tile server proxy.
-    ```
-    $ cd server
-    $ python -m venv env
-    $ . env/bin/activate
-    $ pip install -r requirements.txt
-    $ python tile_server_proxy.py
-    ```
-2. Run a web server, such as live-server, in the working directory. Make sure you specify a port that doesn't conflict with the tile server proxy.
-    ```
-    $ npm install live-server
-    $ live-server --port=8081 .
-    ```
-
-## Third-party libraries used
-1. [Turf.js](https://turfjs.org/) (for GeoJSON processingand geospatial calculations)
-2. [Leaflet](https://leafletjs.com/) (provides OpenStreetMap widget)≥
-3. [unmute](https://github.com/swevans/unmute) (improved web audio behavior on iOS)
-
-### Chat module:
-
-Move the chat folder out of MapGPT as it has not been interpolated yet. This module is standalone at the moment. 
-
-An AI-powered search engine with a generative UI.
 
 
 ## 🧱 Stack
@@ -63,7 +38,7 @@ An AI-powered search engine with a generative UI.
 ### 2. Install dependencies
 
 ```
-cd chat
+cd mapgpt
 bun install
 ```
 
@@ -91,6 +66,11 @@ UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=
 ```
 
+#Mapbox access token
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=
+
+
+
 _Note: This project focuses on Generative UI and requires complex output from LLMs. Currently, it's assumed that the official OpenAI models will be used. Although it's possible to set up other models, if you use an OpenAI-compatible model, but we don't guarantee that it'll work._
 
 ### 5. Run app locally
@@ -108,5 +88,3 @@ List of verified models that can be specified to writers.
 - [Groq](https://console.groq.com/docs/models)
   - LLaMA3 8b
   - LLaMA3 70b
-
-≥
