@@ -31,6 +31,6 @@ export const Mapbox: React.FC = () => {
   }, []);
 
   return (
-    <div ref={mapContainer} className="h-full w-full fixed"/>
+    <div ref={mapContainer} className="h-full w-full overflow-hidden rounded-l-lg"/>
   );
 }
