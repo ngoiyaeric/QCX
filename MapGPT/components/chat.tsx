@@ -36,7 +36,7 @@ export function Chat({ id }: ChatProps) {
         <ChatMessages messages={messages} />
         <ChatPanel messages={messages} />
       </div>
-      <div className="w-1/2 p-4 h-screen top-0">
+      <div className="w-1/2 p-4 fixed h-screen top-0 right-0">
         <Mapbox />
       </div>
     </div>
