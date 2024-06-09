@@ -16,6 +16,10 @@ Visit our roadmap for more information.
 
 (https://draw.roadmap.sh/664d9e21d6b907c7f745be36)
 
+Documentation: 
+
+https://chlorinated-birch-096.notion.site/MapGPT-Documentation-f7440889fca74582b31376192a30ed94
+
 ### Running the app on your own machine
 
 
