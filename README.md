@@ -3,10 +3,6 @@
 ### Language to Maps 
 
 
-MapGPT is a AI based web application to control maps based on a user's input. It also searches the internet. 
-It's a fun way to explore the world through the eyes of a computer.
-
-
 ![Design](https://github.com/QueueLab/MapGPT/assets/115367894/40ea0a4f-354b-4486-b873-114bbab411d8)
 
 
