@@ -1,7 +1,7 @@
 # MapGPT
 
 ### Language to Maps 
-
+(in progress)
 
 ![Design](https://github.com/QueueLab/MapGPT/assets/115367894/40ea0a4f-354b-4486-b873-114bbab411d8)
 
