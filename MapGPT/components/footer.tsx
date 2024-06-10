@@ -17,12 +17,12 @@ const Footer: React.FC = () => {
     >
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex space-x-10">
-          <Link href="https://discord.com" passHref>
+          <Link href="https://discord.com/invite/WEPSzPbWtq" passHref>
             <Button variant="ghost" size="icon">
               <SiDiscord size={24} />
             </Button>
           </Link>
-          <Link href="https://github.com" passHref>
+          <Link href="https://github.com/QueueLab/MapGPT" passHref>
             <Button variant="ghost" size="icon">
               <SiGithub size={24} />
             </Button>
