@@ -15,17 +15,14 @@ export const Header: React.FC = async () => {
           <span className="sr-only">Chat</span>
         </a>
       </div>
-      <div className="w-1/2 md:p-2 justify-between px-6">
+      <div className="absolute left-1">
         <Button variant="ghost" size="icon">
-          <img src="/images/logo.png" alt="Logo" className="h-6" />
-        </Button>
+          <img src="/images/logo.svg" alt="Logo" className="h-6" />
+        </Button> 
       </div>
       <div className="w-1/2 gap-20 flex justify-between px-10 items-center z-10">
         <Button variant="ghost" size="icon">
           <CircleUserRound className='h-[1.2rem] w-[1.2rem]'/>
-        </Button>
-        <Button variant="ghost" size="icon">
-          <TentTree className='h-[1.2rem] w-[1.2rem] transition-all rotate-0 scale-100' />
         </Button>
         <Button variant="ghost" size="icon">
           <Map className='h-[1.2rem] w-[1.2rem] transition-all rotate-0 scale-100' />
@@ -35,6 +32,9 @@ export const Header: React.FC = async () => {
         </Button>
         <Button variant="ghost" size="icon">
           <Search className='h-[1.2rem] w-[1.2rem] transition-all rotate-0 scale-100' />
+        </Button>
+        <Button variant="ghost" size="icon">
+          <TentTree className='h-[1.2rem] w-[1.2rem] transition-all rotate-0 scale-100' />
         </Button>
         <ModeToggle />
         <HistoryContainer location="header" />
