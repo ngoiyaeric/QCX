@@ -142,6 +142,7 @@ export function ChatPanel({ messages }: ChatPanelProps) {
             onBlur={() => setShowEmptyScreen(false)}
           />
           <Button 
+            type="button"
             variant={'ghost'}
             size={'icon'}
             className="absolute right-10 top-1/2 transform -translate-y-1/2"
