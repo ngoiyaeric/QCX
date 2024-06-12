@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import * as React from 'react';
 import { Moon, Sun, Earth } from 'lucide-react';
@@ -14,21 +14,26 @@ import {
 
 export function ModeToggle() {
   const { theme, resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const currentTheme = theme === 'system' ? resolvedTheme : theme;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon">
           <Sun className={`h-[1.2rem] w-[1.2rem] transition-all ${
-            currentTheme === 'light' ? 'rotate-0 scale-100' : 'rotate-90 scale-0'
+            mounted && currentTheme === 'light' ? 'scale-100' : 'scale-0'
           }`} />
           <Moon className={`absolute h-[1.2rem] w-[1.2rem] transition-all ${
-            currentTheme === 'dark' ? 'rotate-0 scale-100' : 'rotate-90 scale-0'
+            mounted && currentTheme === 'dark' ? 'scale-100' : 'scale-0'
           }`} />
           <Earth className={`absolute h-[1.2rem] w-[1.2rem] transition-all ${
-            currentTheme === 'earth' ? 'rotate-0 scale-100' : 'rotate-90 scale-0'
+            mounted && currentTheme === 'earth' ? 'scale-100' : 'scale-0'
           }`} />
           <span className="sr-only">Toggle theme</span>
         </Button>
