@@ -24,8 +24,9 @@ export const Header: React.FC = async () => {
       </div>
       <div className="absolute left-1">
         <Button variant="ghost" size="icon">
-          <img src="/images/logo.svg" alt="Logo" className="h-6" />
         </Button>
+        🌱          
+        </Button> 
       </div>
       <div className="w-1/2 gap-20 flex justify-between px-10 items-center z-10">
         <Button variant="ghost" size="icon">
