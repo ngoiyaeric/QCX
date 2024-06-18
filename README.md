@@ -22,7 +22,7 @@ https://chlorinated-birch-096.notion.site/MapGPT-Documentation-f7440889fca74582b
 ### Running the app on your own machine
 
 
-## 🧱 Stack
+## Stack
 
 - App framework: [Next.js](https://nextjs.org/)
 - Text streaming / Generative UI: [Vercel AI SDK](https://sdk.vercel.ai/docs)
@@ -80,10 +80,11 @@ bun dev
 
 You can now visit http://localhost:3000.
 
-## ✅ Verified models
+## Verified models
 
 List of verified models that can be specified to writers.
 
 - [Groq](https://console.groq.com/docs/models)
   - LLaMA3 8b
   - LLaMA3 70b
+ - Grok (coming soon) 
