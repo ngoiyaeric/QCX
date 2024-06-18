@@ -3,6 +3,10 @@ import { ArrowRight } from 'lucide-react'
 
 const exampleMessages = [
   {
+    heading: 'What are the best nature parks here?',
+    message: 'What are the best nature parks here?'
+  },
+  {
     heading: "What are some of the tallest trees?",
     message: "What are some of the tallest trees?"
   },
