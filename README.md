@@ -3,8 +3,7 @@
 ### Language to Maps 
 (in progress)
 
-![Design](https://github.com/QueueLab/MapGPT/assets/115367894/40ea0a4f-354b-4486-b873-114bbab411d8)
-
+<img width="1277" alt="Screen Shot 2024-06-18 at 4 19 14 PM" src="https://github.com/QueueLab/MapGPT/assets/115367894/9150b2e2-38b2-4302-b656-bff79f71162b">
 
 
 ## Contributing
