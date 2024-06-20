@@ -7,7 +7,7 @@ RUN apk add --no-cache nodejs npm git
 RUN git clone --depth=1 https://github.com/queuelab/MapGPT /app
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /app/MapGPT
 
 # Remove the .git directory
 RUN rm -rf .git
