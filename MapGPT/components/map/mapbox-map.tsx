@@ -35,7 +35,7 @@ export const Mapbox: React.FC = () => {
         mapType === MapToggleEnum.RealTimeMode &&map.current &&
           map.current.flyTo({
             center: [geoPos.coords.longitude, geoPos.coords.latitude],
-            zoom: 12
+            zoom: 22
           })
       }
 
@@ -57,7 +57,7 @@ export const Mapbox: React.FC = () => {
         zoom: 12, // Closer zoom for better 3D effect
         pitch: 60, // Tilts the map for a 3D effect
         bearing: -20, // Rotates the map for a better view
-        maxZoom: 15,
+        maxZoom: 22,
         attributionControl: false
       })
       // Add zoom controls
@@ -69,7 +69,7 @@ export const Mapbox: React.FC = () => {
           type: 'raster-dem',
           url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
           tileSize: 512,
-          maxzoom: 14
+          maxzoom: 22
         })
 
         // Add the DEM source as a terrain layer with exaggerated height
