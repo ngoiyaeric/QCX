@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "worker-loader": "^3.0.8"
+  },
+  "dependencies": {
+    "@react-google-maps/api": "^2.19.3",
+    "cesium": "^1.118.2"
+  }
+}

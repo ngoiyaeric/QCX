@@ -11,7 +11,7 @@ mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 export const Mapbox: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<any>(null)
-  const [is3D, setIs3D] = useState(false)
+  const [is3D, setIs3D] = useState(true)
   const [position, setPosition] = useState({
     latitude: -74.0060152,
     longitude: 40.7127281
@@ -35,7 +35,7 @@ export const Mapbox: React.FC = () => {
         mapType === MapToggleEnum.RealTimeMode &&map.current &&
           map.current.flyTo({
             center: [geoPos.coords.longitude, geoPos.coords.latitude],
-            zoom: 22
+            zoom: 19
           })
       }
 
@@ -52,7 +52,7 @@ export const Mapbox: React.FC = () => {
     if (mapContainer.current) {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/satellite-v9', // Satellite style
+        style: 'mapbox://styles/mapbox/satellite-streets-v12', // Satellite style
         center: [-74.0060152, 40.7127281], // Coordinates for Mount Everest
         zoom: 12, // Closer zoom for better 3D effect
         pitch: 60, // Tilts the map for a 3D effect
@@ -86,6 +86,8 @@ export const Mapbox: React.FC = () => {
           }
         })
       })
+
+      
 
       // Clean up on unmount
       return () => {

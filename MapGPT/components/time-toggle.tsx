@@ -8,31 +8,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Map } from 'lucide-react'
-import { useMapToggle, MapToggleEnum } from './map-toggle-context'
+import { CalendarDays } from 'lucide-react'
+import { useTimeToggle, TimeToggleEnum } from './time-toggle-context'
 
-export function MapToggle() {
-  const { setMapType } = useMapToggle();
+export function TimeToggle() {
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
-          <Map className="h-[1.2rem] w-[1.2rem] transition-all rotate-0 scale-100" />
+          <CalendarDays className="h-[1.2rem] w-[1.2rem] transition-all rotate-0 scale-100" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => {setMapType(MapToggleEnum.RealTimeMode)}}>
-          My location
+        <DropdownMenuItem>
+          Trips
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {setMapType(MapToggleEnum.MapBox)}}>
-          Saved Maps
+        <DropdownMenuItem>
+          Appointments
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {setMapType(MapToggleEnum.EarthEngine)}}>
-          Live
-        </DropdownMenuItem>
-
       </DropdownMenuContent>
     </DropdownMenu>
   )
