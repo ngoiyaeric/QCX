@@ -3,14 +3,9 @@
 ### Language to Maps 
 (in progress)
 
-<img width="1277" alt="Screen Shot 2024-06-18 at 4 27 51 PM" src="https://github.com/QueueLab/MapGPT/assets/115367894/01584e12-b3f5-41c9-8009-a16642568798">
-
-
-
 ## Contributing
 
 Welcome! Please see the issues for items that need attention, and below for some tools to aid in development and debugging. We're working to interpolate chat functionality onto the map module.
-
 
 Visit our roadmap for more information.
 
@@ -22,7 +17,6 @@ https://chlorinated-birch-096.notion.site/MapGPT-Documentation-f7440889fca74582b
 
 ### Running the app on your own machine
 
-
 ## Stack
 
 - App framework: [Next.js](https://nextjs.org/)
@@ -33,7 +27,6 @@ https://chlorinated-birch-096.notion.site/MapGPT-Documentation-f7440889fca74582b
 - Component library: [shadcn/ui](https://ui.shadcn.com/)
 - Headless component primitives: [Radix UI](https://www.radix-ui.com/)
 - Styling: [Tailwind CSS](https://tailwindcss.com/)
-
 
 ### 2. Install dependencies
 
