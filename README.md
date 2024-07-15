@@ -25,6 +25,7 @@ Styling: Tailwind CSS
 2. Install dependencies
 
 cd mapgpt
+
 bun install
 
 3. Setting up Upstash Redis
