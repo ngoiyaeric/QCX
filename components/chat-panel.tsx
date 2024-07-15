@@ -28,9 +28,6 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
- 
-
-  // Focus on input when button is pressed
   useEffect(() => {
     if (isButtonPressed) {
       inputRef.current?.focus()
@@ -41,13 +38,11 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    // Clear messages if button is pressed
     if (isButtonPressed) {
       handleClear()
       setIsButtonPressed(false)
     }
 
-    // Add user message to UI state
     setMessages(currentMessages => [
       ...currentMessages,
       {
@@ -56,39 +51,54 @@ export function ChatPanel({ messages }: ChatPanelProps) {
       }
     ])
 
-    // Submit and get response message
     const formData = new FormData(e.currentTarget)
     const responseMessage = await submit(formData)
     setMessages(currentMessages => [...currentMessages, responseMessage as any])
   }
 
-  // Clear messages
   const handleClear = () => {
     router.push('/')
   }
 
-    useEffect(() => {
-      const handleClickOutside = (event: MouseEvent): void => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-          setShowDropdown(false);
-        }
-      };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent): void => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
 
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }, []);
-
-
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   useEffect(() => {
-    // Focus on input when the page loads
     inputRef.current?.focus()
   }, [])
-  
 
-  // If there are messages and the new button has not been pressed, display the new Button
+  const handleOption1Click = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click()
+    }
+  }
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = () => {
+        localStorage.setItem('uploadedFile', reader.result as string)
+        alert('File content stored in local storage')
+      }
+      reader.readAsText(file)
+    }
+  }
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown)
+  }
+
   if (messages.length > 0 && !isButtonPressed) {
     return (
       <div className="fixed bottom-2 md:bottom-8 left-2 flex justify-start items-center mx-auto pointer-events-none">
@@ -106,38 +116,6 @@ export function ChatPanel({ messages }: ChatPanelProps) {
       </div>
     )
   }
-
-  function handleOption2Click(event: React.MouseEvent<HTMLButtonElement>): void {
-    throw new Error('Function not implemented.')
-
-  }
-  
-  const handleOption1Click = () => {
-    const reader = new FileReader();
-    //add file to gpt4o context 
-    reader.onload = () => {
-      // Store the file content in localStorage
-      localStorage.setItem('uploadedFile', reader.result as string)
-      alert('File content stored in local storage')
-    }
-  }
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = () => {
-        // Store the file content in localStorage
-        localStorage.setItem('uploadedFile', reader.result as string)
-        alert('File content stored in local storage')
-      }
-      reader.readAsText(file)
-    }
-  }
-
-  const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
-  };
 
   return (
     <div className="fixed top-10 left-2 bottom-8 w-1/2 flex flex-col items-start justify-center">
@@ -158,13 +136,11 @@ export function ChatPanel({ messages }: ChatPanelProps) {
               setShowEmptyScreen(e.target.value.length === 0)
             }}
             onKeyDown={e => {
-              // Enter should submit the form
               if (
                 e.key === 'Enter' &&
                 !e.shiftKey &&
                 !e.nativeEvent.isComposing
               ) {
-                // Prevent the default action to avoid adding a new line
                 if (input.trim().length === 0) {
                   e.preventDefault()
                   return
@@ -175,19 +151,13 @@ export function ChatPanel({ messages }: ChatPanelProps) {
               }
             }}
             onHeightChange={height => {
-              // Ensure inputRef.current is defined
               if (!inputRef.current) return
 
-              // The initial height and left padding is 70px and 2rem
               const initialHeight = 70
-              // The initial border radius is 32px
               const initialBorder = 32
-              // The height is incremented by multiples of 20px
               const multiple = (height - initialHeight) / 20
 
-              // Decrease the border radius by 4px for each 20px height increase
               const newBorder = initialBorder - 4 * multiple
-              // The lowest border radius will be 8px
               inputRef.current.style.borderRadius =
                 Math.max(8, newBorder) + 'px'
             }}
@@ -195,7 +165,6 @@ export function ChatPanel({ messages }: ChatPanelProps) {
             onBlur={() => setShowEmptyScreen(false)}
           />
           
-          {/* Paperclip icon with dropdown */}
           <div className={cn('relative')}>
             <Button
               type="button"
@@ -210,11 +179,10 @@ export function ChatPanel({ messages }: ChatPanelProps) {
             {showDropdown && (
               <div className={cn("absolute top-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none")}>
                 <div ref={dropdownRef} className={cn("py-1")} role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                  {/* Dropdown menu options */}
                   <button onClick={handleOption1Click} className={cn("block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left")}role="menuitem">
                     My Computer
                   </button>
-                  <button onClick={handleOption2Click} className={cn("block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left")} role="menuitem">
+                  <button onClick={() => alert('Function not implemented.')} className={cn("block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left")} role="menuitem">
                     Drive
                   </button>
                 </div>
@@ -222,7 +190,6 @@ export function ChatPanel({ messages }: ChatPanelProps) {
             )}
           </div>
 
-          {/* Submit button */}
           <Button
             type="submit"
             size={'icon'}
@@ -240,6 +207,14 @@ export function ChatPanel({ messages }: ChatPanelProps) {
           className={cn(showEmptyScreen ? 'visible' : 'invisible')}
         />
       </form>
+
+      {/* Hidden file input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
     </div>
   )
 }
