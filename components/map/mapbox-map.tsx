@@ -11,7 +11,7 @@ mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 export const Mapbox: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<any>(null)
-  const [is3D, setIs3D] = useState(false)
+  const [is3D, setIs3D] = useState(true)
   const [position, setPosition] = useState({
     latitude: -74.0060152,
     longitude: 40.7127281
@@ -57,7 +57,7 @@ export const Mapbox: React.FC = () => {
         zoom: 12, // Closer zoom for better 3D effect
         pitch: 60, // Tilts the map for a 3D effect
         bearing: -20, // Rotates the map for a better view
-        maxZoom: 15,
+        maxZoom: 22,
         attributionControl: false
       })
       // Add zoom controls

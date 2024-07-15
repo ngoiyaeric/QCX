@@ -24,6 +24,11 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [showEmptyScreen, setShowEmptyScreen] = useState(false)
   const router = useRouter()
+  const [showDropdown, setShowDropdown] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+ 
 
   // Focus on input when button is pressed
   useEffect(() => {
@@ -62,10 +67,26 @@ export function ChatPanel({ messages }: ChatPanelProps) {
     router.push('/')
   }
 
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent): void => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+          setShowDropdown(false);
+        }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, []);
+
+
+
   useEffect(() => {
     // Focus on input when the page loads
     inputRef.current?.focus()
   }, [])
+  
 
   // If there are messages and the new button has not been pressed, display the new Button
   if (messages.length > 0 && !isButtonPressed) {
@@ -85,6 +106,38 @@ export function ChatPanel({ messages }: ChatPanelProps) {
       </div>
     )
   }
+
+  function handleOption2Click(event: React.MouseEvent<HTMLButtonElement>): void {
+    throw new Error('Function not implemented.')
+
+  }
+  
+  const handleOption1Click = () => {
+    const reader = new FileReader();
+    //add file to gpt4o context 
+    reader.onload = () => {
+      // Store the file content in localStorage
+      localStorage.setItem('uploadedFile', reader.result as string)
+      alert('File content stored in local storage')
+    }
+  }
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = () => {
+        // Store the file content in localStorage
+        localStorage.setItem('uploadedFile', reader.result as string)
+        alert('File content stored in local storage')
+      }
+      reader.readAsText(file)
+    }
+  }
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
 
   return (
     <div className="fixed top-10 left-2 bottom-8 w-1/2 flex flex-col items-start justify-center">
@@ -141,14 +194,35 @@ export function ChatPanel({ messages }: ChatPanelProps) {
             onFocus={() => setShowEmptyScreen(true)}
             onBlur={() => setShowEmptyScreen(false)}
           />
-          <Button 
-            type="button"
-            variant={'ghost'}
-            size={'icon'}
-            className="absolute right-10 top-1/2 transform -translate-y-1/2"
-          >
-            <Paperclip size={20} />
-          </Button>
+          
+          {/* Paperclip icon with dropdown */}
+          <div className={cn('relative')}>
+            <Button
+              type="button"
+              variant={'ghost'}
+              size={'icon'}
+              className={cn("absolute right-12 top-6 transform -translate-y-1/2")}
+              onClick={toggleDropdown}
+            >
+              <Paperclip size={20} />
+            </Button>
+
+            {showDropdown && (
+              <div className={cn("absolute top-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none")}>
+                <div ref={dropdownRef} className={cn("py-1")} role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                  {/* Dropdown menu options */}
+                  <button onClick={handleOption1Click} className={cn("block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left")}role="menuitem">
+                    My Computer
+                  </button>
+                  <button onClick={handleOption2Click} className={cn("block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left")} role="menuitem">
+                    Drive
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Submit button */}
           <Button
             type="submit"
             size={'icon'}
