@@ -23,16 +23,12 @@ export function MapToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => {setMapType(MapToggleEnum.FreeMode)}}>
+          My Maps
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => {setMapType(MapToggleEnum.RealTimeMode)}}>
-          My location
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {setMapType(MapToggleEnum.MapBox)}}>
-          Saved Maps
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {setMapType(MapToggleEnum.EarthEngine)}}>
           Live
         </DropdownMenuItem>
-
       </DropdownMenuContent>
     </DropdownMenu>
   )

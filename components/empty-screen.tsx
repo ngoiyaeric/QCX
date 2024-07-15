@@ -3,15 +3,17 @@ import { ArrowRight } from 'lucide-react'
 
 const exampleMessages = [
   {
-    heading: 'What are the best nature parks here?',
-    message: 'What are the best nature parks here?'
+    
+    heading: "Coffee Shops with a vintage vibe in NYC?",
+    message: "Coffee Shops with a vintage vibe in NYC?"
   },
   {
+    
     heading: "What are some of the tallest trees?",
     message: "What are some of the tallest trees?"
   },
   {
-    heading: 'When is the next lunar eclipse?',
+    heading: 'When is the next lunar eclipse?' ,
     message: 'When is the next lunar eclipse?'
   },
   {
