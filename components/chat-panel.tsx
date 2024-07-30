@@ -11,6 +11,8 @@ import { ArrowRight, Plus, Paperclip } from 'lucide-react'
 import { EmptyScreen } from './empty-screen'
 import Textarea from 'react-textarea-autosize'
 import { nanoid } from 'ai'
+import AnimatedShinyText from '@/components/magicui/animated-shiny-text'
+
 
 interface ChatPanelProps {
   messages: UIState
@@ -58,6 +60,7 @@ export function ChatPanel({ messages }: ChatPanelProps) {
 
   const handleClear = () => {
     router.push('/')
+    window.location.reload()
   }
 
   useEffect(() => {
@@ -127,7 +130,7 @@ export function ChatPanel({ messages }: ChatPanelProps) {
             rows={1}
             maxRows={5}
             tabIndex={0}
-            placeholder="Ask a question..."
+            placeholder="explore"
             spellCheck={false}
             value={input}
             className="resize-none w-full min-h-12 rounded-fill bg-muted border border-input pl-4 pr-20 pt-3 pb-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'"
@@ -164,7 +167,7 @@ export function ChatPanel({ messages }: ChatPanelProps) {
             onFocus={() => setShowEmptyScreen(true)}
             onBlur={() => setShowEmptyScreen(false)}
           />
-          
+
           <div className={cn('relative')}>
             <Button
               type="button"
@@ -180,10 +183,10 @@ export function ChatPanel({ messages }: ChatPanelProps) {
               <div className={cn("absolute top-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none")}>
                 <div ref={dropdownRef} className={cn("py-1")} role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                   <button onClick={handleOption1Click} className={cn("block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left")}role="menuitem">
-                    My Computer
+                    Documents
                   </button>
                   <button onClick={() => alert('Function not implemented.')} className={cn("block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left")} role="menuitem">
-                    Drive
+                    Images
                   </button>
                 </div>
               </div>
@@ -199,6 +202,9 @@ export function ChatPanel({ messages }: ChatPanelProps) {
           >
             <ArrowRight size={20} />
           </Button>
+        </div>
+        <div className="text-xs text-gray-500 mt-2">
+          Beta: Responses may contain innacuracies. 
         </div>
         <EmptyScreen
           submitMessage={message => {

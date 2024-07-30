@@ -1,25 +1,51 @@
 import { Button } from '@/components/ui/button'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, icons } from 'lucide-react'
+import { Globe, Video, FileText, Search,
+  CircleUserRound,
+  Map,
+  CalendarDays,
+  TentTree} from 'lucide-react';
+
+
 
 const exampleMessages = [
   {
     
-    heading: "Coffee Shops with a vintage vibe in NYC?",
-    message: "Coffee Shops with a vintage vibe in NYC?"
+    heading: "What is the best route and time for a Jog tomorrow Morning?",
+    message: "What is the best route and time for a Jog tomorrow Morning?",
+    icon: Map
   },
   {
     
-    heading: "What are some of the tallest trees?",
-    message: "What are some of the tallest trees?"
+    heading: "Plan me a safari trip",
+    message: "Plan me a safari trip",
+    icon: CalendarDays 
+
   },
   {
-    heading: 'When is the next lunar eclipse?' ,
-    message: 'When is the next lunar eclipse?'
+    heading: 'Recommend a nature video on rare species' ,
+    message: 'Recommend a nature video on rare species',
+    icon: Video
   },
   {
-    heading: 'How far is mars?',
-    message: 'How far is mars?'
+    heading: 'How far is mars today?',
+    message: 'How far is mars today?',
+    icon: Globe
+  },
+
+  {
+    heading: 'Make a brunch reservation for me this weekend',
+    message: 'Make a brunch reservation for me this weekend',
+    icon: CalendarDays
+  },
+
+  {
+    heading: 'Who owns that green building next to the subway station?',
+    message: 'Who owns that green building next to the subway station?',
+    icon: TentTree
   }
+
+
 ]
 export function EmptyScreen({
   submitMessage,
@@ -43,6 +69,7 @@ export function EmptyScreen({
               }}
             >
               <ArrowRight size={16} className="mr-2 text-muted-foreground" />
+              <message.icon size={16} className="mr-2 text-muted-foreground" />
               {message.heading}
             </Button>
           ))}

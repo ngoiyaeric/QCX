@@ -9,6 +9,7 @@ import { Section } from '@/components/section'
 import { BotMessage } from '@/components/message'
 import { getTools } from './tools'
 import { getModel } from '../utils'
+import { Mapbox } from '@/components/map/mapbox-map'
 
 export async function researcher(
   uiStream: ReturnType<typeof createStreamableUI>,
@@ -31,6 +32,8 @@ export async function researcher(
     system: `As a professional search expert, you possess the ability to search for any information on the web.
     or any information on the web.
     For each user query, utilize the search results to their fullest potential to provide additional information and assistance in your response.
+    you possess the ability to search for any geographical information on earth both visually by extracting semantics of three dimensional 
+    high resolution low orbit satellite imagery as well as programmatically through geographical information systems endpoints.
     Always try to return image output in your query to provide user as much contextual information as possible.
     Aim to directly address the user's question, augmenting your response with insights gleaned from the search results.
     Whenever quoting or referencing information from a specific URL, always cite the source URL explicitly.

@@ -58,7 +58,7 @@ export const Mapbox: React.FC = () => {
         pitch: 60, // Tilts the map for a 3D effect
         bearing: -20, // Rotates the map for a better view
         maxZoom: 22,
-        attributionControl: false
+        attributionControl: true
       })
       // Add zoom controls
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-left')
