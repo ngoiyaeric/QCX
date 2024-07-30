@@ -123,86 +123,88 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   return (
     <div className="fixed top-10 left-2 bottom-8 w-1/2 flex flex-col items-start justify-center">
       <form onSubmit={handleSubmit} className="max-w-full w-full px-6">
-        <div className="relative flex items-start w-full">
-          <Textarea
-            ref={inputRef}
-            name="input"
-            rows={1}
-            maxRows={5}
-            tabIndex={0}
-            placeholder="explore"
-            spellCheck={false}
-            value={input}
-            className="resize-none w-full min-h-12 rounded-fill bg-muted border border-input pl-4 pr-20 pt-3 pb-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'"
-            onChange={e => {
-              setInput(e.target.value)
-              setShowEmptyScreen(e.target.value.length === 0)
-            }}
-            onKeyDown={e => {
-              if (
-                e.key === 'Enter' &&
-                !e.shiftKey &&
-                !e.nativeEvent.isComposing
-              ) {
-                if (input.trim().length === 0) {
-                  e.preventDefault()
-                  return
-                }
-                e.preventDefault()
-                const textarea = e.target as HTMLTextAreaElement
-                textarea.form?.requestSubmit()
-              }
-            }}
-            onHeightChange={height => {
-              if (!inputRef.current) return
+      <div className="relative flex items-center w-full">
+  <Textarea
+    ref={inputRef}
+    name="input"
+    rows={1}
+    maxRows={5}
+    tabIndex={0}
+    placeholder="explore"
+    spellCheck={false}
+    value={input}
+    className="resize-none w-full min-h-12 rounded-fill bg-muted border border-input pl-4 pr-20 pt-3 pb-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    onChange={e => {
+      setInput(e.target.value);
+      setShowEmptyScreen(e.target.value.length === 0);
+    }}
+    onKeyDown={e => {
+      if (
+        e.key === 'Enter' &&
+        !e.shiftKey &&
+        !e.nativeEvent.isComposing
+      ) {
+        if (input.trim().length === 0) {
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+        const textarea = e.target as HTMLTextAreaElement;
+        textarea.form?.requestSubmit();
+      }
+    }}
+    onHeightChange={height => {
+      if (!inputRef.current) return;
 
-              const initialHeight = 70
-              const initialBorder = 32
-              const multiple = (height - initialHeight) / 20
+      const initialHeight = 70;
+      const initialBorder = 32;
+      const multiple = (height - initialHeight) / 20;
 
-              const newBorder = initialBorder - 4 * multiple
-              inputRef.current.style.borderRadius =
-                Math.max(8, newBorder) + 'px'
-            }}
-            onFocus={() => setShowEmptyScreen(true)}
-            onBlur={() => setShowEmptyScreen(false)}
-          />
+      const newBorder = initialBorder - 4 * multiple;
+      inputRef.current.style.borderRadius =
+        Math.max(8, newBorder) + 'px';
+    }}
+    onFocus={() => setShowEmptyScreen(true)}
+    onBlur={() => setShowEmptyScreen(false)}
+  />
+  
+  <div className="absolute right-2 flex items-center">
+    <Button
+      type="button"
+      variant={'ghost'}
+      size={'icon'}
+      className="mr-2"
+      
+      onClick={toggleDropdown}
+    >
+      <Paperclip size={20} />
+    </Button>
 
-          <div className={cn('relative')}>
-            <Button
-              type="button"
-              variant={'ghost'}
-              size={'icon'}
-              className={cn("absolute right-12 top-6 transform -translate-y-1/2")}
-              onClick={toggleDropdown}
-            >
-              <Paperclip size={20} />
-            </Button>
-
-            {showDropdown && (
-              <div className={cn("absolute top-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none")}>
-                <div ref={dropdownRef} className={cn("py-1")} role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                  <button onClick={handleOption1Click} className={cn("block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left")}role="menuitem">
-                    Documents
-                  </button>
-                  <button onClick={() => alert('Function not implemented.')} className={cn("block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left")} role="menuitem">
-                    Images
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <Button
-            type="submit"
-            size={'icon'}
-            variant={'ghost'}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2"
-            disabled={input.length === 0}
-          >
-            <ArrowRight size={20} />
-          </Button>
+    {showDropdown && (
+      <div className="absolute top-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <div ref={dropdownRef} className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+          <button onClick={handleOption1Click} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" role="menuitem">
+            Documents
+          </button>
+          <button onClick={() => alert('Function not implemented.')} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" role="menuitem">
+            Images
+          </button>
         </div>
+      </div>
+    )}
+
+    <Button
+      type="submit"
+      size={'icon'}
+      variant={'ghost'}
+      className=""
+      disabled={input.length === 0}
+    >
+      <ArrowRight size={20} />
+    </Button>
+  </div>
+</div>
+
         <div className="text-xs text-gray-500 mt-2">
           Beta: Responses may contain innacuracies. 
         </div>
