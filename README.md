@@ -22,7 +22,7 @@ Exploration & Automation
 
 - App framework: [Next.js](https://nextjs.org/)
 - Map: [MapBox] (https://www.mapbox.com/)
-- Location Data & News: X 
+- Location Data & News: 𝕏 
 - Text streaming / Generative UI: [Vercel AI SDK](https://sdk.vercel.ai/docs)
 - Generative Model: [OpenAI](https://openai.com/)
 - Search API: [Tavily AI](https://tavily.com/) / [Serper](https://serper.dev)
