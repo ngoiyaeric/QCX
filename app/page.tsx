@@ -1,7 +1,9 @@
-
 import { Chat } from '@/components/chat';
 import { AI } from './actions';
 import { generateId } from 'ai'
+import AccountSettings  from '@/components/settings/settings'; 
+
+
 /*import { nanoid } from 'ai';
 import { User } from 'firebase/auth';
 import { useEffect, useState } from 'react';
@@ -62,14 +64,25 @@ const AppPage = () => {
   }
  */
 
-  
-  export const maxDuration = 60
+
+  export const maxDuration = 60;
   
   export default function Page() {
-    const id = generateId()
+   
+
+   
+    const id = generateId();
+    //const pathname = usePathname();
+    
+   /* if (pathname === '/settings') {
+      return <AccountSettings />;
+    }
+      */
+
     return (
       <AI initialAIState={{ chatId: id, messages: [] }}>
         <Chat id={id} />
       </AI>
-    )
+    );
   }
+  

@@ -12,6 +12,8 @@ import { EmptyScreen } from './empty-screen'
 import Textarea from 'react-textarea-autosize'
 import { nanoid } from 'ai'
 import AnimatedShinyText from '@/components/magicui/animated-shiny-text'
+import { aiUseChatAdapter } from "@upstash/rag-chat/nextjs";
+
 
 
 interface ChatPanelProps {

@@ -42,7 +42,7 @@ async function submit(formData?: FormData, skip?: boolean) {
   )
 
   // goupeiId is used to group the messages for collapse
-  const groupeId = nanoid()
+  const groupId = nanoid()
 
   const useSpecificAPI = process.env.USE_SPECIFIC_API_FOR_WRITER === 'true'
   const maxMessages = useSpecificAPI ? 5 : 10
@@ -146,7 +146,7 @@ async function submit(formData?: FormData, skip?: boolean) {
             messages: [
               ...aiState.get().messages,
               {
-                id: groupeId,
+                id: groupId,
                 role: 'tool',
                 content: JSON.stringify(output.result),
                 name: output.toolName,
@@ -196,19 +196,19 @@ async function submit(formData?: FormData, skip?: boolean) {
         messages: [
           ...aiState.get().messages,
           {
-            id: groupeId,
+            id: groupId,
             role: 'assistant',
             content: answer,
             type: 'answer'
           },
           {
-            id: groupeId,
+            id: groupId,
             role: 'assistant',
             content: JSON.stringify(relatedQueries),
             type: 'related'
           },
           {
-            id: groupeId,
+            id: groupId,
             role: 'assistant',
             content: 'followup',
             type: 'followup'

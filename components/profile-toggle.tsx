@@ -8,28 +8,30 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { Map } from 'lucide-react'
-import { useMapToggle, MapToggleEnum } from './map-toggle-context'
+import { CircleUserRound } from 'lucide-react'
+import { useProfileActions, ProfileActionEnum } from './profile-toggle-context'
 
-export function MapToggle() {
-  const { setMapType } = useMapToggle();
+
+export function ProfileToggle() {
+  const { handleAction } = useProfileActions();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
-          <Map className="h-[1.2rem] w-[1.2rem] transition-all rotate-0 scale-100" />
-          
+          <CircleUserRound className="h-[1.2rem] w-[1.2rem] transition-all" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => {setMapType(MapToggleEnum.FreeMode)}}>
-          My Maps
+       
+        <DropdownMenuItem onClick={() => { handleAction(ProfileActionEnum.SignOut) }}>
+          Sign Out
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {setMapType(MapToggleEnum.RealTimeMode)}}>
-          Live
+        <DropdownMenuItem onClick={() => { handleAction(ProfileActionEnum.AccountSettings) }}>
+          Account Settings
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
+

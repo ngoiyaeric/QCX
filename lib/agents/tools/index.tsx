@@ -2,6 +2,7 @@ import { createStreamableUI } from 'ai/rsc'
 import { retrieveTool } from './retrieve'
 import { searchTool } from './search'
 import { videoSearchTool } from './video-search'
+import { locationTool } from './location'
 
 export interface ToolProps {
   uiStream: ReturnType<typeof createStreamableUI>
@@ -17,7 +18,12 @@ export const getTools = ({ uiStream, fullResponse }: ToolProps) => {
     retrieve: retrieveTool({
       uiStream,
       fullResponse
+    }),
+    location: locationTool({
+      uiStream,
+      fullResponse
     })
+
   }
 
   if (process.env.SERPER_API_KEY) {
