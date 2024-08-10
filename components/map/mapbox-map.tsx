@@ -10,19 +10,15 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import { useMapToggle, MapToggleEnum } from '../map-toggle-context'
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ?? ""
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN as string;
 
-export const Mapbox: React.FC = () => {
+export const Mapbox: React.FC<{ position: { latitude: number; longitude: number; } }> = ({ position }) => {
   const mapContainer = useRef<HTMLDivElement>(null)
-  const map = useRef<any>(null)
-  const [is3D, setIs3D] = useState(true)
+  const map = useRef<mapboxgl.Map | null>(null);
+  const { mapType } = useMapToggle();
   const [roundedArea, setRoundedArea] = useState<number | null>(null);
-
-  const [position, setPosition] = useState({
-    latitude: -74.0060152,
-    longitude: 40.7127281
-  })
-  const {mapType} = useMapToggle();
+  const [isLoading, setIsLoading] = useState(false);
+  
 
   const draw = new MapboxDraw({
     displayControlsDefault: false,
@@ -34,44 +30,64 @@ export const Mapbox: React.FC = () => {
   });
 
   useEffect(() => {
-    if(mapType !== MapToggleEnum.RealTimeMode)
-        return;
+    if (mapType !== MapToggleEnum.RealTimeMode) return;
 
-    let watchId: number | null = null
-    // real time location
+    let watchId: number | null = null;
     if (!navigator.geolocation) {
-      toast('Geolocation is not supported by your browser')
+      toast('Geolocation is not supported by your browser');
     } else {
-      const success = (geoPos: GeolocationPosition) => {
-        setPosition({
-          latitude: geoPos.coords.latitude,
-          longitude: geoPos.coords.longitude
-        })
-        mapType === MapToggleEnum.RealTimeMode &&map.current &&
-          map.current.flyTo({
-            center: [geoPos.coords.longitude, geoPos.coords.latitude],
-            zoom: 12
-          })
-      }
+      const success = async (geoPos: GeolocationPosition) => {
+        setIsLoading(true);
+        try {
+          await updateMapPosition(geoPos.coords.latitude, geoPos.coords.longitude);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-      const error = (error: GeolocationPositionError) => {}
-      watchId = navigator.geolocation.watchPosition(success, error)
+      const error = (positionError: GeolocationPositionError) => {
+        toast(`Error fetching location: ${positionError.message}`);
+      };
+
+      watchId = navigator.geolocation.watchPosition(success, error);
 
       return () => {
-        watchId && navigator.geolocation.clearWatch(watchId)
-      }
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+      };
     }
   }, [mapType]);
 
+  const updateMapPosition = async (latitude: number, longitude: number) => {
+    if (map.current) {
+      await new Promise<void>((resolve) => {
+        map.current?.flyTo({
+          center: [longitude, latitude],
+          zoom: 12,
+          essential: true,
+          speed: 0.5,
+          curve: 1,
+        });
+        map.current?.once('moveend', () => resolve());
+      });
+    }
+  };
+
   useEffect(() => {
-    if (mapContainer.current) {
+    if (mapContainer.current && !map.current) {
+      const initialCenter: [number, number] = [
+        position?.longitude ?? 0,
+        position?.latitude ?? 0
+      ];
+
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/satellite-streets-v12', // Satellite style
-        center: [-74.0060152, 40.7127281], // Coordinates for Mount Everest
-        zoom: 12, // Closer zoom for better 3D effect
-        pitch: 60, // Tilts the map for a 3D effect
-        bearing: -20, // Rotates the map for a better view
+        style: 'mapbox://styles/mapbox/satellite-streets-v12',
+        center: initialCenter,
+        zoom: 12,
+        pitch: 60,
+        bearing: -20,
         maxZoom: 22,
         attributionControl: true
       })
@@ -88,43 +104,51 @@ export const Mapbox: React.FC = () => {
         }
       };
       // Add zoom controls
-      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-left')
       // Add draw controls
-      map.current.addControl(draw, 'top-right');
+      map.current.addControl(draw, 'top-left');
 
       map.current.on('draw.create', updateArea);
       map.current.on('draw.delete', updateArea);
       map.current.on('draw.update', updateArea);
       // Add terrain
       map.current.on('load', () => {
+        if (!map.current) return;
+
         map.current.addSource('mapbox-dem', {
           type: 'raster-dem',
           url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
           tileSize: 512,
-          maxzoom: 14
-        })
+          maxzoom: 14,
+        });
 
-        // Add the DEM source as a terrain layer with exaggerated height
-        map.current.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 })
+        map.current.setTerrain({ source: 'mapbox-dem', exaggeration: 1.5 });
 
-        // Add sky layer for background
         map.current.addLayer({
           id: 'sky',
           type: 'sky',
           paint: {
             'sky-type': 'atmosphere',
             'sky-atmosphere-sun': [0.0, 0.0],
-            'sky-atmosphere-sun-intensity': 15
-          }
-        })
-      })
-
-      // Clean up on unmount
-      return () => {
-        map.current?.remove()
-      }
+            'sky-atmosphere-sun-intensity': 15,
+          },
+        });
+      });
     }
-  }, [])
+
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, [position]);
+
+  useEffect(() => {
+    if (map.current && position?.latitude && position?.longitude) {
+      updateMapPosition(position.latitude, position.longitude);
+    }
+  }, [position]);
 
   return (
     <div className="h-full w-full overflow-hidden rounded-l-lg">
@@ -132,6 +156,7 @@ export const Mapbox: React.FC = () => {
         className="w=full h-full"
         ref={mapContainer}
       />
+      {isLoading && <p>Updating map position...</p>}
       <div className="absolute bottom-10 left-10 h-30 w-48 bg-white bg-opacity-80 p-3.5 text-center rounded-lg !text-black">
         <p>Draw Area</p>
         <div>

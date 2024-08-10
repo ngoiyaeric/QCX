@@ -22,7 +22,7 @@ Exploration & Automation
 
 - App framework: [Next.js](https://nextjs.org/)
 - Map: [MapBox] (https://www.mapbox.com/)
-- Location Data & News: X 
+- Location Data & News: 𝕏 
 - Text streaming / Generative UI: [Vercel AI SDK](https://sdk.vercel.ai/docs)
 - Generative Model: [OpenAI](https://openai.com/)
 - Search API: [Tavily AI](https://tavily.com/) / [Serper](https://serper.dev)
@@ -121,8 +121,6 @@ This will allow you to use mapgpt as your default search engine in the browser.
 ## Verified models
 
 ### List of models applicable to all:
-- X
-  Grok (In Progress) 
 - OpenAI
   - gpt-4o
   - gpt-4-turbo
@@ -133,6 +131,7 @@ This will allow you to use mapgpt as your default search engine in the browser.
   - Claude 3.5 Sonnet
 - Ollama (Unstable)
   - mistral/openhermes & Phi3/llama3
+  - Grok (In Progress) 
     
 
 ### List of verified models that can be specified to writers:
@@ -140,3 +139,4 @@ This will allow you to use mapgpt as your default search engine in the browser.
 - [Groq](https://console.groq.com/docs/models)
   - LLaMA3 8b
   - LLaMA3 70b
+  - Grok (In Progress) 
