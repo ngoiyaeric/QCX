@@ -72,6 +72,10 @@ TAVILY_API_KEY=
 # Upstash Redis URL and Token retrieved here: https://console.upstash.com/redis
 UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=
+
+Upstash Vector store URL and Token retrieved here: https://console.upstash.com/vector
+UPSTASH_VECTOR_REST_URL=
+UPSTASH_VECTOR_REST_TOKEN=
 ```
 
 _Note: This project focuses on Generative UI and requires complex output from LLMs. Currently, it's assumed that the official OpenAI models will be used. Although it's possible to set up other models, if you use an OpenAI-compatible model, but we don't guarantee that it'll work._
