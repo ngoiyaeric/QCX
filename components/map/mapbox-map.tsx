@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useState, useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { toast } from 'react-toastify';
@@ -12,53 +10,7 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const { mapType } = useMapToggle();
-
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (mapType !== MapToggleEnum.RealTimeMode) return;
-
-    let watchId: number | null = null;
-    if (!navigator.geolocation) {
-      toast('Geolocation is not supported by your browser');
-    } else {
-      const success = async (geoPos: GeolocationPosition) => {
-        setIsLoading(true);
-        try {
-          await updateMapPosition(geoPos.coords.latitude, geoPos.coords.longitude);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      const error = (positionError: GeolocationPositionError) => {
-        toast(`Error fetching location: ${positionError.message}`);
-      };
-
-      watchId = navigator.geolocation.watchPosition(success, error);
-
-      return () => {
-        if (watchId !== null) {
-          navigator.geolocation.clearWatch(watchId);
-        }
-      };
-    }
-  }, [mapType]);
-
-  const updateMapPosition = async (latitude: number, longitude: number) => {
-    if (map.current) {
-      await new Promise<void>((resolve) => {
-        map.current?.flyTo({
-          center: [longitude, latitude],
-          zoom: 12,
-          essential: true,
-          speed: 0.5,
-          curve: 1,
-        });
-        map.current?.once('moveend', () => resolve());
-      });
-    }
-  };
 
   useEffect(() => {
     if (mapContainer.current && !map.current) {
@@ -110,13 +62,58 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
         map.current = null;
       }
     };
-  }, [position]);
+  }, [mapContainer]);
 
   useEffect(() => {
     if (map.current && position?.latitude && position?.longitude) {
       updateMapPosition(position.latitude, position.longitude);
     }
   }, [position]);
+
+  useEffect(() => {
+    if (mapType !== MapToggleEnum.RealTimeMode) return;
+
+    let watchId: number | null = null;
+    if (!navigator.geolocation) {
+      toast('Geolocation is not supported by your browser');
+    } else {
+      const success = async (geoPos: GeolocationPosition) => {
+        setIsLoading(true);
+        try {
+          await updateMapPosition(geoPos.coords.latitude, geoPos.coords.longitude);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      const error = (positionError: GeolocationPositionError) => {
+        toast(`Error fetching location: ${positionError.message}`);
+      };
+
+      watchId = navigator.geolocation.watchPosition(success, error);
+
+      return () => {
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+      };
+    }
+  }, [mapType]);
+
+  const updateMapPosition = async (latitude: number, longitude: number) => {
+    if (map.current) {
+      await new Promise<void>((resolve) => {
+        map.current?.flyTo({
+          center: [longitude, latitude],
+          zoom: 12,
+          essential: true,
+          speed: 0.5,
+          curve: 1,
+        });
+        map.current?.once('moveend', () => resolve());
+      });
+    }
+  };
 
   return (
     <>

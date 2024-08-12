@@ -6,7 +6,7 @@ import { ChatPanel } from './chat-panel'
 import { ChatMessages } from './chat-messages'
 import { Mapbox } from './map/mapbox-map'
 import { useUIState, useAIState } from 'ai/rsc'
-import { AccountSettings } from './settings/settings'
+import { AccountSettings } from '../app/settings/settings'
 type ChatProps = {
   id?: string
 }

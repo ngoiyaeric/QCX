@@ -1,11 +1,13 @@
+
+
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { X, User, Mail, MapPin, Globe, Cpu } from 'lucide-react';
 import iso6391 from 'iso-639-1';
 import mapboxgl from 'mapbox-gl'; // Import your Mapbox component
-import { Mapbox } from '../map/mapbox-map';
-import { useProfileActions, ProfileActionEnum } from '../profile-toggle-context';
+import { Mapbox } from '../../components/map/mapbox-map';
+import { useProfileActions, ProfileActionEnum } from '../../components/profile-toggle-context';
 
 export const AccountSettings = () => {
   const [name, setName] = useState('--');

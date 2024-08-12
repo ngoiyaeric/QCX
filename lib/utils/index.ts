@@ -1,9 +1,9 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { OpenAI } from '@ai-sdk/openai'
-import { Ollama } from '@langchain/community/llms/ollama'
-import { google } from '@ai-sdk/google'
-import { anthropic } from '@ai-sdk/anthropic'
+import { createOllama } from 'ollama-ai-provider'
+import { createOpenAI } from '@ai-sdk/openai'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { createAnthropic } from '@ai-sdk/anthropic'
 import { CoreMessage } from 'ai'
 
 export function cn(...inputs: ClassValue[]) {
@@ -42,16 +42,24 @@ export function getModel(useSubModel = false) {
   }
 
   if (googleApiKey) {
+    const google = createGoogleGenerativeAI({
+      baseURL: process.env.GOOGLE_GENERATIVE_AI_API_BASE,
+      apiKey: googleApiKey
+    })
     return google('models/gemini-1.5-pro-latest')
   }
 
   if (anthropicApiKey) {
+    const anthropic = createAnthropic({
+      baseURL: process.env.ANTHROPIC_API_BASE,
+      apiKey: anthropicApiKey
+    })
     return anthropic('claude-3-5-sonnet-20240620')
   }
 
   // Fallback to OpenAI instead
 
-  const openai = new OpenAI({
+  const openai = createOpenAI({
     baseURL: openaiApiBase, // optional base URL for proxies etc.
     apiKey: openaiApiKey, // optional API key, default to env property OPENAI_API_KEY
     organization: '' // optional organization
@@ -89,3 +97,35 @@ export function transformToolMessages(messages: CoreMessage[]): CoreMessage[] {
 export function sanitizeUrl(url: string): string {
   return url.replace(/\s+/g, '%20')
 }
+
+// else if (projectId && region && typeof window === 'undefined') {
+/* Use OpenAI via Google Vertex AI on the server side only
+
+      //  const model = new VertexAI({ project: projectId, location: region })
+      //  const client = await auth.getClient()
+      //  const token = await client.getAccessToken()
+      //  if (!token.token) {
+       //   throw new Error('Failed to obtain access token')
+     //   }
+      //  return new OpenAI({
+        //  apiKey: token.token,
+        //  baseURL: `https://${region}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${region}/publishers/google/models/publishers/meta/models/llama3-405b-instruct-maas`
+        //})
+      }
+      break
+    case 'llama-3.1-405b':
+      if (projectId && region && typeof window === 'undefined') {
+        const vertexAI = new VertexAI({ project: projectId, location: region })
+        return vertexAI.preview.getGenerativeModel({
+          model: modelid,
+          generationConfig: {
+            maxOutputTokens: 2048,
+            temperature: 0.9,
+            topP: 1
+          }
+        })
+      }
+      break
+  }
+  throw new Error('No valid model configuration found')
+} */
