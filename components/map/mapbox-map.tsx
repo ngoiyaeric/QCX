@@ -88,13 +88,13 @@ export const Mapbox: React.FC = () => {
         }
       };
       // Add zoom controls
-      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
-      // Add draw controls
-      map.current.addControl(draw, 'top-right');
-
-      map.current.on('draw.create', updateArea);
-      map.current.on('draw.delete', updateArea);
-      map.current.on('draw.update', updateArea);
+      if (map.current) {
+        map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+        map.current.addControl(draw, 'top-right');
+        map.current.on('draw.create', updateArea);
+        map.current.on('draw.delete', updateArea);
+        map.current.on('draw.update', updateArea);
+      }
       // Add terrain
       map.current.on('load', () => {
         map.current.addSource('mapbox-dem', {
