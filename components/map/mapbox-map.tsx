@@ -54,7 +54,10 @@ export const Mapbox: React.FC = () => {
           })
       }
 
-      const error = (error: GeolocationPositionError) => {}
+      const error = (error: GeolocationPositionError) => {
+        console.error('Geolocation Error:', error.message);
+        toast.error(`Location error: ${error.message}`);
+      }
       watchId = navigator.geolocation.watchPosition(success, error)
 
       return () => {
