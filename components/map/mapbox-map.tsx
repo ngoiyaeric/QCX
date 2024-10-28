@@ -82,7 +82,7 @@ export const Mapbox: React.FC = () => {
       // actions
       const updateArea = (event: MapboxDraw.DrawCreateEvent | MapboxDraw.DrawUpdateEvent) => {
         const { features } = event;
-        const data = draw.getAll();
+        const allDrawnFeatures = draw.getAll();
         if (features && features.length > 0) {
           const polygon = features[0];
           console.log('Polygon created:', polygon);
