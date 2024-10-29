@@ -18,7 +18,7 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
   const { mapType } = useMapToggle();
   const [roundedArea, setRoundedArea] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+
 
   const draw = new MapboxDraw({
     displayControlsDefault: false,
@@ -45,11 +45,11 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
         }
       };
 
-      const error = (positionError: GeolocationPositionError) => {
-        toast(`Error fetching location: ${positionError.message}`);
-      };
-
-      watchId = navigator.geolocation.watchPosition(success, error);
+      const error = (error: GeolocationPositionError) => {
+        console.error('Geolocation Error:', error.message);
+        toast.error(`Location error: ${error.message}`);
+      }
+      watchId = navigator.geolocation.watchPosition(success, error)
 
       return () => {
         if (watchId !== null) {
@@ -95,22 +95,22 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
       // actions
       const updateArea = (event: MapboxDraw.DrawCreateEvent | MapboxDraw.DrawUpdateEvent) => {
         const { features } = event;
-        const data = draw.getAll();
+        const allDrawnFeatures = draw.getAll();
         if (features && features.length > 0) {
           const polygon = features[0];
           console.log('Polygon created:', polygon);
-          const area = turf.area(data);
+          const area = turf.area(allDrawnFeatures);
           setRoundedArea(Math.round(area * 100) / 100);
         }
       };
       // Add zoom controls
-      map.current.addControl(new mapboxgl.NavigationControl(), 'top-left')
-      // Add draw controls
-      map.current.addControl(draw, 'top-left');
-
-      map.current.on('draw.create', updateArea);
-      map.current.on('draw.delete', updateArea);
-      map.current.on('draw.update', updateArea);
+      if (map.current) {
+        map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+        map.current.addControl(draw, 'top-right');
+        map.current.on('draw.create', updateArea);
+        map.current.on('draw.delete', updateArea);
+        map.current.on('draw.update', updateArea);
+      }
       // Add terrain
       map.current.on('load', () => {
         if (!map.current) return;
