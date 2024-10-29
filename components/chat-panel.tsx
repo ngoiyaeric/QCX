@@ -13,7 +13,7 @@ import Textarea from 'react-textarea-autosize'
 import { nanoid } from 'ai'
 import AnimatedShinyText from '@/components/magicui/animated-shiny-text'
 import { aiUseChatAdapter } from "@upstash/rag-chat/nextjs";
-
+import { embedData } from '@/lib/actions/chat'
 
 
 interface ChatPanelProps {
@@ -84,7 +84,8 @@ export function ChatPanel({ messages }: ChatPanelProps) {
 
   const handleOption1Click = () => {
     if (fileInputRef.current) {
-      fileInputRef.current.click()
+      fileInputRef.current.click();
+      embedData(fileInputRef.current.value);
     }
   }
 

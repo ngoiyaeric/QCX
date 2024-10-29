@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import * as turf from '@turf/turf'
+=======
+import React, { useState, useEffect, useRef } from 'react';
+import mapboxgl from 'mapbox-gl';
+>>>>>>> e7baff241f36529734f500d95d10fe025653bccd
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -16,7 +21,10 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<mapboxgl.Map | null>(null);
   const { mapType } = useMapToggle();
+<<<<<<< HEAD
   const [roundedArea, setRoundedArea] = useState<number | null>(null);
+=======
+>>>>>>> e7baff241f36529734f500d95d10fe025653bccd
   const [isLoading, setIsLoading] = useState(false);
 
 
@@ -30,6 +38,7 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
   });
 
   useEffect(() => {
+<<<<<<< HEAD
     if (mapType !== MapToggleEnum.RealTimeMode) return;
 
     let watchId: number | null = null;
@@ -75,6 +84,8 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
   };
 
   useEffect(() => {
+=======
+>>>>>>> e7baff241f36529734f500d95d10fe025653bccd
     if (mapContainer.current && !map.current) {
       const initialCenter: [number, number] = [
         position?.longitude ?? 0,
@@ -142,13 +153,58 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
         map.current = null;
       }
     };
-  }, [position]);
+  }, [mapContainer]);
 
   useEffect(() => {
     if (map.current && position?.latitude && position?.longitude) {
       updateMapPosition(position.latitude, position.longitude);
     }
   }, [position]);
+
+  useEffect(() => {
+    if (mapType !== MapToggleEnum.RealTimeMode) return;
+
+    let watchId: number | null = null;
+    if (!navigator.geolocation) {
+      toast('Geolocation is not supported by your browser');
+    } else {
+      const success = async (geoPos: GeolocationPosition) => {
+        setIsLoading(true);
+        try {
+          await updateMapPosition(geoPos.coords.latitude, geoPos.coords.longitude);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      const error = (positionError: GeolocationPositionError) => {
+        toast(`Error fetching location: ${positionError.message}`);
+      };
+
+      watchId = navigator.geolocation.watchPosition(success, error);
+
+      return () => {
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+      };
+    }
+  }, [mapType]);
+
+  const updateMapPosition = async (latitude: number, longitude: number) => {
+    if (map.current) {
+      await new Promise<void>((resolve) => {
+        map.current?.flyTo({
+          center: [longitude, latitude],
+          zoom: 12,
+          essential: true,
+          speed: 0.5,
+          curve: 1,
+        });
+        map.current?.once('moveend', () => resolve());
+      });
+    }
+  };
 
   return (
     <div className="h-full w-full overflow-hidden rounded-l-lg">
@@ -157,6 +213,7 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
         ref={mapContainer}
       />
       {isLoading && <p>Updating map position...</p>}
+<<<<<<< HEAD
       <div className="absolute bottom-10 left-10 h-30 w-48 bg-white bg-opacity-80 p-3.5 text-center rounded-lg !text-black">
         <p>Draw Area</p>
         <div>
@@ -175,3 +232,8 @@ export const Mapbox: React.FC<{ position: { latitude: number; longitude: number;
     </div>
   )
 }
+=======
+    </>
+  );
+};
+>>>>>>> e7baff241f36529734f500d95d10fe025653bccd
