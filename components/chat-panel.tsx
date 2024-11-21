@@ -209,7 +209,7 @@ export function ChatPanel({ messages }: ChatPanelProps) {
 </div>
 
         <div className="text-xs text-gray-500 mt-2">
-          Beta: Responses may contain innacuracies. 
+          Beta:
         </div>
         <EmptyScreen
           submitMessage={message => {
