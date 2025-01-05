@@ -4,10 +4,10 @@
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
-    "dev": "next dev --turbo",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "bun run dev",
+    "build": "bun build",
+    "start": "bun start",
+    "lint": "bun lint"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^0.0.14",
