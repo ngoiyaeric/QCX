@@ -262,8 +262,10 @@ export const AI = createAI<AIState, UIState>({
     'use server';
 
     const aiState = getAIState();
-    if (aiState) {
-      const uiState = getUIStateFromAIState(aiState);
+
+
+    if (aiState && 'id' in aiState && 'title' in aiState && 'createdAt' in aiState && 'userId' in aiState && 'path' in aiState && 'messages' in aiState) {
+      const uiState = getUIStateFromAIState(aiState as Chat);
       return uiState;
     } else {
       return;
