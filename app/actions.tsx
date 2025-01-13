@@ -259,33 +259,33 @@ export const AI = createAI<AIState, UIState>({
   initialUIState,
   initialAIState,
   onGetUIState: async () => {
-    'use server'
+    'use server';
 
-    const aiState = getAIState()
+    const aiState = getAIState();
     if (aiState) {
-      const uiState = getUIStateFromAIState(aiState)
-      return uiState
+      const uiState = getUIStateFromAIState(aiState);
+      return uiState;
     } else {
-      return
+      return;
     }
   },
   onSetAIState: async ({ state, done }) => {
-    'use server'
+    'use server';
 
     // Check if there is any message of type 'answer' in the state messages
     if (!state.messages.some(e => e.type === 'answer')) {
-      return
+      return;
     }
 
-    const { chatId, messages } = state
-    const createdAt = new Date()
-    const userId = 'anonymous'
-    const path = `/search/${chatId}`
+    const { chatId, messages } = state;
+    const createdAt = new Date();
+    const userId = 'anonymous';
+    const path = `/search/${chatId}`;
     const title =
       messages.length > 0
-        ? JSON.parse(messages[0].content)?.input?.substring(0, 100) ||
-          'Untitled'
-        : 'Untitled'
+        ? JSON.parse(messages[0].content)?.input?.substring(0, 100) || 'Untitled'
+        : 'Untitled';
+
     // Add an 'end' message at the end to determine if the history needs to be reloaded
     const updatedMessages: AIMessage[] = [
       ...messages,
@@ -295,8 +295,9 @@ export const AI = createAI<AIState, UIState>({
         content: `end`,
         type: 'end'
       }
-    ]
+    ];
 
+    // Explicitly define the 'chat' object and ensure it matches the 'Chat' type
     const chat: Chat = {
       id: chatId,
       createdAt,
@@ -304,10 +305,13 @@ export const AI = createAI<AIState, UIState>({
       path,
       title,
       messages: updatedMessages
-    }
-    await saveChat(chat)
+    };
+
+    // Ensure saveChat accepts a 'Chat' object
+    await saveChat(chat);
   }
-})
+});
+
 
 export const getUIStateFromAIState = (aiState: Chat) => {
   const chatId = aiState.chatId
