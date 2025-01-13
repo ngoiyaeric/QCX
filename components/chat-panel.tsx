@@ -13,7 +13,7 @@ import Textarea from 'react-textarea-autosize'
 import { nanoid } from 'ai'
 import AnimatedShinyText from '@/components/magicui/animated-shiny-text'
 import { aiUseChatAdapter } from "@upstash/rag-chat/nextjs";
-import { embedData } from '@/lib/actions/chat'
+// import { embedData } from '@/lib/actions/chat'
 
 
 interface ChatPanelProps {
@@ -82,12 +82,15 @@ export function ChatPanel({ messages }: ChatPanelProps) {
     inputRef.current?.focus()
   }, [])
 
+ 
   const handleOption1Click = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
-      embedData(fileInputRef.current.value);
+      //embedData(fileInputRef.current.value);
     }
   }
+  
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -186,7 +189,7 @@ export function ChatPanel({ messages }: ChatPanelProps) {
     {showDropdown && (
       <div className="absolute top-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
         <div ref={dropdownRef} className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-          <button onClick={handleOption1Click} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" role="menuitem">
+          <button onClick={() => alert('Function not implemented.')} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" role="menuitem">
             Documents
           </button>
           <button onClick={() => alert('Function not implemented.')} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left" role="menuitem">
