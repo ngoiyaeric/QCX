@@ -1,4 +1,3 @@
-
 'use server'
 import {
   StreamableValue,
@@ -367,7 +366,7 @@ export const getUIStateFromAIState = (aiState: Chat) => {
                 )
               }
             case 'related':
-              const relatedQueries = createStreamableValue()
+              const relatedQueries = createStreamableValue<PartialRelated>()
               relatedQueries.done(JSON.parse(content))
               return {
                 id,
