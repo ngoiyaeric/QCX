@@ -1,4 +1,3 @@
-
 'use server'
 import {
   StreamableValue,
@@ -24,6 +23,7 @@ import SearchRelated from '@/components/search-related'
 import { CopilotDisplay } from '@/components/copilot-display'
 import RetrieveSection from '@/components/retrieve-section'
 import { VideoSearchSection } from '@/components/video-search-section'
+import { PartialRelated } from '@/lib/schema/related'
 
 async function submit(formData?: FormData, skip?: boolean) {
   'use server'
@@ -367,7 +367,7 @@ export const getUIStateFromAIState = (aiState: Chat) => {
                 )
               }
             case 'related':
-              const relatedQueries = createStreamableValue()
+              const relatedQueries = createStreamableValue<PartialRelated>()
               relatedQueries.done(JSON.parse(content))
               return {
                 id,
