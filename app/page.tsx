@@ -1,7 +1,7 @@
 import { Chat } from '@/components/chat';
 import { AI } from './actions';
 import { generateId } from 'ai'
-import AccountSettings  from '@/components/settings/settings'; 
+// import AccountSettings  from '@/components/settings/settings'; 
 
 
 /*import { nanoid } from 'ai';
