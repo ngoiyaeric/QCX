@@ -1,5 +1,5 @@
 import { PartialInquiry, inquirySchema } from '@/lib/schema/inquiry'
-import { getModel } from '../utils'
+// import { getModel } from '../utils'
 import { streamObject } from 'ai'
 import { BaseAgent } from './base-agent'
 import { Copilot } from '@/components/copilot'
