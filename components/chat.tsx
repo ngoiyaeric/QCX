@@ -54,8 +54,8 @@ export function Chat({ id }: ChatProps) {
       <div className="mobile-layout-container">
         <div className="mobile-chat-section">
           <ChatMessages messages={messages} />
-          <ChatPanel messages={messages} />
         </div>
+        <ChatPanel messages={messages} />
         <div className="mobile-icons-bar">
           <MobileIconsBar />
         </div>

@@ -28,7 +28,7 @@ export const Header: React.FC = async () => {
           <img src="/images/logo.svg" alt="Logo" className="h-6" />
         </Button>
       </div>
-      <div className="w-1/2 gap-20 flex justify-between px-10 items-center z-10">
+      <div className="w-1/2 gap-20 hidden md:flex justify-between px-10 items-center z-10">
         <Button variant="ghost" size="icon">
           <CircleUserRound className="h-[1.2rem] w-[1.2rem]" />
         </Button>
