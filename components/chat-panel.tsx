@@ -89,14 +89,6 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   return (
     <div className="fixed top-10 left-2 bottom-8 md:w-1/2 w-full flex flex-col items-start justify-center">
       <form onSubmit={handleSubmit} className="max-w-full w-full px-4 md:px-6">
-        <div className="md:hidden block mb-4">
-          <EmptyScreen
-            submitMessage={message => {
-              setInput(message)
-            }}
-            className="visible"
-          />
-        </div>
         <div className="relative flex items-start w-full">
           <Textarea
             ref={inputRef}
@@ -167,14 +159,12 @@ export function ChatPanel({ messages }: ChatPanelProps) {
             <ArrowRight size={20} />
           </Button>
         </div>
-        <div className="hidden md:block">
-          <EmptyScreen
-            submitMessage={message => {
-              setInput(message)
-            }}
-            className={cn(showEmptyScreen ? 'visible' : 'invisible')}
-          />
-        </div>
+        <EmptyScreen
+          submitMessage={message => {
+            setInput(message)
+          }}
+          className={cn(showEmptyScreen ? 'visible' : 'invisible')}
+        />
       </form>
     </div>
   )
