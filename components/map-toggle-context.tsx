@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 export enum MapToggleEnum {
   FreeMode,
   RealTimeMode,
+  DrawingMode, // Added new mode for drawing and measurement
 }
 
 interface MapToggleContextType {
