@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import mapboxgl from 'mapbox-gl'
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import * as turf from '@turf/turf'
@@ -139,20 +139,53 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
     }
   }, [position])
 
+  // Create a stable reference to the updateArea function
+  const updateArea = useCallback(() => {
+    if (!drawRef.current) return
+    
+    const data = drawRef.current.getAll()
+    if (data.features.length > 0) {
+      const area = turf.area(data)
+      
+      let displayArea: number
+      let unit: 'meters' | 'kilometers' | 'hectares'
+      
+      if (area >= 1000000) {
+        displayArea = Math.round((area / 1000000) * 100) / 100
+        unit = 'kilometers'
+      } else if (area >= 10000) {
+        displayArea = Math.round((area / 10000) * 100) / 100
+        unit = 'hectares'
+      } else {
+        displayArea = Math.round(area * 100) / 100
+        unit = 'meters'
+      }
+      
+      setRoundedArea(displayArea)
+      setMeasurementUnit(unit)
+    } else {
+      setRoundedArea(null)
+    }
+  }, [])
+
   // Handle drawing mode toggle
   useEffect(() => {
     if (!map.current) return
     
     // Clean up any existing draw control
     if (drawRef.current) {
-      map.current.off('draw.create')
-      map.current.off('draw.delete')
-      map.current.off('draw.update')
-      try {
-        map.current.removeControl(drawRef.current)
-        drawRef.current = null
-      } catch (e) {
-        console.log('Draw control already removed')
+      if (map.current) {
+        // Properly remove event listeners with the same function reference
+        map.current.off('draw.create', updateArea)
+        map.current.off('draw.delete', updateArea)
+        map.current.off('draw.update', updateArea)
+        
+        try {
+          map.current.removeControl(drawRef.current)
+          drawRef.current = null
+        } catch (e) {
+          console.log('Draw control already removed')
+        }
       }
     }
 
@@ -172,36 +205,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
       // Add the draw control to the map
       map.current.addControl(drawRef.current, 'top-right')
 
-      // Define area update function
-      const updateArea = () => {
-        if (!drawRef.current) return
-        
-        const data = drawRef.current.getAll()
-        if (data.features.length > 0) {
-          const area = turf.area(data)
-          
-          let displayArea: number
-          let unit: 'meters' | 'kilometers' | 'hectares'
-          
-          if (area >= 1000000) {
-            displayArea = Math.round((area / 1000000) * 100) / 100
-            unit = 'kilometers'
-          } else if (area >= 10000) {
-            displayArea = Math.round((area / 10000) * 100) / 100
-            unit = 'hectares'
-          } else {
-            displayArea = Math.round(area * 100) / 100
-            unit = 'meters'
-          }
-          
-          setRoundedArea(displayArea)
-          setMeasurementUnit(unit)
-        } else {
-          setRoundedArea(null)
-        }
-      }
-
-      // Add drawing event listeners
+      // Add drawing event listeners with the stable callback
       map.current.on('draw.create', updateArea)
       map.current.on('draw.delete', updateArea)
       map.current.on('draw.update', updateArea)
@@ -213,12 +217,13 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
     // Cleanup function
     return () => {
       if (map.current && drawRef.current) {
-        map.current.off('draw.create')
-        map.current.off('draw.delete')
-        map.current.off('draw.update')
+        // Properly remove event listeners with the same function reference
+        map.current.off('draw.create', updateArea)
+        map.current.off('draw.delete', updateArea)
+        map.current.off('draw.update', updateArea)
       }
     }
-  }, [mapType])
+  }, [mapType, updateArea])
 
   return (
     <div className="relative h-full w-full">
