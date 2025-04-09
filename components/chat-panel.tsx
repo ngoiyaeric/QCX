@@ -21,11 +21,21 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   const [, setMessages] = useUIState<typeof AI>()
   const { submit } = useActions()
   const [isButtonPressed, setIsButtonPressed] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [showEmptyScreen, setShowEmptyScreen] = useState(false)
   const router = useRouter()
 
-  // Focus on input when button is pressed
+  // Detect mobile layout
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   useEffect(() => {
     if (isButtonPressed) {
       inputRef.current?.focus()
@@ -35,14 +45,10 @@ export function ChatPanel({ messages }: ChatPanelProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    // Clear messages if button is pressed
     if (isButtonPressed) {
       handleClear()
       setIsButtonPressed(false)
     }
-
-    // Add user message to UI state
     setMessages(currentMessages => [
       ...currentMessages,
       {
@@ -50,27 +56,28 @@ export function ChatPanel({ messages }: ChatPanelProps) {
         component: <UserMessage message={input} />
       }
     ])
-
-    // Submit and get response message
     const formData = new FormData(e.currentTarget)
     const responseMessage = await submit(formData)
     setMessages(currentMessages => [...currentMessages, responseMessage as any])
   }
 
-  // Clear messages
   const handleClear = () => {
     router.push('/')
   }
 
   useEffect(() => {
-    // Focus on input when the page loads
-    inputRef.current?.focus()
+    inputRef.current?.focus(); 
   }, [])
 
-  // If there are messages and the new button has not been pressed, display the new Button
+  // New chat button (appears when there are messages)
   if (messages.length > 0 && !isButtonPressed) {
     return (
-      <div className="fixed bottom-2 md:bottom-8 left-2 flex justify-start items-center mx-auto pointer-events-none">
+      <div
+        className={cn(
+          'fixed bottom-2 left-2 flex justify-start items-center pointer-events-none',
+          isMobile ? 'w-full px-2' : 'md:bottom-8'
+        )}
+      >
         <Button
           type="button"
           variant={'secondary'}
@@ -87,31 +94,47 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   }
 
   return (
-    <div className="fixed top-10 left-2 bottom-8 md:w-1/2 w-full flex flex-col items-start justify-center">
-      <form onSubmit={handleSubmit} className="max-w-full w-full px-4 md:px-6">
-        <div className="relative flex items-start w-full">
+    <div
+      className={cn(
+        // Base styles for desktop
+        'fixed left-2 flex flex-col items-start justify-center',
+        isMobile
+          ? 'mobile-chat-section' // Use mobile-chat-section class for mobile layout
+          : 'top-10 bottom-8 md:w-1/2 w-full px-4 md:px-6'
+      )}
+    >
+      <form onSubmit={handleSubmit} className="max-w-full w-full">
+        <div
+          className={cn(
+            'relative flex items-start w-full',
+            isMobile && 'mobile-chat-input' // Apply mobile chat input styling
+          )}
+        >
           <Textarea
             ref={inputRef}
             name="input"
             rows={1}
-            maxRows={5}
+            maxRows={isMobile ? 3 : 5}
             tabIndex={0}
             placeholder="Explore"
             spellCheck={false}
             value={input}
-            className="resize-none w-full min-h-12 rounded-fill bg-muted border border-input pl-4 pr-20 pt-3 pb-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'"
+            className={cn(
+              'resize-none w-full min-h-12 rounded-fill border border-input pl-4 pr-20 pt-3 pb-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+              isMobile
+                ? 'mobile-chat-input input bg-background' // Use mobile input styles
+                : 'bg-muted pr-20'
+            )}
             onChange={e => {
               setInput(e.target.value)
               setShowEmptyScreen(e.target.value.length === 0)
             }}
             onKeyDown={e => {
-              // Enter should submit the form
               if (
                 e.key === 'Enter' &&
                 !e.shiftKey &&
                 !e.nativeEvent.isComposing
               ) {
-                // Prevent the default action to avoid adding a new line
                 if (input.trim().length === 0) {
                   e.preventDefault()
                   return
@@ -122,41 +145,39 @@ export function ChatPanel({ messages }: ChatPanelProps) {
               }
             }}
             onHeightChange={height => {
-              // Ensure inputRef.current is defined
               if (!inputRef.current) return
-
-              // The initial height and left padding is 70px and 2rem
               const initialHeight = 70
-              // The initial border radius is 32px
               const initialBorder = 32
-              // The height is incremented by multiples of 20px
               const multiple = (height - initialHeight) / 20
-
-              // Decrease the border radius by 4px for each 20px height increase
               const newBorder = initialBorder - 4 * multiple
-              // The lowest border radius will be 8px
               inputRef.current.style.borderRadius =
                 Math.max(8, newBorder) + 'px'
             }}
             onFocus={() => setShowEmptyScreen(true)}
             onBlur={() => setShowEmptyScreen(false)}
           />
-          <Button 
+          <Button
             type="button"
             variant={'ghost'}
             size={'icon'}
-            className="absolute right-10 top-1/2 transform -translate-y-1/2"
+            className={cn(
+              'absolute top-1/2 transform -translate-y-1/2',
+              isMobile ? 'right-8' : 'right-10'
+            )}
           >
-            <Paperclip size={20} />
+            <Paperclip size={isMobile ? 18 : 20} />
           </Button>
           <Button
             type="submit"
             size={'icon'}
             variant={'ghost'}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2"
+            className={cn(
+              'absolute top-1/2 transform -translate-y-1/2',
+              isMobile ? 'right-1' : 'right-2'
+            )}
             disabled={input.length === 0}
           >
-            <ArrowRight size={20} />
+            <ArrowRight size={isMobile ? 18 : 20} />
           </Button>
         </div>
         <EmptyScreen
