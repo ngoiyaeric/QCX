@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -24,6 +25,7 @@
     --ring: 0 0% 89.8%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -45,11 +47,10 @@
     --input: 0 0% 14.9%;
     --ring: 0 0% 14.9%;
   }
-}
+
   .earth {
     --background: 34 35% 91%;
     --foreground: 120 50% 30%;
-    
     --card: 120 20% 80%;
     --card-foreground: 120 25% 30%;
     --popover: 34 35% 91%;
@@ -60,18 +61,20 @@
     --secondary-foreground: 52 21% 30%;
     --muted: 34 35% 75%;
     --muted-foreground: 52 21% 30%;
-    --accent: 34 35% 75%; 
-    --accent-foreground: 120 50% 30%; 
+    --accent: 34 35% 75%;
+    --accent-foreground: 120 50% 30%;
     --destructive: 34 35% 9%;
     --destructive-foreground: 34 60% 9%;
     --border: 34 35% 75%;
     --input: 34 35% 75%;
     --ring: 34 35% 75%;
   }
+
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
   }
+}
 
 /* Mobile layout specific styles */
 @media (max-width: 768px) {
@@ -80,16 +83,18 @@
     flex-direction: column-reverse;
     height: 100vh;
     width: 100%;
+    background-color: hsl(var(--background));
   }
 
-  .mobile-chat-section {
-    height: 60vh;
+  .mobile-map-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40vh;
     width: 100%;
-    overflow-y: auto;
-    padding: 12px;
-    padding-top: 50px; /* Account for header */
-    position: relative;
-    /* top property removed as it's positioned by flex layout */
+    z-index: 10;
+    background-color: hsl(var(--secondary));
   }
 
   .mobile-icons-bar {
@@ -106,7 +111,7 @@
     padding: 0 10px;
     z-index: 20;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    -  -webkit-overflow-scrolling: touch;
     scrollbar-width: none; /* Firefox */
   }
 
@@ -121,14 +126,198 @@
     min-width: max-content;
   }
 
+  .mobile-chat-section {
+    position: relative;
+    top: calc(40vh + 60px); /* Start below the map (40vh) and icons bar (60px) */
+    height: calc(60vh - 60px); /* Remaining height minus the icons bar */
+    width: 100%;
+    overflow-y: auto;
+    padding: 12px;
+    padding-top: 50px; /* Account for header */
+    padding-bottom: 60px; /* Space for the chat input */
+    box-sizing: border-box;
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+  }
+
+  .mobile-chat-input {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background-color: hsl(var(--background));
+    border-top: 1px solid hsl(var(--border));
+    z-index: 30;
+  }
+
+  .mobile-chat-input input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid hsl(var(--input));
+    border-radius: var(--radius);
+    background-color: hsl(var(--input));
+    color: hsl(var(--foreground));
+  }
+      }@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 96.1%;
+    --card-foreground: 0 0% 45.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 89.8%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 14.9%;
+    --card-foreground: 0 0% 63.9%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 14.9%;
+  }
+
+  .earth {
+    --background: 34 35% 91%;
+    --foreground: 120 50% 30%;
+    --card: 120 20% 80%;
+    --card-foreground: 120 25% 30%;
+    --popover: 34 35% 91%;
+    --popover-foreground: 34 35% 9%;
+    --primary: 120 50% 30%;
+    --primary-foreground: 34 60% 9%;
+    --secondary: 34 35% 75%;
+    --secondary-foreground: 52 21% 30%;
+    --muted: 34 35% 75%;
+    --muted-foreground: 52 21% 30%;
+    --accent: 34 35% 75%;
+    --accent-foreground: 120 50% 30%;
+    --destructive: 34 35% 9%;
+    --destructive-foreground: 34 60% 9%;
+    --border: 34 35% 75%;
+    --input: 34 35% 75%;
+    --ring: 34 35% 75%;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
+/* Mobile layout specific styles */
+@media (max-width: 768px) {
+  .mobile-layout-container {
+    display: flex;
+    flex-direction: column-reverse;
+    height: 100vh;
+    width: 100%;
+    background-color: hsl(var(--background));
+  }
+
   .mobile-map-section {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
     height: 40vh;
     width: 100%;
     z-index: 10;
+    background-color: hsl(var(--secondary));
   }
-}
+
+  .mobile-icons-bar {
+    position: fixed;
+    top: 40vh;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: hsl(var(--background));
+    border-top: 1px solid hsl(var(--border));
+    border-bottom: 1px solid hsl(var(--border));
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    z-index: 20;
+    overflow-x: auto;
+    -  -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .mobile-icons-bar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+
+  .mobile-icons-bar-content {
+    display: flex;
+    gap: 20px;
+    padding: 0 10px;
+    min-width: max-content;
+  }
+
+  .mobile-chat-section {
+    position: relative;
+    top: calc(40vh + 60px); /* Start below the map (40vh) and icons bar (60px) */
+    height: calc(60vh - 60px); /* Remaining height minus the icons bar */
+    width: 100%;
+    overflow-y: auto;
+    padding: 12px;
+    padding-top: 50px; /* Account for header */
+    padding-bottom: 60px; /* Space for the chat input */
+    box-sizing: border-box;
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+  }
+
+  .mobile-chat-input {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background-color: hsl(var(--background));
+    border-top: 1px solid hsl(var(--border));
+    z-index: 30;
+  }
+
+  .mobile-chat-input input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid hsl(var(--input));
+    border-radius: var(--radius);
+    background-color: hsl(var(--input));
+    color: hsl(var(--foreground));
+  }
+    }
