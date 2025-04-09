@@ -77,18 +77,19 @@
 @media (max-width: 768px) {
   .mobile-layout-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     height: 100vh;
     width: 100%;
   }
 
   .mobile-chat-section {
-    height: 40vh;
+    height: 60vh;
     width: 100%;
     overflow-y: auto;
     padding: 12px;
     padding-top: 50px; /* Account for header */
     position: relative;
+    top: calc(40vh + 60px);
   }
 
   .mobile-icons-bar {
@@ -122,11 +123,11 @@
 
   .mobile-map-section {
     position: fixed;
-    top: calc(40vh + 60px); /* Position below icons bar */
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    height: calc(60vh - 60px);
+    height: 40vh;
     width: 100%;
     z-index: 10;
   }

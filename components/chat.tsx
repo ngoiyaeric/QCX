@@ -52,15 +52,15 @@ export function Chat({ id }: ChatProps) {
   if (isMobile) {
     return (
       <div className="mobile-layout-container">
-        <div className="mobile-chat-section">
-          <ChatMessages messages={messages} />
+        <div className="mobile-map-section">
+          <Mapbox />
         </div>
-        <ChatPanel messages={messages} />
         <div className="mobile-icons-bar">
           <MobileIconsBar />
         </div>
-        <div className="mobile-map-section">
-          <Mapbox />
+        <div className="mobile-chat-section">
+          <ChatMessages messages={messages} />
+          <ChatPanel messages={messages} />
         </div>
       </div>
     )
