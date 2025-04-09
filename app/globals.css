@@ -89,7 +89,7 @@
     padding: 12px;
     padding-top: 50px; /* Account for header */
     position: relative;
-    top: calc(40vh + 60px);
+    /* top property removed as it's positioned by flex layout */
   }
 
   .mobile-icons-bar {
