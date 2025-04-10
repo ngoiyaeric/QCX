@@ -172,4 +172,21 @@
     background-color: hsl(var(--secondary-foreground));
     color: hsl(var(--secondary));
   }
+
+  .mobile-chat-input .icon-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  .mobile-chat-input .icon-button.paperclip {
+    right: 40px;
+  }
+
+  .mobile-chat-input .icon-button.arrow-right {
+    right: 10px;
+  }
 }
