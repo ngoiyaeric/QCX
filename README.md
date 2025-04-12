@@ -1,4 +1,4 @@
-# MapGPT
+# Quality Computer Experiences 
 
 ### Language to Maps 
 (in progress)
