@@ -10,7 +10,7 @@ import { Button } from './ui/button'
 import { ArrowRight, Plus, Paperclip } from 'lucide-react'
 import { EmptyScreen } from './empty-screen'
 import Textarea from 'react-textarea-autosize'
-import { nanoid } from 'nanoid'
+import { nanoid } from 'ai'
 
 interface ChatPanelProps {
   messages: UIState
