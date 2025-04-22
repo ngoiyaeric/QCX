@@ -1,6 +1,6 @@
-<div align="center">
+<div align="center" style="font-family: Helvetica>
 
-#  Quality 🌍 Computer 🌏 Experiences
+#  Quality  Computer  Experiences
 
 <img src="https://github.com/user-attachments/assets/3fef4c71-2811-4853-80b2-2703ee2eda78" alt="Logo" width="200"/>
 
