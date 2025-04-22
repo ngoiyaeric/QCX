@@ -1,9 +1,12 @@
-# Quality Computer Experiences 
+<div align="center">
+
+# Quality Computer Experiences
+
 <img src="https://github.com/user-attachments/assets/3fef4c71-2811-4853-80b2-2703ee2eda78" alt="Logo" width="200"/>
 
+[**Sign Up**](https://tally.so/r/wkWqkd) &nbsp;|&nbsp; [**Community**](https://discord.com/invite/NqGY9EWjWj) &nbsp;|&nbsp; [**X**](https://x.com/tryqcx)
 
-[**Sign Up**](https://tally.so/r/wkWqkd) | [**Discord**](https://discord.com/invite/NqGY9EWjWj) | [**X**](https://x.com/tryqcx)
-
+</div>
 ### Language to Maps 
 (in progress)
 
