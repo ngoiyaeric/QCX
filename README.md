@@ -1,4 +1,4 @@
-<div align="center" style="font-family: Helvetica>
+<div align="center">
 
 #  Quality  Computer  Experiences
 
