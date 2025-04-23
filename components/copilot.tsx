@@ -24,7 +24,7 @@ export const Copilot: React.FC<CopilotProps> = ({ inquiry }: CopilotProps) => {
   const [completed, setCompleted] = useState(false)
   const [query, setQuery] = useState('')
   const [skipped, setSkipped] = useState(false)
-  const [data, error, pending] = useStreamableValue<PartialInquiry>(inquiry)
+  const [data, error, pending] = useStreamableValue<PartialInquiry>()
   const [checkedOptions, setCheckedOptions] = useState<{
     [key: string]: boolean
   }>({})

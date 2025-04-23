@@ -9,7 +9,7 @@ export async function inquire(
   messages: CoreMessage[]
 ) {
   const objectStream = createStreamableValue<PartialInquiry>()
-  uiStream.update(<Copilot inquiry={objectStream.value} />)
+  uiStream.update(<Copilot inquiry={objectStream} />)
 
   let finalInquiry: PartialInquiry = {}
   await streamObject({
