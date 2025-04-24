@@ -96,9 +96,5 @@ You can now visit http://localhost:3000.
 
 ## Verified models
 
-List of verified models that can be specified to writers.
-
-- [Groq](https://console.groq.com/docs/models)
-  - LLaMA3 8b
-  - LLaMA3 70b
- - Grok (coming soon) 
+List of non reasoning verified models 
+Grok-3-mini
