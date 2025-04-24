@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { TreePine,Computer,Rocket, Moon} from 'lucide-react';
+import { TreePine, Sun ,Rocket, Moon} from 'lucide-react';
 
 const exampleMessages = [
   {
@@ -8,9 +8,9 @@ const exampleMessages = [
     icon: TreePine
   },
   {
-    heading: 'What is Quality Computer Experiences (QCX)?',
-    message: 'What is Quality Computer Experiences (QCX)?',
-    icon: Computer
+    heading: 'Plan me a trip in the tropics',
+    message: 'Plan me a trip in the tropics',
+    icon: Sun
   },
   {
     heading: 'When is the next lunar eclipse?',
