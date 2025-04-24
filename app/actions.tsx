@@ -36,8 +36,7 @@ export async function querySuggestor(
   // Mock implementation (replace with actual logic)
   return {
     items: [
-      { query: 'example query 1' },
-      { query: 'example query 2' },
+      { query: 'Can you provide additional details?' },
     ],
   };
 }
