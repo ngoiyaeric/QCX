@@ -17,10 +17,11 @@ import {
 import { cn } from '@/lib/utils'
 
 export type CopilotProps = {
-  inquiry?: PartialInquiry
+  inquiry: { value: PartialInquiry };
 }
 
 export const Copilot: React.FC<CopilotProps> = ({ inquiry }: CopilotProps) => {
+  const { value } = inquiry;
   const [completed, setCompleted] = useState(false)
   const [query, setQuery] = useState('')
   const [skipped, setSkipped] = useState(false)
@@ -118,12 +119,14 @@ export const Copilot: React.FC<CopilotProps> = ({ inquiry }: CopilotProps) => {
       <Card className="p-4 rounded-lg w-full mx-auto">
         <div className="mb-4">
           <p className="text-lg text-foreground text-semibold ml-2">
-            {data?.question}
+            {data?.question || value.question}
+            
+            
           </p>
         </div>
         <form onSubmit={onFormSubmit}>
           <div className="flex flex-wrap justify-start mb-4">
-            {data?.options?.map((option, index) => (
+            {value.options?.map((option, index) => (
               <div
                 key={`option-${index}`}
                 className="flex items-center space-x-1.5 mb-2"
@@ -147,14 +150,14 @@ export const Copilot: React.FC<CopilotProps> = ({ inquiry }: CopilotProps) => {
           {data?.allowsInput && (
             <div className="mb-6 flex flex-col space-y-2 text-sm">
               <label className="text-muted-foreground" htmlFor="query">
-                {data?.inputLabel}
+                {data?.inputLabel || value.inputLabel}
               </label>
               <Input
                 type="text"
                 name="additional_query"
                 className="w-full"
                 id="query"
-                placeholder={data?.inputPlaceholder}
+                placeholder={data?.inputPlaceholder || value.inputPlaceholder}
                 value={query}
                 onChange={handleInputChange}
               />

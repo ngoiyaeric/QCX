@@ -6,7 +6,8 @@ import {
   getAIState,
   getMutableAIState,
 } from 'ai/rsc';
-import { CoreMessage, nanoid, ToolResultPart } from 'ai';
+import { CoreMessage, ToolResultPart } from 'ai';
+import { nanoid } from 'nanoid';
 import { Spinner } from '@/components/ui/spinner';
 import { Section } from '@/components/section';
 import { FollowupPanel } from '@/components/followup-panel';
