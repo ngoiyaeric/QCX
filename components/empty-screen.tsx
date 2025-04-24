@@ -1,16 +1,16 @@
 import { Button } from '@/components/ui/button';
-import { TreePine, Trees, Moon, Rocket } from 'lucide-react';
+import { TreePine,Computer,Rocket, Moon} from 'lucide-react';
 
 const exampleMessages = [
   {
     heading: 'What are the best nature parks here?',
     message: 'What are the best nature parks here?',
-    icon: Trees,
+    icon: TreePine
   },
   {
-    heading: 'What are some of the tallest trees?',
-    message: 'What are some of the tallest trees?',
-    icon: TreePine,
+    heading: 'What is Quality Computer Experiences (QCX)?',
+    message: 'What is Quality Computer Experiences (QCX)?',
+    icon: Computer
   },
   {
     heading: 'When is the next lunar eclipse?',

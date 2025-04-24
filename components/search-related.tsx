@@ -7,14 +7,15 @@ import {
   useActions,
   useStreamableValue,
   useUIState,
-  readStreamableValue
+  readStreamableValue,
+  StreamableValue
 } from 'ai/rsc'
 import { AI } from '@/app/actions'
 import { UserMessage } from './user-message'
 import { PartialRelated } from '@/lib/schema/related'
 
 export interface SearchRelatedProps {
-  relatedQueries: PartialRelated
+  relatedQueries: StreamableValue<PartialRelated, any>
 }
 
 export const SearchRelated: React.FC<SearchRelatedProps> = ({
