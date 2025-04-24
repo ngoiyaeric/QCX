@@ -34,19 +34,24 @@ https://chlorinated-birch-096.notion.site/MapGPT-Documentation-f7440889fca74582b
 
 - App framework: [Next.js](https://nextjs.org/)
 - Text streaming / Generative UI: [Vercel AI SDK](https://sdk.vercel.ai/docs)
-- Generative Model: [OpenAI](https://openai.com/)
+- Generative Model [Varies](https://openai.com/)
 - Search API: [Tavily AI](https://tavily.com/) / [Exa AI](https://exa.ai/)
 - Serverless Database: [Upstash](https://upstash.com/)
 - Component library: [shadcn/ui](https://ui.shadcn.com/)
 - Headless component primitives: [Radix UI](https://www.radix-ui.com/)
 - Styling: [Tailwind CSS](https://tailwindcss.com/)
+- Mapping : [Mapbox]
+(https://www.mapbox.com/)
+
 
 
 ### 2. Install dependencies
 
 ```
-cd mapgpt
+install bun package manager 
 bun install
+bun run build
+bun run dev 
 ```
 
 ### 3. Setting up Upstash Redis
@@ -62,8 +67,8 @@ cp .env.local.example .env.local
 Your .env.local file should look like this:
 
 ```
-# OpenAI API key retrieved here: https://platform.openai.com/api-keys
-OPENAI_API_KEY=
+# XAI API key retrieved here: https://platform.openai.com/api-keys
+XAI_API_KEY=
 
 # Tavily API Key retrieved here: https://app.tavily.com/home
 TAVILY_API_KEY=
@@ -71,19 +76,20 @@ TAVILY_API_KEY=
 # Upstash Redis URL and Token retrieved here: https://console.upstash.com/redis
 UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=
+#Mapbox access token
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 ```
 
-#Mapbox access token
-NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=
 
 
 
-_Note: This project focuses on Generative UI and requires complex output from LLMs. Currently, it's assumed that the official OpenAI models will be used. Although it's possible to set up other models, if you use an OpenAI-compatible model, but we don't guarantee that it'll work._
+
+_Note: This project focuses on Generative UI and requires complex output from LLMs. Currently, it's assumed that the official state of the art models will be used. Although it's possible to set up other models, if you use an Standard-compatible model, but we don't guarantee that it'll work._
 
 ### 5. Run app locally
 
 ```
-bun dev
+bun run dev
 ```
 
 You can now visit http://localhost:3000.
