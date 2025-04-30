@@ -18,14 +18,9 @@ Planetary Copilot
 
 Welcome! Please see the issues for items that need attention, and below for some tools to aid in development and debugging. We're working to interpolate chat functionality onto the map module.
 
+Documentation.
 
-Visit our roadmap for more information.
-
-(https://draw.roadmap.sh/664d9e21d6b907c7f745be36)
-
-Documentation: 
-
-https://chlorinated-birch-096.notion.site/MapGPT-Documentation-f7440889fca74582b31376192a30ed94
+https://deepwiki.com/QueueLab/QCX
 
 ### Running the app on your own machine
 
