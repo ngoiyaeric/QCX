@@ -1,3 +1,4 @@
+
 import {
   StreamableValue,
   createAI,
@@ -42,7 +43,7 @@ export async function querySuggestor(
 }
 
 async function submit(formData?: FormData, skip?: boolean) {
-  'use server';
+'use server';
 
   const aiState = getMutableAIState<typeof AI>();
   const uiStream = createStreamableUI();
