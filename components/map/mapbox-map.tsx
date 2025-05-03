@@ -37,18 +37,16 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
     if (isArea) {
       // Area formatting
       if (value >= 1000000) {
-        return `${(value / 1000000).toFixed(2)} km²`
-      } else if (value >= 10000) {
-        return `${(value / 10000).toFixed(2)} ha`
+      return `${(value / 1000000).toFixed(2)} km²`
       } else {
-        return `${value.toFixed(2)} m²`
+      return `${value.toFixed(2)} m²`
       }
     } else {
       // Distance formatting
       if (value >= 1000) {
-        return `${(value / 1000).toFixed(2)} km`
+      return `${(value / 1000).toFixed(2)} km`
       } else {
-        return `${value.toFixed(2)} m`
+      return `${value.toFixed(0)} m`
       }
     }
   }, [])
