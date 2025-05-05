@@ -1,6 +1,6 @@
 import { Suspense } from "react"
-import { Settings } from "@/components/settings/settings"
-import { SettingsSkeleton } from "@/components/settings/settings-skeleton"
+import { Settings } from "@/components/settings/components/settings"
+import { SettingsSkeleton } from "@/components/settings/components/settings-skeleton"
 
 export default function SettingsPage() {
   return (
