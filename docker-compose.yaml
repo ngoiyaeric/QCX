@@ -1,6 +1,6 @@
-# This is a Docker Compose file for setting up the morphic-stack environment.
 
-name: mapgpt-stack
+
+name: qcx-stack.
 services:
   mapgpt:
     build:
