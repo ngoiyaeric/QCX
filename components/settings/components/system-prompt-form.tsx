@@ -14,7 +14,7 @@ export function SystemPromptForm({ form }: SystemPromptFormProps) {
     <FormField
       control={form.control}
       name="systemPrompt"
-      render={({ field }) => (
+      render={({ field, fieldState, formState }: { field: import("react-hook-form").ControllerRenderProps<any, "systemPrompt">; fieldState: import("react-hook-form").ControllerFieldState; formState: import("react-hook-form").UseFormStateReturn<any>; }) => (
         <FormItem>
           <FormLabel>System Prompt</FormLabel>
           <FormControl>
