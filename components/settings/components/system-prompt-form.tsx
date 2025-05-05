@@ -1,4 +1,4 @@
-/*import type { UseFormReturn } from "react-hook-form"
+import type { UseFormReturn } from "react-hook-form"
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -34,4 +34,3 @@ export function SystemPromptForm({ form }: SystemPromptFormProps) {
     />
   )
 }
-*/

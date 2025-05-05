@@ -12,6 +12,7 @@ import {
   TentTree
 } from 'lucide-react'
 import { MapToggle } from './map-toggle'
+import Link from 'next/link'
 
 export const Header: React.FC = async () => {
   return (
@@ -29,9 +30,11 @@ export const Header: React.FC = async () => {
         </Button>
       </div>
       <div className="w-1/2 gap-20 hidden md:flex justify-between px-10 items-center z-10">
-        <Button variant="ghost" size="icon">
-          <CircleUserRound className="h-[1.2rem] w-[1.2rem]" />
-        </Button>
+        <Link href="/settings">
+          <Button variant="ghost" size="icon">
+            <CircleUserRound className="h-[1.2rem] w-[1.2rem]" />
+          </Button>
+        </Link>
         <MapToggle />
         <Button variant="ghost" size="icon">
           <CalendarDays className="h-[1.2rem] w-[1.2rem] transition-all rotate-0 scale-100" />

@@ -1,4 +1,3 @@
-/*
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -35,4 +34,3 @@ export function SettingsSkeleton() {
     </div>
   )
 }
-*/

@@ -1,4 +1,4 @@
-/*"use client"
+"use client"
 
 import { useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
@@ -206,4 +206,3 @@ export function UserManagementForm({ form }: UserManagementFormProps) {
     </div>
   )
 }
-*/
