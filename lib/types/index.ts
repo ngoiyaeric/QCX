@@ -60,7 +60,7 @@ export type AIMessage = {
   id: string
   name?: string
   type?:
-    | 'answer'
+    | 'response'
     | 'related'
     | 'skip'
     | 'inquiry'
