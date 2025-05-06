@@ -1,24 +1,27 @@
-// components/profile-toggle.tsx
-import { User, Settings, Paintbrush, Shield } from "lucide-react"
+'use client'
+
+import { User, Settings, Paintbrush, Shield, CircleUserRound } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { ProfileToggleEnum, useProfileToggle } from "./profile-toggle-context"
 import { useRouter } from "next/navigation"
+//import { settings } from "@components/settings/components/settings.tsx"
+
 
 export function ProfileToggle() {
   const { setProfileSection } = useProfileToggle()
   const router = useRouter()
-
+  
   const handleSectionChange = (section: string) => {
     setProfileSection(section as ProfileToggleEnum)
     router.push(`/settings/${section}`)
   }
-
+  
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <User className="h-4 w-4" />
+        <Button variant="ghost" size="icon" className="relative">
+          <CircleUserRound className="h-[1.2rem] w-[1.2rem] transition-all rotate-0 scale-100" />
           <span className="sr-only">Open profile menu</span>
         </Button>
       </DropdownMenuTrigger>
