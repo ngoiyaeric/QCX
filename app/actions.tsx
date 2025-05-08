@@ -1,4 +1,3 @@
-
 import {
   StreamableValue,
   createAI,
@@ -216,7 +215,7 @@ async function submit(formData?: FormData, skip?: boolean) {
             id: groupeId,
             role: 'assistant',
             content: answer,
-            type: 'answer',
+            type: 'response',
           },
           {
             id: groupeId,
@@ -288,8 +287,8 @@ export const AI = createAI<AIState, UIState>({
   onSetAIState: async ({ state, done }) => {
     'use server';
 
-    // Check if there is any message of type 'answer' in the state messages
-    if (!state.messages.some((e) => e.type === 'answer')) {
+    // Check if there is any message of type 'response' in the state messages
+    if (!state.messages.some((e) => e.type === 'response')) {
       return;
     }
 
@@ -368,11 +367,11 @@ export const getUIStateFromAIState = (aiState: AIState): UIState => {
           const answer = createStreamableValue();
           answer.done(content);
           switch (type) {
-            case 'answer':
+            case 'response':
               return {
                 id,
                 component: (
-                  <Section title="Answer">
+                  <Section title="response">
                     <BotMessage content={answer.value} />
                   </Section>
                 ),
