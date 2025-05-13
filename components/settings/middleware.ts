@@ -18,5 +18,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [""],
+  matcher: ['/settings/:path*'], // Corrected matcher to only apply to /settings routes
 }
