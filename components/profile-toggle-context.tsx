@@ -6,8 +6,7 @@ import { createContext, useContext, useState, ReactNode } from "react"
 export enum ProfileToggleEnum {
   Account = "account",
   Settings = "settings",
-  Appearance = "appearance",
-Security = "security",
+  Security = "security",
 }
 
 interface ProfileToggleContextType {
