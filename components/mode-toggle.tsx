@@ -25,16 +25,24 @@ export function ModeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Sun className={`h-[1.2rem] w-[1.2rem] transition-all ${
-            mounted && currentTheme === 'light' ? 'scale-100' : 'scale-0'
-          }`} />
-          <Moon className={`absolute h-[1.2rem] w-[1.2rem] transition-all ${
-            mounted && currentTheme === 'dark' ? 'scale-100' : 'scale-0'
-          }`} />
-          <Earth className={`absolute h-[1.2rem] w-[1.2rem] transition-all ${
-            mounted && currentTheme === 'earth' ? 'scale-100' : 'scale-0'
-          }`} />
+        <Button variant="ghost" size="icon" className="relative">
+          <span className="relative block">
+            <Sun
+              className={`h-[1.2rem] w-[1.2rem] transition-all ${
+                mounted && currentTheme === 'light' ? 'scale-100' : 'scale-0'
+              }`}
+            />
+            <Moon
+              className={`absolute left-0 top-0 h-[1.2rem] w-[1.2rem] transition-all ${
+                mounted && currentTheme === 'dark' ? 'scale-100' : 'scale-0'
+              }`}
+            />
+            <Earth
+              className={`absolute left-0 top-0 h-[1.2rem] w-[1.2rem] transition-all ${
+                mounted && currentTheme === 'earth' ? 'scale-100' : 'scale-0'
+              }`}
+            />
+          </span>
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>

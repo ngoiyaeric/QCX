@@ -187,6 +187,9 @@ export function ChatPanel({ messages }: ChatPanelProps) {
           className={cn(showEmptyScreen ? 'visible' : 'invisible')}
         />
       </form>
+      {messages.map((msg) => (
+        <div key={msg.id}>{msg.component}</div>
+      ))}
     </div>
   )
 }

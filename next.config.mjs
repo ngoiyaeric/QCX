@@ -1,13 +1,10 @@
-const nextConfig = {
+/** @type {import('next').NextConfig} */  
+const nextConfig = {  
+  experimental: {  
+    serverActions: {  
+      allowedOrigins: ["localhost:3000", "https://planet.queue.cx/"]  
+    },  
+  },  
+};  
 
-    experimental: {
-      serverActions: {
-        allowedOrigins: [
-          'localhost:3000'
-        ]
-      }
-    }
-  };
-  
-  export default nextConfig;
-  
+export default nextConfig
