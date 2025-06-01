@@ -11,7 +11,7 @@ import { nanoid } from 'nanoid';
 import { Spinner } from '@/components/ui/spinner';
 import { Section } from '@/components/section';
 import { FollowupPanel } from '@/components/followup-panel';
-import { inquire, researcher, taskManager } from '@/lib/agents';
+import { inquire, researcher, taskManager, querySuggestor } from '@/lib/agents';
 import { writer } from '@/lib/agents/writer';
 import { saveChat } from '@/lib/actions/chat';
 import { Chat, AIMessage } from '@/lib/types';
@@ -27,19 +27,6 @@ import { VideoSearchSection } from '@/components/video-search-section';
 type RelatedQueries = {
   items: { query: string }[];
 };
-
-// Stub for querySuggestor (update the actual implementation in '@/lib/agents')
-export async function querySuggestor(
-  uiStream: ReturnType<typeof createStreamableUI>,
-  messages: CoreMessage[]
-): Promise<RelatedQueries> {
-  // Mock implementation (replace with actual logic)
-  return {
-    items: [
-      { query: 'Can you provide additional details?' },
-    ],
-  };
-}
 
 async function submit(formData?: FormData, skip?: boolean) {
 'use server';

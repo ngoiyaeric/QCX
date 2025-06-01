@@ -24,10 +24,10 @@ export async function querySuggestor(
     For instance, if the original query was "Starship's third test flight key milestones", your output should follow this format:
 
     "{
-      "related": [
-        "What were the primary objectives achieved during Starship's third test flight?",
-        "What factors contributed to the ultimate outcome of Starship's third test flight?",
-        "How will the results of the third test flight influence SpaceX's future development plans for Starship?"
+      "items": [
+        { "query": "What were the primary objectives achieved during Starship's third test flight?" },
+        { "query": "What factors contributed to the ultimate outcome of Starship's third test flight?" },
+        { "query": "How will the results of the third test flight influence SpaceX's future development plans for Starship?" }
       ]
     }"
 
