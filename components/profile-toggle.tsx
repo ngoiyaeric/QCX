@@ -14,9 +14,9 @@ export function ProfileToggle() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setAlignValue("end") // Right align on mobile too
+        setAlignValue("start") // Right align on mobile too
       } else {
-        setAlignValue("end") // Right align on desktop
+        setAlignValue("start") // Right align on desktop
       }
     }
     handleResize() // Set initial value
