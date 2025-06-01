@@ -1,12 +1,13 @@
 import { Suspense } from "react"
 import { Settings } from "@/components/settings/components/settings"
 import { SettingsSkeleton } from "@/components/settings/components/settings-skeleton"
-import { useProfileToggle } from "@/components/profile-toggle-context"
+import { useProfileToggle, ProfileToggleEnum } from "@/components/profile-toggle-context"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 
 export default function SettingsView() {
   const { toggleProfileSection, activeView } = useProfileToggle();
+  const initialTab = activeView === ProfileToggleEnum.Security ? "user-management" : "system-prompt";
 
   const handleClose = () => {
     if (activeView) {
@@ -27,7 +28,7 @@ export default function SettingsView() {
         </Button>
       </div>
       <Suspense fallback={<SettingsSkeleton />}>
-        <Settings />
+        <Settings initialTab={initialTab} />
       </Suspense>
     </div>
   )

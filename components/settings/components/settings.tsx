@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -13,6 +13,7 @@ import { Loader2, Save, RotateCcw } from "lucide-react"
 // Or, if the file does not exist, create it as shown below.
 import { SystemPromptForm } from "./system-prompt-form"
 import { ModelSelectionForm } from "./model-selection-form"
+import { UserManagementForm } from './user-management-form';
 import { Form } from "@/components/ui/form"
 import { useToast } from "@/components/ui/hooks/use-toast"
 
@@ -40,7 +41,7 @@ const settingsFormSchema = z.object({
   newUserRole: z.enum(["admin", "editor", "viewer"]).optional(),
 })
 
-type SettingsFormValues = z.infer<typeof settingsFormSchema>
+export type SettingsFormValues = z.infer<typeof settingsFormSchema>
 
 // Default values
 const defaultValues: Partial<SettingsFormValues> = {
@@ -53,10 +54,19 @@ const defaultValues: Partial<SettingsFormValues> = {
   ],
 }
 
-export function Settings() {
+interface SettingsProps {
+  initialTab?: string;
+}
+
+export function Settings({ initialTab = "system-prompt" }: SettingsProps) {
   const { toast } = useToast()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [currentTab, setCurrentTab] = useState(initialTab);
+
+  useEffect(() => {
+    setCurrentTab(initialTab);
+  }, [initialTab]);
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
@@ -105,10 +115,11 @@ export function Settings() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-6">
-          <Tabs.Root defaultValue="system-prompt" className="w-full">
-            <Tabs.List className="grid w-full grid-cols-2">
+          <Tabs.Root value={currentTab} onValueChange={setCurrentTab} className="w-full">
+            <Tabs.List className="grid w-full grid-cols-3">
               <Tabs.Trigger value="system-prompt">System Prompt</Tabs.Trigger>
               <Tabs.Trigger value="model">Model Selection</Tabs.Trigger>
+              <Tabs.Trigger value="user-management">User Management</Tabs.Trigger>
             </Tabs.List>
 
             <Tabs.Content value="system-prompt">
@@ -133,6 +144,10 @@ export function Settings() {
                   <ModelSelectionForm form={form} />
                 </CardContent>
               </Card>
+            </Tabs.Content>
+
+            <Tabs.Content value="user-management">
+              <UserManagementForm form={form} />
             </Tabs.Content>
           </Tabs.Root>
 
