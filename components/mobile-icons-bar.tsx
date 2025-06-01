@@ -11,6 +11,7 @@ import {
   Paperclip,
   ArrowRight
 } from 'lucide-react'
+import { History } from '@/components/history'
 import { MapToggle } from './map-toggle'
 import { ModeToggle } from './mode-toggle'
 
@@ -36,6 +37,7 @@ export const MobileIconsBar: React.FC = () => {
       <Button variant="ghost" size="icon">
         <ArrowRight className="h-[1.2rem] w-[1.2rem] transition-all rotate-0 scale-100" />
       </Button>
+      <History location="header" />
       <ModeToggle />
     </div>
   )
