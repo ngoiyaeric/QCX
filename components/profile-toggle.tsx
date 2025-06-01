@@ -1,16 +1,35 @@
 'use client'
-
+import { useState, useEffect } from "react"
 import { User, Settings, Paintbrush, Shield, CircleUserRound } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { ProfileToggleEnum, useProfileToggle } from "./profile-toggle-context"
 import { useRouter } from "next/navigation"
-//import { settings } from "@components/settings/components/settings.tsx"
-
 
 export function ProfileToggle() {
   const { setProfileSection } = useProfileToggle()
   const router = useRouter()
+  const [alignValue, setAlignValue] = useState<'start' | 'end'>("end")
+  
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setAlignValue("start") // Right align on mobile too
+      } else {
+        setAlignValue("start") // Right align on desktop
+      }
+    }
+    handleResize() // Set initial value
+  
+    let resizeTimer: NodeJS.Timeout;
+    const debouncedResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleResize, 100);
+    };
+  
+    window.addEventListener("resize", debouncedResize)
+    return () => window.removeEventListener("resize", debouncedResize)
+  }, [])
   
   const handleSectionChange = (section: string) => {
     setProfileSection(section as ProfileToggleEnum)
@@ -25,7 +44,7 @@ export function ProfileToggle() {
           <span className="sr-only">Open profile menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-56" align={alignValue} forceMount>
         <DropdownMenuItem onClick={() => handleSectionChange("account")}>
           <User className="mr-2 h-4 w-4" />
           <span>Account</span>
