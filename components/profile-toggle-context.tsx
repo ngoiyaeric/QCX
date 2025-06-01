@@ -6,12 +6,13 @@ import { createContext, useContext, useState, ReactNode } from "react"
 export enum ProfileToggleEnum {
   Account = "account",
   Settings = "settings",
+  Appearance = "appearance",
   Security = "security",
 }
 
 interface ProfileToggleContextType {
-  profileSection: ProfileToggleEnum
-  setProfileSection: (section: ProfileToggleEnum) => void
+  activeView: ProfileToggleEnum | null
+  toggleProfileSection: (section: ProfileToggleEnum) => void
 }
 
 const ProfileToggleContext = createContext<ProfileToggleContextType | undefined>(undefined)
@@ -21,10 +22,14 @@ interface ProfileToggleProviderProps {
 }
 
 export const ProfileToggleProvider: React.FC<ProfileToggleProviderProps> = ({ children }) => {
-  const [profileSection, setProfileSection] = useState<ProfileToggleEnum>(ProfileToggleEnum.Account)
+  const [activeView, setActiveView] = useState<ProfileToggleEnum | null>(null)
+
+  const toggleProfileSection = (section: ProfileToggleEnum) => {
+    setActiveView(prevView => (prevView === section ? null : section))
+  }
 
   return (
-    <ProfileToggleContext.Provider value={{ profileSection, setProfileSection }}>
+    <ProfileToggleContext.Provider value={{ activeView, toggleProfileSection }}>
       {children}
     </ProfileToggleContext.Provider>
   )

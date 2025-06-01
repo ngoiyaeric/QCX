@@ -12,7 +12,6 @@ import { FormProvider, UseFormReturn } from "react-hook-form"; import React from
 import { Loader2, Save, RotateCcw } from "lucide-react"
 // Or, if the file does not exist, create it as shown below.
 import { SystemPromptForm } from "./system-prompt-form"
-import { UserManagementForm } from "./user-management-form"
 import { ModelSelectionForm } from "./model-selection-form"
 import { Form } from "@/components/ui/form"
 import { useToast } from "@/components/ui/hooks/use-toast"
@@ -107,9 +106,8 @@ export function Settings() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="space-y-6">
           <Tabs.Root defaultValue="system-prompt" className="w-full">
-            <Tabs.List className="grid w-full grid-cols-3">
+            <Tabs.List className="grid w-full grid-cols-2">
               <Tabs.Trigger value="system-prompt">System Prompt</Tabs.Trigger>
-              <Tabs.Trigger value="users">User Management</Tabs.Trigger>
               <Tabs.Trigger value="model">Model Selection</Tabs.Trigger>
             </Tabs.List>
 
@@ -121,18 +119,6 @@ export function Settings() {
                 </CardHeader>
                 <CardContent>
                   <SystemPromptForm form={form} />
-                </CardContent>
-              </Card>
-            </Tabs.Content>
-
-            <Tabs.Content value="users">
-              <Card>
-                <CardHeader>
-                  <CardTitle>User Management</CardTitle>
-                  <CardDescription>Invite users and manage access to your planetary copilot</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <UserManagementForm form={form} />
                 </CardContent>
               </Card>
             </Tabs.Content>

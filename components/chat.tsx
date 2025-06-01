@@ -7,6 +7,8 @@ import { ChatMessages } from './chat-messages'
 import { Mapbox } from './map/mapbox-map'
 import { useUIState, useAIState } from 'ai/rsc'
 import MobileIconsBar from './mobile-icons-bar'
+import { useProfileToggle, ProfileToggleEnum } from "@/components/profile-toggle-context";
+import SettingsView from "@/components/settings/settings-view";
 
 type ChatProps = {
   id?: string
@@ -18,6 +20,7 @@ export function Chat({ id }: ChatProps) {
   const [messages] = useUIState()
   const [aiState] = useAIState()
   const [isMobile, setIsMobile] = useState(false)
+  const { activeView } = useProfileToggle();
   
   useEffect(() => {
     // Check if device is mobile
@@ -53,7 +56,7 @@ export function Chat({ id }: ChatProps) {
     return (
       <div className="mobile-layout-container">
         <div className="mobile-map-section">
-          <Mapbox />
+          {activeView ? <SettingsView /> : <Mapbox />}
         </div>
         <div className="mobile-icons-bar">
           <MobileIconsBar />
@@ -75,7 +78,7 @@ export function Chat({ id }: ChatProps) {
         <ChatPanel messages={messages} />
       </div>
       <div className="w-1/2 p-4 fixed h-[calc(100vh-0.5in)] top-0 right-0 mt-[0.5in]">
-        <Mapbox />
+        {activeView ? <SettingsView /> : <Mapbox />}
       </div>
     </div>
   )
