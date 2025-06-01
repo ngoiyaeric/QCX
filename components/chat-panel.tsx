@@ -96,14 +96,16 @@ export function ChatPanel({ messages }: ChatPanelProps) {
   return (
     <div
       className={cn(
-        // Base styles for desktop
-        'fixed left-2 flex flex-col items-start justify-center',
+        'flex flex-col items-start',
         isMobile
-          ? 'mobile-chat-section' // Use mobile-chat-section class for mobile layout
-          : 'top-10 bottom-8 md:w-1/2 w-full px-4 md:px-6'
+          ? 'w-full'
+          : 'sticky bottom-0 bg-background z-10 w-full border-t border-border px-2 py-3 md:px-4'
       )}
     >
-      <form onSubmit={handleSubmit} className="max-w-full w-full">
+      <form
+        onSubmit={handleSubmit}
+        className={cn('max-w-full w-full', isMobile ? 'px-2 pb-2 pt-1' : '')}
+      >
         <div
           className={cn(
             'relative flex items-start w-full',
@@ -187,9 +189,6 @@ export function ChatPanel({ messages }: ChatPanelProps) {
           className={cn(showEmptyScreen ? 'visible' : 'invisible')}
         />
       </form>
-      {messages.map((msg) => (
-        <div key={msg.id}>{msg.component}</div>
-      ))}
     </div>
   )
 }
