@@ -1,28 +1,24 @@
 'use client'
-
 import { useState, useEffect } from "react"
 import { User, Settings, Paintbrush, Shield, CircleUserRound } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { ProfileToggleEnum, useProfileToggle } from "./profile-toggle-context"
 import { useRouter } from "next/navigation"
-//import { settings } from "@components/settings/components/settings.tsx"
-
 
 export function ProfileToggle() {
   const { setProfileSection } = useProfileToggle()
   const router = useRouter()
-  const [alignValue, setAlignValue] = useState<'start' | 'end'>("start")
-
+  const [alignValue, setAlignValue] = useState<'start' | 'end'>("end")
+  
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setAlignValue("start")
+        setAlignValue("end") // Right align on mobile too
       } else {
-        setAlignValue("start")
+        setAlignValue("end") // Right align on desktop
       }
     }
-
     handleResize() // Set initial value
   
     let resizeTimer: NodeJS.Timeout;
