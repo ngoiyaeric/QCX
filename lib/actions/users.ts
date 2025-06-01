@@ -5,7 +5,17 @@ import { revalidatePath } from 'next/cache';
 
 // This is a placeholder for a database or other storage.
 // In a real application, you would interact with your database here.
-let usersStore: Record<string, Array<{ id: string; email: string; role: string }>> = {
+
+// Define UserRole and User types
+export type UserRole = "admin" | "editor" | "viewer";
+
+export interface User {
+  id: string;
+  email: string;
+  role: UserRole;
+}
+
+let usersStore: Record<string, Array<User>> = {
   'default-user': [ // Simulate a default user having some initial users
     { id: '1', email: 'admin@example.com', role: 'admin' },
     { id: '2', email: 'editor@example.com', role: 'editor' },
@@ -15,7 +25,7 @@ let usersStore: Record<string, Array<{ id: string; email: string; role: string }
 // Simulate a delay to mimic network latency
 const simulateDBDelay = () => new Promise(resolve => setTimeout(resolve, 500));
 
-export async function getUsers(userId: string = 'default-user') {
+export async function getUsers(userId: string = 'default-user'): Promise<{ users: User[] }> {
   await simulateDBDelay();
   if (!usersStore[userId]) {
     usersStore[userId] = [];
@@ -24,7 +34,7 @@ export async function getUsers(userId: string = 'default-user') {
   return { users: usersStore[userId] };
 }
 
-export async function addUser(userId: string = 'default-user', newUser: { email: string; role: string }) {
+export async function addUser(userId: string = 'default-user', newUser: { email: string; role: UserRole }): Promise<{ user?: User; error?: string }> {
   await simulateDBDelay();
   if (!usersStore[userId]) {
     usersStore[userId] = [];
@@ -36,14 +46,14 @@ export async function addUser(userId: string = 'default-user', newUser: { email:
     return { error: 'User with this email already exists.' };
   }
 
-  const userToAdd = { ...newUser, id: Math.random().toString(36).substr(2, 9) };
+  const userToAdd: User = { ...newUser, id: Math.random().toString(36).substr(2, 9) };
   usersStore[userId].push(userToAdd);
   console.log(`[Action: addUser] Added user ${newUser.email} for ${userId}:`, userToAdd);
   revalidatePath('/settings'); // Assuming settings page path, adjust if needed
   return { user: userToAdd };
 }
 
-export async function updateUserRole(userId: string = 'default-user', userEmail: string, newRole: string) {
+export async function updateUserRole(userId: string = 'default-user', userEmail: string, newRole: UserRole): Promise<{ user?: User; error?: string }> {
   await simulateDBDelay();
   if (!usersStore[userId]) {
     return { error: 'User list not found.' };
@@ -61,7 +71,7 @@ export async function updateUserRole(userId: string = 'default-user', userEmail:
   return { user: usersStore[userId][userIndex] };
 }
 
-export async function removeUser(userId: string = 'default-user', userEmail: string) {
+export async function removeUser(userId: string = 'default-user', userEmail: string): Promise<{ success?: boolean; error?: string }> {
   await simulateDBDelay();
   if (!usersStore[userId]) {
     return { error: 'User list not found.' };
@@ -81,7 +91,10 @@ export async function removeUser(userId: string = 'default-user', userEmail: str
 }
 
 // Example of how the settings form might use these actions (conceptual)
-export async function updateSettingsAndUsers(userId: string = 'default-user', formData: any) {
+export async function updateSettingsAndUsers(
+  userId: string = 'default-user',
+  formData: { users: Array<Omit<User, 'id'> & { id?: string }> } // Looser type for incoming, stricter for store
+): Promise<{ success: boolean; message?: string; users?: User[] }> {
   // formData would contain systemPrompt, selectedModel, and the users array
   console.log('[Action: updateSettingsAndUsers] Received data:', formData);
 
@@ -95,13 +108,13 @@ export async function updateSettingsAndUsers(userId: string = 'default-user', fo
   // For simplicity in this simulation, let's assume the form sends the complete new user list.
 
   await simulateDBDelay();
-  usersStore[userId] = formData.users.map((u: any) => ({ // Ensure new users also get an ID if they don't have one
+  usersStore[userId] = formData.users.map((u): User => ({
     id: u.id || Math.random().toString(36).substr(2, 9),
     email: u.email,
-    role: u.role,
+    role: u.role, // Assumes u.role is already UserRole, validation should occur before this action
   }));
 
   console.log(`[Action: updateSettingsAndUsers] Updated users for ${userId}:`, usersStore[userId]);
   revalidatePath('/settings');
-  return { success: true, message: 'Settings and users updated successfully.' };
+  return { success: true, message: 'Settings and users updated successfully.', users: usersStore[userId] };
 }
