@@ -24,8 +24,15 @@ export function ProfileToggle() {
     }
 
     handleResize() // Set initial value
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
+  
+    let resizeTimer: NodeJS.Timeout;
+    const debouncedResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(handleResize, 100);
+    };
+  
+    window.addEventListener("resize", debouncedResize)
+    return () => window.removeEventListener("resize", debouncedResize)
   }, [])
   
   const handleSectionChange = (section: string) => {
