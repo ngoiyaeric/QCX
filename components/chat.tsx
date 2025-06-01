@@ -69,7 +69,8 @@ export function Chat({ id }: ChatProps) {
   // Desktop layout
   return (
     <div className="flex justify-start items-start">
-      <div className="w-1/2 flex flex-col space-y-3 md:space-y-4 px-8 sm:px-12 pt-12 md:pt-14 pb-14 md:pb-24">
+      {/* This is the new div for scrolling */}
+      <div className="w-1/2 flex flex-col space-y-3 md:space-y-4 px-8 sm:px-12 pt-12 md:pt-14 pb-4 h-[calc(100vh-10rem)] overflow-y-auto">
         <ChatMessages messages={messages} />
         <ChatPanel messages={messages} />
       </div>
