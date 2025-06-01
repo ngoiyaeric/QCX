@@ -17,7 +17,7 @@ export function ProfileToggle() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setAlignValue("end")
+        setAlignValue("start")
       } else {
         setAlignValue("start")
       }
