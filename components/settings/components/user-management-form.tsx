@@ -10,9 +10,10 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Trash2, Edit3, UserPlus, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/hooks/use-toast';
 import { addUser } from '@/lib/actions/users';
+import type { SettingsFormValues } from './settings';
 
 interface UserManagementFormProps {
-  form: UseFormReturn<any>; // Replace 'any' with your form values type if available
+  form: UseFormReturn<SettingsFormValues>;
 }
 
 export function UserManagementForm({ form }: UserManagementFormProps) {

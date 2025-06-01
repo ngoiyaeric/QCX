@@ -41,7 +41,7 @@ const settingsFormSchema = z.object({
   newUserRole: z.enum(["admin", "editor", "viewer"]).optional(),
 })
 
-type SettingsFormValues = z.infer<typeof settingsFormSchema>
+export type SettingsFormValues = z.infer<typeof settingsFormSchema>
 
 // Default values
 const defaultValues: Partial<SettingsFormValues> = {
