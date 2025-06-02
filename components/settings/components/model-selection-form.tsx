@@ -20,15 +20,15 @@ interface ModelSelectionFormProps {
 
 const models = [
   {
-    id: "gpt-4o",
-    name: "GPT-4o",
+    id: "o4",
+    name: "o4",
     description: "Most capable model for complex tasks, reasoning, and creative content generation.",
     icon: Sparkles,
     badge: "Recommended",
     badgeVariant: "default" as const,
   },
   {
-    id: "gpt-3.5-turbo",
+    id: "Grok-3",
     name: "GPT-3.5 Turbo",
     description: "Fast and efficient model for most everyday tasks and queries.",
     icon: Zap,
@@ -36,16 +36,16 @@ const models = [
     badgeVariant: "secondary" as const,
   },
   {
-    id: "claude-3-opus",
-    name: "Claude 3 Opus",
+    id: "claude-4-sonnet",
+    name: "Claude 4 Sonnet",
     description: "Advanced model with strong reasoning and detailed planetary knowledge.",
     icon: Rocket,
     badge: "Advanced",
     badgeVariant: "outline" as const,
   },
   {
-    id: "llama-3",
-    name: "Llama 3",
+    id: "llama-4",
+    name: "Llama 4",
     description: "Open-source model with good performance for general planetary information.",
     icon: Cpu,
     badge: "Open Source",
