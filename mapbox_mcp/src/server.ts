@@ -265,7 +265,7 @@ export default function createStatelessServer({
         });
 
         let resultText = `🏪 **Found ${places.length} places for "${query}" near ${location}:**\n\n`;
-        places.forEach((place, index) => {
+        places.forEach((place: { name: string; address: string; mapUrl: string }, index: number) => {
           resultText += `${index + 1}. **${place.name}**\n   📍 ${place.address}\n   **[🗺️ View](${place.mapUrl})**\n\n`;
         });
 

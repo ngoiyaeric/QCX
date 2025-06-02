@@ -22,35 +22,33 @@ export async function inquire(
   );
 
   let finalInquiry: PartialInquiry = {};
-  await streamObject({
+  const result = await streamObject({
     model: getModel() as LanguageModel,
     system: `...`, // Your system prompt remains unchanged
     messages,
     schema: inquirySchema,
-  })
-    .then(async (result) => {
-      for await (const obj of result.partialObjectStream) {
-        if (obj) {
-          // Update the local state
-          currentInquiry = obj;
-          // Update the stream with the new serializable value
-          objectStream.update(obj);
-          finalInquiry = obj;
+  });
 
-          // Update the UI stream with the new inquiry value
-          uiStream.update(
-            <Copilot inquiry={{ value: currentInquiry }} />
-          );
-        }
-      }
-    })
-    .finally(() => {
-      objectStream.done();
-      // Final UI update
+  for await (const obj of result.partialObjectStream) {
+    if (obj) {
+      // Update the local state
+      currentInquiry = obj;
+      // Update the stream with the new serializable value
+      objectStream.update(obj);
+      finalInquiry = obj;
+
+      // Update the UI stream with the new inquiry value
       uiStream.update(
-        <Copilot inquiry={{ value: finalInquiry }} />
+        <Copilot inquiry={{ value: currentInquiry }} />
       );
-    });
+    }
+  }
+
+  objectStream.done();
+  // Final UI update
+  uiStream.update(
+    <Copilot inquiry={{ value: finalInquiry }} />
+  );
 
   return finalInquiry;
 }
