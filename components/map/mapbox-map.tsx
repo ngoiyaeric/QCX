@@ -26,8 +26,8 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   const geolocationWatchIdRef = useRef<number | null>(null)
   const initializedRef = useRef<boolean>(false)
   const currentMapCenterRef = useRef<[number, number]>([
-    position?.longitude ?? -74.0060152,
-    position?.latitude ?? 40.7127281
+    position?.longitude ?? 0,
+    position?.latitude ?? 0
   ])
   const drawingFeatures = useRef<any>(null)
   const { mapType } = useMapToggle()
@@ -362,13 +362,18 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   // Initialize map (only once)
   useEffect(() => {
     if (mapContainer.current && !map.current) {
+      let initialZoom = 2;
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        initialZoom = 1.3;
+      }
+
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/satellite-streets-v12',
         center: currentMapCenterRef.current,
-        zoom: 12,
-        pitch: 60,
-        bearing: -20,
+        zoom: initialZoom,
+        pitch: 0,
+        bearing: 0,
         maxZoom: 22,
         attributionControl: true
       })
