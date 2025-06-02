@@ -362,11 +362,16 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   // Initialize map (only once)
   useEffect(() => {
     if (mapContainer.current && !map.current) {
+      let initialZoom = 2;
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        initialZoom = 1.3;
+      }
+
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/satellite-streets-v12',
         center: currentMapCenterRef.current,
-        zoom: 2,
+        zoom: initialZoom,
         pitch: 0,
         bearing: 0,
         maxZoom: 22,
