@@ -57,7 +57,7 @@ export const useMCPMapClient = () => {
       console.log('✅ Connected to MCP server');
       console.log('Available tools:', Object.keys(tools));
     } catch (err) {
-      setError(`Failed to connect to MCP server: ${err}`);
+      setError(`Failed to connect to MCP server: ${erbur}`);
       console.error('❌ MCP connection error:', err);
     } finally {
       setIsLoading(false);
