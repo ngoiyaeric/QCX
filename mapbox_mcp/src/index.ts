@@ -29,7 +29,10 @@ async function testMCPConnection() {
     // const serverUrl = `https://server.smithery.ai/${serverName}/mcp?profile=${profileId}&api_key=${apiKey}`;
 
     const transport = new StreamableHTTPClientTransport(serverUrl);
-
+    // Perform further actions with the transport if needed
+    console.log("MCP connection test successful: Transport created");
+  } catch (error) {
+    console.error("MCP connection test failed:", error);
   }
 }
 // Run the test
