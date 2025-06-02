@@ -140,7 +140,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   const rotateMap = useCallback(() => {
     if (map.current && isRotatingRef.current && !isUpdatingPositionRef.current) {
       const bearing = map.current.getBearing()
-      map.current.setBearing(bearing - 0.1)
+      map.current.setBearing(bearing + 0.1)
       rotationFrameRef.current = requestAnimationFrame(rotateMap)
     }
   }, [])
