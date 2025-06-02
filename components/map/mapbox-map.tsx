@@ -26,8 +26,8 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   const geolocationWatchIdRef = useRef<number | null>(null)
   const initializedRef = useRef<boolean>(false)
   const currentMapCenterRef = useRef<[number, number]>([
-    position?.longitude ?? -74.0060152,
-    position?.latitude ?? 40.7127281
+    position?.longitude ?? 0,
+    position?.latitude ?? 0
   ])
   const drawingFeatures = useRef<any>(null)
   const { mapType } = useMapToggle()
@@ -140,7 +140,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   const rotateMap = useCallback(() => {
     if (map.current && isRotatingRef.current && !isUpdatingPositionRef.current) {
       const bearing = map.current.getBearing()
-      map.current.setBearing(bearing + 0.1)
+      map.current.setBearing(bearing - 0.1)
       rotationFrameRef.current = requestAnimationFrame(rotateMap)
     }
   }, [])
@@ -366,9 +366,9 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/satellite-streets-v12',
         center: currentMapCenterRef.current,
-        zoom: 12,
-        pitch: 60,
-        bearing: -20,
+        zoom: 2,
+        pitch: 0,
+        bearing: 0,
         maxZoom: 22,
         attributionControl: true
       })
