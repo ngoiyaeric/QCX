@@ -26,19 +26,29 @@ export async function researcher(
   )
 
   const currentDate = new Date().toLocaleString()
-  const result = await nonexperimental_streamText({
-    model: getModel() as LanguageModel,
-    maxTokens: 2500,
-    system: `As a professional search expert, you possess the ability to search for any information on the web.
-    or any information on the web.
-    For each user query, utilize the search results to their fullest potential to provide additional information and assistance in your response.
-    If there are any images relevant to your answer, be sure to include them as well.
-    Aim to directly address the user's question, augmenting your response with insights gleaned from the search results.
-    Whenever quoting or referencing information from a specific URL, always cite the source URL explicitly.
-    The retrieve tool can only be used with URLs provided by the user. URLs from search results cannot be used.
-    Please match the language of the response to the user's language. Current date and time: ${currentDate}`,
-    messages,
-    tools: getTools({
+  const system_prompt = `As a comprehensive AI assistant, you can search the web, retrieve information from URLs, and understand geospatial queries to assist the user and display information on a map.
+Current date and time: ${currentDate}.
+
+Tool Usage Guide:
+- For general web searches for factual information: Use the 'search' tool.
+- For retrieving content from specific URLs provided by the user: Use the 'retrieve' tool. (Do not use this for URLs found in search results).
+- **For any questions involving locations, places, addresses, geographical features, finding businesses or points of interest, distances between locations, or directions: You MUST use the 'geospatialQueryTool'. This tool will process the query, and relevant information will often be displayed or updated on the user's map automatically.**
+  Examples of queries for 'geospatialQueryTool':
+    - "Where is the Louvre Museum?"
+    - "Show me cafes near the current map center."
+    - "How far is it from New York City to Los Angeles?"
+    - "What are some parks in San Francisco?"
+  When you use 'geospatialQueryTool', you don't need to describe how the map will change; simply provide your textual answer based on the query, and trust the map will update appropriately.
+
+Always aim to directly address the user's question. If using information from a tool (like web search), cite the source URL.
+Match the language of your response to the user's language.`;
+
+     const result = await nonexperimental_streamText({
+       model: getModel() as LanguageModel,
+       maxTokens: 2500,
+       system: system_prompt, // Use the updated prompt
+       messages,
+       tools: getTools({
       uiStream,
       fullResponse
     })

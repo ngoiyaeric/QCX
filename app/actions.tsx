@@ -22,6 +22,7 @@ import SearchRelated from '@/components/search-related';
 import { CopilotDisplay } from '@/components/copilot-display';
 import RetrieveSection from '@/components/retrieve-section';
 import { VideoSearchSection } from '@/components/video-search-section';
+import { MapQueryHandler } from '@/components/map/map-query-handler'; // Add this import
 
 // Define the type for related queries
 type RelatedQueries = {
@@ -389,7 +390,18 @@ export const getUIStateFromAIState = (aiState: AIState): UIState => {
           try {
             const toolOutput = JSON.parse(content);
             const isCollapsed = createStreamableValue();
-            isCollapsed.done(true);
+            isCollapsed.done(true); // Or false, depending on if we want this visible
+
+            // Check if this is our map query trigger
+            if (toolOutput.type === "MAP_QUERY_TRIGGER" && name === "geospatialQueryTool") {
+              return {
+                id, // message id
+                component: <MapQueryHandler originalUserInput={toolOutput.originalUserInput} />, // Use actual component
+                isCollapsed: true, // Keep it collapsed/hidden as it's a handler
+              };
+            }
+
+            // Existing tool handling
             const searchResults = createStreamableValue();
             searchResults.done(JSON.stringify(toolOutput));
             switch (name) {
@@ -413,18 +425,23 @@ export const getUIStateFromAIState = (aiState: AIState): UIState => {
                   ),
                   isCollapsed: isCollapsed.value,
                 };
+              // Add a default case for other tools if any, or if the specific tool is not found
+              default:
+                console.warn(`Unhandled tool result in getUIStateFromAIState: ${name}`);
+                return { id, component: null }; // Or some generic tool display
             }
           } catch (error) {
+            console.error("Error parsing tool content in getUIStateFromAIState:", error);
             return {
               id,
-              component: null,
+              component: null, // Or an error display component
             };
           }
           break;
         default:
           return {
             id,
-            component: null,
+            component: null, // Or some generic tool display
           };
       }
     })

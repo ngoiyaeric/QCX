@@ -52,7 +52,7 @@ export default function createStatelessServer({
    * Resolves a location string (which can be an address or 'lat,lng' coordinates)
    * to an array of [longitude, latitude].
    * Uses Mapbox Geocoding API if the location is not already coordinates.
-   *
+   * 
    * @param location The location string to resolve (e.g., "Eiffel Tower" or "48.8584,2.2945").
    * @param mapboxAccessToken The Mapbox API access token.
    * @returns A Promise resolving to `[longitude, latitude]` array if successful, or `null` if resolution fails.
@@ -127,7 +127,7 @@ export default function createStatelessServer({
         // original query was not already in 'lat,lng' format.
         let placeName = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`; // Default to "lat, lng" string
         // Check if the original query string looks like raw coordinates. If not, try to get a place name.
-        if (!query.match(/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/)) {
+        if (!query.match(/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/)) { 
             const geocodeUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${config.mapboxAccessToken}&limit=1`;
             try {
                 const response = await fetch(geocodeUrl);
@@ -297,7 +297,7 @@ export default function createStatelessServer({
         // roughly by the specified radius. Note: This bbox calculation is a simplification.
         // For more advanced Points of Interest (POI) search, Mapbox Search API (Tilequery or Places endpoints)
         // might be more suitable if the API key supports them.
-        const searchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${config.mapboxAccessToken}&proximity=${centerLng},${centerLat}&limit=${limit}&bbox=${centerLng-radius/100000},${centerLat-radius/100000},${centerLng+radius/100000},${centerLat+radius/100000}`;
+        const searchUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${config.mapboxAccessToken}&proximity=${centerLng},${centerLat}&limit=${limit}&bbox=${centerLng-radius/100000},${centerLat-radius/100000},${centerLng+radius/100000},${centerLat+radius/100000}`; 
         
         const response = await fetch(searchUrl);
         const data = await response.json();

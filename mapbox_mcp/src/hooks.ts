@@ -42,8 +42,8 @@ export const useMCPMapClient = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   // Holds error messages from MCP operations; set by various functions if errors occur.
-  const [error, setError] = useState<string | null>(null);
-
+  const [error, setError] = useState<string | null>(null); 
+  
   // Refs to hold the MCP client instance and available tools.
   // Using refs allows these values to persist across re-renders without triggering them.
   const clientRef = useRef<any>(null); // Stores the MCP client instance once connected.
@@ -96,35 +96,34 @@ export const useMCPMapClient = () => {
       // Use the `generateText` function from the AI SDK to interact with the model.
       // This function can leverage the tools provided by the MCP server.
       const response = await generateText({
-        model: getModel(), // Dynamically retrieves the model configuration (implementation outside this hook)
+        model: getModel(), // Ensure getModel() is appropriate here or use a specific one
         tools: toolsRef.current, // Provides the available MCP tools to the AI model
-        messages: [
-          { // System prompt to guide the AI's behavior and tool usage.
-            role: 'system',
-            content: `You are a helpful location assistant. For location-related queries:
-1. For address/place queries: Use geocode_location to find coordinates and get map previews
-2. For distance/travel queries: Use calculate_distance to get routes and travel times  
-3. For nearby searches: Use search_nearby_places to find points of interest
-4. For map generation: Use generate_map_link to create shareable maps
+        system: `You are an expert location data processing engine. Your role is to accurately use the available tools to answer location-based queries and provide structured data.
+Available tools and their purpose:
+- geocode_location: Converts addresses or place names to geographic coordinates. Also provides a map preview URL for the location.
+- calculate_distance: Calculates the travel distance and duration between two locations for various profiles (driving, walking, cycling). Also provides a map preview URL for the route.
+- search_nearby_places: Searches for points of interest (e.g., 'restaurants', 'gas stations') near a specified location. Provides details for each place including a map preview URL.
+- generate_map_link: Generates static and interactive map links for a given location.
 
-Always include map previews when relevant. Structure responses to be user-friendly.
-When providing coordinates, also specify if the map should be toggled/shown.`,
-          },
+For any user query, determine the most appropriate tool or sequence of tools to achieve the user's goal.
+Prioritize calling tools to get structured data. The text response you generate should summarize the findings and must include any relevant map URLs or key information provided by the tools.
+Focus on extracting and presenting factual data from the tools.`,
+        messages: [ // System message is now part of the generateText call directly
           { // The user's actual query.
             role: 'user',
             content: query,
           },
         ],
-        maxSteps: 3, // Limits the number of steps (tool uses and model generations) in a single turn.
+        maxSteps: 5, // Increased maxSteps slightly for potentially more complex tool sequences
       });
 
       // Heuristics to determine if the response suggests a map should be shown
       // and to extract coordinates if present in the model's textual response.
       let mapLocation = null; // Object to hold {lat, lng, zoom} if coordinates are found.
       let shouldShowMap = false; // Flag to indicate if the UI should attempt to show a map.
-
+      
       // Regex to find patterns like "latitude, longitude" in the response text.
-      const coordPattern = /(-?\d+\.\d+),\s*(-?\d+\.\d+)/;
+      const coordPattern = /(-?\d+\.\d+),\s*(-?\d+\.\d+)/; 
       const coordMatch = response.text.match(coordPattern);
       if (coordMatch) { // If coordinates are found in the text
         mapLocation = {
@@ -175,7 +174,7 @@ When providing coordinates, also specify if the map should be toggled/shown.`,
       // This line attempts to extract that JSON string.
       const match = result.content[1]?.text?.match(/```json\n([\s\S]*?)\n```/);
       // Parses the extracted JSON string. Returns an empty object if no match or parsing fails.
-      return JSON.parse(match?.[1] || '{}');
+      return JSON.parse(match?.[1] || '{}'); 
       
     } catch (err) {
       console.error('Geocoding error:', err);

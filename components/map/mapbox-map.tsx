@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import { useMapToggle, MapToggleEnum } from '../map-toggle-context'
+import { useMapData } from './map-data-context'; // Add this import
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN as string;
 
@@ -30,6 +31,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   ])
   const drawingFeatures = useRef<any>(null)
   const { mapType } = useMapToggle()
+  const { mapData } = useMapData(); // Consume the new context
   const previousMapTypeRef = useRef<MapToggleEnum | null>(null)
 
   // Formats the area or distance for display
@@ -465,6 +467,26 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
       updateMapPosition(position.latitude, position.longitude)
     }
   }, [position, updateMapPosition, mapType])
+
+  // Effect to handle map updates from MapDataContext
+  useEffect(() => {
+    if (mapData.targetPosition && map.current) {
+      // console.log("Mapbox.tsx: Received new targetPosition from context:", mapData.targetPosition);
+      // targetPosition is LngLatLike, which can be [number, number]
+      // updateMapPosition expects (latitude, longitude)
+      const [lng, lat] = mapData.targetPosition as [number, number]; // Assuming LngLatLike is [lng, lat]
+      if (typeof lat === 'number' && typeof lng === 'number') {
+        updateMapPosition(lat, lng);
+      } else {
+        // console.error("Mapbox.tsx: Invalid targetPosition format in mapData", mapData.targetPosition);
+      }
+    }
+    // TODO: Handle mapData.mapFeature for drawing routes, polygons, etc. in a future step.
+    // For example:
+    // if (mapData.mapFeature && mapData.mapFeature.route_geometry && typeof drawRoute === 'function') {
+    //   drawRoute(mapData.mapFeature.route_geometry); // Implement drawRoute function if needed
+    // }
+  }, [mapData.targetPosition, mapData.mapFeature, updateMapPosition]);
 
   return (
     <div className="relative h-full w-full">

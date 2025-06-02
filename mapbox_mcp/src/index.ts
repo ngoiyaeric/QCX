@@ -20,14 +20,14 @@ async function testMCPConnection() {
   if (!profileId || !apiKey) {
     console.error("SMITHERY_PROFILE_ID and SMITHERY_API_KEY environment variables are required for this script.");
     // For a standalone script, exiting might be preferable:
-    // process.exit(1);
+    // process.exit(1); 
     return; // Return early if essential credentials are missing.
   }
 
   // Construct the server URL for SSE (Server-Sent Events) transport.
   // This URL points to your specific MCP server instance hosted on Smithery.
   const serverUrl = `https://server.smithery.ai/${serverName}/mcp?profile=${profileId}&api_key=${apiKey}`;
-
+  
   // Declare client variable here to ensure it's accessible in the finally block for cleanup.
   let client: any; // Ideally, this would have a more specific type from `experimental_createMCPClient`
                    // e.g., Awaited<ReturnType<typeof experimental_createMCPClient>> for better type safety.
@@ -36,7 +36,7 @@ async function testMCPConnection() {
     // Log the connection attempt (masking API key in logs for security).
     const urlToLog = serverUrl.split('?')[0] + `?profile=${profileId}&api_key=****`; // Mask API key
     console.log(`Attempting to connect to MCP server at ${urlToLog}...`);
-
+    
     // Initialize the MCP client using Server-Sent Events (SSE) transport.
     // SSE is suitable for scenarios where the server pushes updates to the client.
     client = await experimental_createMCPClient({
@@ -61,7 +61,7 @@ async function testMCPConnection() {
       try {
         // Call the tool directly using client.callTool().
         const geocodeResult = await client.callTool('geocode_location', geocodeParams);
-
+        
         // The server tools (as defined in server.ts) typically return content in two blocks:
         // 1. User-friendly formatted text.
         // 2. A JSON string of the structured result, wrapped in ```json ... ```.
@@ -69,7 +69,7 @@ async function testMCPConnection() {
         let resultOutput = geocodeResult; // Default to the raw result object.
         if (Array.isArray(geocodeResult?.content) && geocodeResult.content.length > 0) {
             // Assuming the detailed JSON might be in the last content block, as per server.ts structure.
-            const lastContentItem = geocodeResult.content[geocodeResult.content.length -1];
+            const lastContentItem = geocodeResult.content[geocodeResult.content.length -1]; 
             if (lastContentItem && typeof lastContentItem.text === 'string') {
                 const jsonMatch = lastContentItem.text.match(/```json\n([\s\S]*?)\n```/); // Regex to extract JSON from markdown code block.
                 if (jsonMatch && jsonMatch[1]) {
@@ -78,7 +78,7 @@ async function testMCPConnection() {
                     } catch (parseError) {
                         // If JSON parsing fails, log a warning and use the raw text.
                         console.warn("Could not parse JSON from tool result text block, logging raw text.");
-                        resultOutput = lastContentItem.text;
+                        resultOutput = lastContentItem.text; 
                     }
                 } else {
                      // If no JSON block found in the expected format, join all text content.
