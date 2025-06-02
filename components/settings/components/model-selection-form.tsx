@@ -29,7 +29,7 @@ const models = [
   },
   {
     id: "Grok-3",
-    name: "GPT-3.5 Turbo",
+    name: "Grok-3",
     description: "Fast and efficient model for most everyday tasks and queries.",
     icon: Zap,
     badge: "Fast",
@@ -37,7 +37,7 @@ const models = [
   },
   {
     id: "claude-4-sonnet",
-    name: "Claude 4 Sonnet",
+    name: "Claude-4-sonnet",
     description: "Advanced model with strong reasoning and detailed planetary knowledge.",
     icon: Rocket,
     badge: "Advanced",
@@ -45,7 +45,7 @@ const models = [
   },
   {
     id: "llama-4",
-    name: "Llama 4",
+    name: "Llama-4",
     description: "Open-source model with good performance for general planetary information.",
     icon: Cpu,
     badge: "Open Source",
