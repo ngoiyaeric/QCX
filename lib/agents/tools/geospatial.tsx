@@ -23,6 +23,14 @@ export const geospatialTool = ({ uiStream, fullResponse }: ToolProps) => ({
          // Append the BotMessage component with the streamable value to the UI stream.
          uiStream.append(<BotMessage content={uiFeedbackStream.value} />);
 
+    // Log environment variable placeholders
+    console.log(`[GeospatialTool] Attempting to use SMITHERY_PROFILE_ID: "${process.env.SMITHERY_PROFILE_ID}"`);
+    if (process.env.SMITHERY_API_KEY) {
+      console.log(`[GeospatialTool] Attempting to use SMITHERY_API_KEY: "****${process.env.SMITHERY_API_KEY.slice(-4)}" (masked)`);
+    } else {
+      console.log(`[GeospatialTool] SMITHERY_API_KEY is not set or empty.`);
+    }
+
     // MCP Client setup and tool call
     const mcpServerUrl = `https://server.smithery.ai/@ngoiyaeric/mapbox-mcp-server/mcp?profile=${process.env.SMITHERY_PROFILE_ID}&api_key=${process.env.SMITHERY_API_KEY}`;
     let client: any; // Define client here to be accessible in finally
