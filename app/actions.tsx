@@ -398,7 +398,7 @@ export const getUIStateFromAIState = (aiState: AIState): UIState => {
               return {
                 id, // message id
                 component: <MapQueryHandler toolOutput={toolOutput} />, 
-                isCollapsed: true, // Keep it collapsed/hidden as it's a handler
+                isCollapsed: false, // Allow handler to be active
               };
             }
 
