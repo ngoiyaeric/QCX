@@ -98,13 +98,13 @@ export function ChatPanel({ messages }: ChatPanelProps) {
       className={cn(
         'flex flex-col items-start',
         isMobile
-          ? 'w-full'
+          ? 'w-full h-full'
           : 'sticky bottom-0 bg-background z-10 w-full border-t border-border px-2 py-3 md:px-4'
       )}
     >
       <form
         onSubmit={handleSubmit}
-        className={cn('max-w-full w-full', isMobile ? 'px-2 pb-2 pt-1' : '')}
+        className={cn('max-w-full w-full', isMobile ? 'px-2 pb-2 pt-1 h-full flex flex-col justify-center' : '')}
       >
         <div
           className={cn(
