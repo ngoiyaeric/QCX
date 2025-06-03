@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import { ModeToggle } from './mode-toggle'
 import { cn } from '@/lib/utils'
 import HistoryContainer from './history-container'
@@ -24,7 +25,7 @@ export const Header = () => {
       
       <div className="absolute left-1">
         <Button variant="ghost" size="icon">
-          <img src="/images/logo.svg" alt="Logo" className="h-6" />
+          <Image src="/images/logo.svg" alt="Logo" width={24} height={24} className="h-6 w-auto" />
         </Button>
       </div>
       

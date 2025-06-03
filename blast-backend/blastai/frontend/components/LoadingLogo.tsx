@@ -8,7 +8,7 @@ interface LoadingLogoProps {
 
 export const LoadingLogo = ({ onComplete }: LoadingLogoProps) => {
   const [rotation, setRotation] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Start rotation animation interval
