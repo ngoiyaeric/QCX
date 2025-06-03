@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "mapbox-mcp-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@smithery/cli@latest",
+        "run",
+        "@ngoiyaeric/mapbox-mcp-server",
+        "--key",
+        "705b0222-a657-4cd2-b180-80c406cf6179",
+        "--profile",
+        "smooth-lemur-vfUbUE"
+      ]
+    }
+  }
+}
