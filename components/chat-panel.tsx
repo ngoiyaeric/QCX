@@ -8,22 +8,21 @@ import { cn } from '@/lib/utils'
 import { UserMessage } from './user-message'
 import { Button } from './ui/button'
 import { ArrowRight, Plus, Paperclip } from 'lucide-react'
-import { EmptyScreen } from './empty-screen'
 import Textarea from 'react-textarea-autosize'
 import { nanoid } from 'nanoid'
 
 interface ChatPanelProps {
   messages: UIState
+  input: string
+  setInput: (value: string) => void
 }
 
-export function ChatPanel({ messages }: ChatPanelProps) {
-  const [input, setInput] = useState('')
+export function ChatPanel({ messages, input, setInput }: ChatPanelProps) {
   const [, setMessages] = useUIState<typeof AI>()
   const { submit } = useActions()
   const [isButtonPressed, setIsButtonPressed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
-  const [showEmptyScreen, setShowEmptyScreen] = useState(false)
   const router = useRouter()
 
   // Detect mobile layout
@@ -129,7 +128,6 @@ export function ChatPanel({ messages }: ChatPanelProps) {
             )}
             onChange={e => {
               setInput(e.target.value)
-              setShowEmptyScreen(e.target.value.length === 0)
             }}
             onKeyDown={e => {
               if (
@@ -155,8 +153,6 @@ export function ChatPanel({ messages }: ChatPanelProps) {
               inputRef.current.style.borderRadius =
                 Math.max(8, newBorder) + 'px'
             }}
-            onFocus={() => setShowEmptyScreen(true)}
-            onBlur={() => setShowEmptyScreen(false)}
           />
           <Button
             type="button"
@@ -182,12 +178,6 @@ export function ChatPanel({ messages }: ChatPanelProps) {
             <ArrowRight size={isMobile ? 18 : 20} />
           </Button>
         </div>
-        <EmptyScreen
-          submitMessage={message => {
-            setInput(message)
-          }}
-          className={cn(showEmptyScreen ? 'visible' : 'invisible')}
-        />
       </form>
     </div>
   )
