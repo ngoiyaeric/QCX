@@ -12,7 +12,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Zap, Rocket, Cpu } from "lucide-react";
+import { Sparkles, Zap, Rocket, Cpu, Earth } from "lucide-react";
 
 interface ModelSelectionFormProps {
   form: UseFormReturn<any>;
@@ -20,10 +20,10 @@ interface ModelSelectionFormProps {
 
 const models = [
   {
-    id: "o4",
-    name: "o4",
-    description: "Most capable model for complex tasks, reasoning, and creative content generation.",
-    icon: Sparkles,
+    id: "TerraMind",
+    name: "TerraMind",
+    description: "Earth observation foundational model",
+    icon: Earth,
     badge: "Recommended",
     badgeVariant: "default" as const,
   },
