@@ -32,7 +32,7 @@ export const geospatialTool = ({ uiStream, fullResponse }: ToolProps) => ({
     }
 
     // MCP Client setup and tool call
-    const mcpServerUrl = 'https://server.smithery.ai/@ngoiyaeric/mapbox-mcp-server/mcp?api_key=705b0222-a657-4cd2-b180-80c406cf6179&profile=smooth-lemur-vfUbUE'
+    const mcpServerUrl = 'https://server.smithery.ai/mapbox-mcp-server/mcp?api_key=705b0222-a657-4cd2-b180-80c406cf6179&profile=smooth-lemur-vfUbUE'
     //const mcpServerUrl = `https://server.smithery.ai/@ngoiyaeric/mapbox-mcp-server/mcp?profile=${process.env.SMITHERY_PROFILE_ID}&api_key=${process.env.SMITHERY_API_KEY}`;
     let client: any; // Define client here to be accessible in finally
     let mcpData: {
