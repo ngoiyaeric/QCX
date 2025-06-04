@@ -150,22 +150,24 @@
     height: 70px;
     padding: 10px;
     background-color: hsl(var(--background));
-    border-top: 1px solid hsl(var(--border));
+    /* border-top: 1px solid hsl(var(--border)); */ /* Removed for cleaner separation */
+    border-bottom: 1px solid hsl(var(--border)); /* Added for separation from messages area below */
     box-sizing: border-box;
-    z-index: 30;
+    /* z-index: 30; */ /* No longer needed as it's in flow */
     display: flex;
     align-items: center;
   }
 
   .mobile-chat-input {
-    position: relative;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    /* position: relative; */ /* No longer fixed to bottom */
+    /* bottom: 0; */
+    /* left: 0; */ /* Handled by parent flex */
+    /* right: 0; */ /* Handled by parent flex */
+    width: 100%; /* Ensure it takes full width of its container */
     padding: 10px;
     background-color: hsl(var(--background));
-    border-top: 1px solid hsl(var(--border));
-    z-index: 30;
+    /* border-top: 1px solid hsl(var(--border)); */ /* Removed to avoid double border */
+    /* z-index: 30; */ /* No longer needed */
   }
 
   .mobile-chat-input input {
