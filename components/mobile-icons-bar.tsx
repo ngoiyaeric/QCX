@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   Search,
@@ -9,15 +10,25 @@ import {
   CalendarDays,
   TentTree,
   Paperclip,
-  ArrowRight
+  ArrowRight,
+  Plus
 } from 'lucide-react'
 import { History } from '@/components/history'
 import { MapToggle } from './map-toggle'
 import { ModeToggle } from './mode-toggle'
 
 export const MobileIconsBar: React.FC = () => {
+  const router = useRouter()
+
+  const handleNewChat = () => {
+    router.push('/')
+  }
+
   return (
     <div className="mobile-icons-bar-content">
+      <Button variant="ghost" size="icon" onClick={handleNewChat}>
+        <Plus className="h-[1.2rem] w-[1.2rem]" />
+      </Button>
       <Button variant="ghost" size="icon">
         <CircleUserRound className="h-[1.2rem] w-[1.2rem]" />
       </Button>
