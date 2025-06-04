@@ -1,7 +1,7 @@
 'use client';
 
 import Lottie from 'lottie-react';
-import animationData from '@/public/images/Q.json';
+import animationData from '@/public/images/Q zoom.json';
 
 interface LottiePlayerProps {
   isVisible: boolean;
