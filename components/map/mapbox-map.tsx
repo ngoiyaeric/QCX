@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback } from 'react' // Removed useState
 import mapboxgl from 'mapbox-gl'
 import MapboxDraw from '@mapbox/mapbox-gl-draw'
 import * as turf from '@turf/turf'
@@ -10,6 +10,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
 import { useMapToggle, MapToggleEnum } from '../map-toggle-context'
 import { useMapData } from './map-data-context'; // Add this import
+import { useMapLoading } from '../map-loading-context'; // Import useMapLoading
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN as string;
 
@@ -32,7 +33,9 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   const drawingFeatures = useRef<any>(null)
   const { mapType } = useMapToggle()
   const { mapData } = useMapData(); // Consume the new context
+  const { setIsMapLoaded } = useMapLoading(); // Get setIsMapLoaded from context
   const previousMapTypeRef = useRef<MapToggleEnum | null>(null)
+  // const [isMapLoaded, setIsMapLoaded] = useState(false); // Removed local state
 
   // Formats the area or distance for display
   const formatMeasurement = useCallback((value: number, isArea = true) => {
@@ -422,6 +425,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
         }
 
         initializedRef.current = true
+        setIsMapLoaded(true) // Set map loaded state to true
         setupGeolocationWatcher()
       })
     }
@@ -446,6 +450,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
         Object.values(lineLabelsRef.current).forEach(marker => marker.remove())
         
         stopRotation()
+        setIsMapLoaded(false) // Reset map loaded state on cleanup
         map.current.remove()
         map.current = null
       }
@@ -463,7 +468,8 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
     updateMeasurementLabels, 
     setupGeolocationWatcher, 
     captureMapCenter, 
-    setupDrawingTools
+    setupDrawingTools,
+    setIsMapLoaded // Added missing dependency
   ])
 
   // Handle position updates from props

@@ -9,6 +9,8 @@ import { Sidebar } from '@/components/sidebar'
 import { Toaster } from '@/components/ui/sonner'
 import { MapToggleProvider } from '@/components/map-toggle-context'
 import { ProfileToggleProvider } from '@/components/profile-toggle-context'
+import { MapLoadingProvider } from '@/components/map-loading-context';
+import ConditionalLottie from '@/components/conditional-lottie';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -59,11 +61,14 @@ export default function RootLayout({
               disableTransitionOnChange
               themes={['light', 'dark', 'earth']}
             >
-              <Header />
-              {children}
-              <Sidebar />
-              <Footer />
-              <Toaster />
+              <MapLoadingProvider>
+                <Header />
+                <ConditionalLottie />
+                {children}
+                <Sidebar />
+                <Footer />
+                <Toaster />
+              </MapLoadingProvider>
             </ThemeProvider>
           </ProfileToggleProvider>
         </MapToggleProvider>
