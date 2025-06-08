@@ -26,10 +26,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   const isUpdatingPositionRef = useRef<boolean>(false)
   const geolocationWatchIdRef = useRef<number | null>(null)
   const initializedRef = useRef<boolean>(false)
-  const currentMapCenterRef = useRef<[number, number]>([
-    position?.longitude ?? 0,
-    position?.latitude ?? 0
-  ])
+  const currentMapCenterRef = useRef<{ center: [number, number]; zoom: number; pitch: number }>({ center: [position?.longitude ?? 0, position?.latitude ?? 0], zoom: 2, pitch: 0 });
   const drawingFeatures = useRef<any>(null)
   const { mapType } = useMapToggle()
   const { mapData } = useMapData(); // Consume the new context
@@ -170,7 +167,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
     // Update the current map center ref when user interacts with the map
     if (map.current) {
       const center = map.current.getCenter()
-      currentMapCenterRef.current = [center.lng, center.lat]
+      currentMapCenterRef.current.center = [center.lng, center.lat]
     }
   }, [stopRotation])
 
@@ -181,7 +178,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
       
       try {
         // Update our current map center ref
-        currentMapCenterRef.current = [longitude, latitude]
+        currentMapCenterRef.current.center = [longitude, latitude]
         
         await new Promise<void>((resolve) => {
           map.current?.flyTo({
@@ -292,8 +289,10 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   // Capture map center changes
   const captureMapCenter = useCallback(() => {
     if (map.current) {
-      const center = map.current.getCenter()
-      currentMapCenterRef.current = [center.lng, center.lat]
+      const center = map.current.getCenter();
+      const zoom = map.current.getZoom();
+      const pitch = map.current.getPitch();
+      currentMapCenterRef.current = { center: [center.lng, center.lat], zoom, pitch };
     }
   }, [])
 
@@ -373,9 +372,9 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/satellite-streets-v12',
-        center: currentMapCenterRef.current,
-        zoom: initialZoom,
-        pitch: 0,
+        center: currentMapCenterRef.current.center,
+        zoom: currentMapCenterRef.current.zoom,
+        pitch: currentMapCenterRef.current.pitch,
         bearing: 0,
         maxZoom: 22,
         attributionControl: true
