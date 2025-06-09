@@ -3,7 +3,7 @@
 #  Quality  Computer  Experiences
 
 <img src="https://github.com/user-attachments/assets/bf0d94e1-438d-4cc8-b809-fd467b142aba" alt="logo" width="200" />
->
+
 
 [**Sign Up**](https://tally.so/r/wkWqkd) &nbsp;|&nbsp; [**Community**](https://discord.com/invite/NqGY9EWjWj) &nbsp;|&nbsp; [**X**](https://x.com/tryqcx)
 
