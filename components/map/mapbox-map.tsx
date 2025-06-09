@@ -26,15 +26,17 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   const isUpdatingPositionRef = useRef<boolean>(false)
   const geolocationWatchIdRef = useRef<number | null>(null)
   const initializedRef = useRef<boolean>(false)
-  const currentMapCenterRef = useRef<[number, number]>([
-    position?.longitude ?? 0,
-    position?.latitude ?? 0
-  ])
+  const currentMapCenterRef = useRef<{ center: [number, number]; zoom: number; pitch: number }>({ center: [position?.longitude ?? 0, position?.latitude ?? 0], zoom: 2, pitch: 0 });
   const drawingFeatures = useRef<any>(null)
-  const { mapType } = useMapToggle()
+  const { mapType, setMapType } = useMapToggle() // Get setMapType
   const { mapData, setMapData } = useMapData(); // Consume the new context, get setMapData
   const { setIsMapLoaded } = useMapLoading(); // Get setIsMapLoaded from context
   const previousMapTypeRef = useRef<MapToggleEnum | null>(null)
+
+  // Refs for long-press functionality
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isMouseDownRef = useRef<boolean>(false);
+
   // const [isMapLoaded, setIsMapLoaded] = useState(false); // Removed local state
 
   // Formats the area or distance for display
@@ -191,7 +193,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
     // Update the current map center ref when user interacts with the map
     if (map.current) {
       const center = map.current.getCenter()
-      currentMapCenterRef.current = [center.lng, center.lat]
+      currentMapCenterRef.current.center = [center.lng, center.lat]
     }
   }, [stopRotation])
 
@@ -202,7 +204,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
       
       try {
         // Update our current map center ref
-        currentMapCenterRef.current = [longitude, latitude]
+        currentMapCenterRef.current.center = [longitude, latitude]
         
         await new Promise<void>((resolve) => {
           map.current?.flyTo({
@@ -313,8 +315,10 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   // Capture map center changes
   const captureMapCenter = useCallback(() => {
     if (map.current) {
-      const center = map.current.getCenter()
-      currentMapCenterRef.current = [center.lng, center.lat]
+      const center = map.current.getCenter();
+      const zoom = map.current.getZoom();
+      const pitch = map.current.getPitch();
+      currentMapCenterRef.current = { center: [center.lng, center.lat], zoom, pitch };
     }
   }, [])
 
@@ -394,9 +398,9 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/satellite-streets-v12',
-        center: currentMapCenterRef.current,
-        zoom: initialZoom,
-        pitch: 0,
+        center: currentMapCenterRef.current.center,
+        zoom: currentMapCenterRef.current.zoom,
+        pitch: currentMapCenterRef.current.pitch,
         bearing: 0,
         maxZoom: 22,
         attributionControl: true
@@ -520,11 +524,90 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
     // }
   }, [mapData.targetPosition, mapData.mapFeature, updateMapPosition]);
 
+  // Long-press handlers
+  const handleMouseDown = useCallback(() => {
+    // Only activate long press if not in real-time mode (as that mode has its own interactions)
+    if (mapType === MapToggleEnum.RealTimeMode) return;
+
+    isMouseDownRef.current = true;
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+    longPressTimerRef.current = setTimeout(() => {
+      if (isMouseDownRef.current && map.current && mapType !== MapToggleEnum.DrawingMode) {
+        console.log('Long press detected, activating drawing mode.');
+        setMapType(MapToggleEnum.DrawingMode);
+      }
+    }, 3000); // 3-second delay for long press
+  }, [mapType, setMapType]);
+
+  const handleMouseUp = useCallback(() => {
+    isMouseDownRef.current = false;
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  }, []);
+
+  // Cleanup for the main useEffect
+  useEffect(() => {
+    // ... existing useEffect logic ...
+    return () => {
+      // ... existing cleanup logic ...
+      if (longPressTimerRef.current) { // Cleanup timer on component unmount
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+      // ... existing cleanup logic for map and geolocation ...
+      if (map.current) {
+        map.current.off('moveend', captureMapCenter)
+
+        if (drawRef.current) {
+          try {
+            map.current.off('draw.create', updateMeasurementLabels)
+            map.current.off('draw.delete', updateMeasurementLabels)
+            map.current.off('draw.update', updateMeasurementLabels)
+            map.current.removeControl(drawRef.current)
+          } catch (e) {
+            console.log('Draw control already removed')
+          }
+        }
+
+        Object.values(polygonLabelsRef.current).forEach(marker => marker.remove())
+        Object.values(lineLabelsRef.current).forEach(marker => marker.remove())
+
+        stopRotation()
+        setIsMapLoaded(false)
+        map.current.remove()
+        map.current = null
+      }
+
+      if (geolocationWatchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(geolocationWatchIdRef.current)
+        geolocationWatchIdRef.current = null
+      }
+    };
+  }, [
+    handleUserInteraction,
+    startRotation,
+    stopRotation,
+    mapType, // mapType is already here, good.
+    updateMeasurementLabels,
+    setupGeolocationWatcher,
+    captureMapCenter,
+    setupDrawingTools,
+    setIsMapLoaded
+  ]);
+
+
   return (
     <div className="relative h-full w-full">
       <div
         ref={mapContainer}
         className="h-full w-full overflow-hidden rounded-l-lg"
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp} // Clear timer if mouse leaves container while pressed
       />
     </div>
   )
