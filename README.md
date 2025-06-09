@@ -2,7 +2,8 @@
 
 #  Quality  Computer  Experiences
 
-<img src="https://github.com/user-attachments/assets/3fef4c71-2811-4853-80b2-2703ee2eda78" alt="Logo" width="200"/>
+![logo](https://github.com/user-attachments/assets/bf0d94e1-438d-4cc8-b809-fd467b142aba)
+>
 
 [**Sign Up**](https://tally.so/r/wkWqkd) &nbsp;|&nbsp; [**Community**](https://discord.com/invite/NqGY9EWjWj) &nbsp;|&nbsp; [**X**](https://x.com/tryqcx)
 
