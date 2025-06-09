@@ -11,7 +11,7 @@
  * @returns {string} Mapbox Access Token
  */
 function getApiKey(): string {
-  const apiKey = process.env.MAPBOX_ACCESS_TOKEN;
+  const apiKey = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   if (!apiKey) {
     console.error("MAPBOX_ACCESS_TOKEN environment variable is not set");
     process.exit(1);
