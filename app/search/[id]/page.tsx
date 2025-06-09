@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { Chat } from '@/components/chat';
 import { getChat } from '@/lib/actions/chat';
 import { AI } from '@/app/actions';
+import { MapDataProvider } from '@/components/map/map-data-context';
 
 export const maxDuration = 60;
 
@@ -37,7 +38,9 @@ export default async function SearchPage({ params }: SearchPageProps) {
         messages: chat.messages,
       }}
     >
-      <Chat id={id} />
+      <MapDataProvider>
+        <Chat id={id} />
+      </MapDataProvider>
     </AI>
   );
 }

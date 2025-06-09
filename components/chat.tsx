@@ -10,10 +10,11 @@ import { useUIState, useAIState } from 'ai/rsc'
 import MobileIconsBar from './mobile-icons-bar'
 import { useProfileToggle, ProfileToggleEnum } from "@/components/profile-toggle-context";
 import SettingsView from "@/components/settings/settings-view";
-import { MapDataProvider } from './map/map-data-context'; // Add this
+import { MapDataProvider, useMapData } from './map/map-data-context'; // Add this and useMapData
+import { updateDrawingContext } from '@/lib/actions/chat'; // Import the server action
 
 type ChatProps = {
-  id?: string
+  id?: string // This is the chatId
 }
 
 export function Chat({ id }: ChatProps) {
@@ -58,6 +59,17 @@ export function Chat({ id }: ChatProps) {
       router.refresh()
     }
   }, [aiState, router])
+
+  // Get mapData to access drawnFeatures
+  const { mapData } = useMapData();
+
+  // useEffect to call the server action when drawnFeatures changes
+  useEffect(() => {
+    if (id && mapData.drawnFeatures && mapData.drawnFeatures.length > 0) {
+      console.log('Chat.tsx: drawnFeatures changed, calling updateDrawingContext', mapData.drawnFeatures);
+      updateDrawingContext(id, mapData.drawnFeatures);
+    }
+  }, [id, mapData.drawnFeatures]);
 
   // Mobile layout
   if (isMobile) {

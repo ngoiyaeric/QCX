@@ -28,10 +28,15 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
   const initializedRef = useRef<boolean>(false)
   const currentMapCenterRef = useRef<{ center: [number, number]; zoom: number; pitch: number }>({ center: [position?.longitude ?? 0, position?.latitude ?? 0], zoom: 2, pitch: 0 });
   const drawingFeatures = useRef<any>(null)
-  const { mapType } = useMapToggle()
-  const { mapData } = useMapData(); // Consume the new context
+  const { mapType, setMapType } = useMapToggle() // Get setMapType
+  const { mapData, setMapData } = useMapData(); // Consume the new context, get setMapData
   const { setIsMapLoaded } = useMapLoading(); // Get setIsMapLoaded from context
   const previousMapTypeRef = useRef<MapToggleEnum | null>(null)
+
+  // Refs for long-press functionality
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isMouseDownRef = useRef<boolean>(false);
+
   // const [isMapLoaded, setIsMapLoaded] = useState(false); // Removed local state
 
   // Formats the area or distance for display
@@ -64,14 +69,19 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
     lineLabelsRef.current = {}
 
     const features = drawRef.current.getAll().features
+    const currentDrawnFeatures: Array<{ id: string; type: 'Polygon' | 'LineString'; measurement: string; geometry: any }> = []
 
     features.forEach(feature => {
       const id = feature.id as string
-      
+      let featureType: 'Polygon' | 'LineString' | null = null;
+      let measurement = '';
+
       if (feature.geometry.type === 'Polygon') {
+        featureType = 'Polygon';
         // Calculate area for polygons
         const area = turf.area(feature)
         const formattedArea = formatMeasurement(area, true)
+        measurement = formattedArea;
         
         // Get centroid for label placement
         const centroid = turf.centroid(feature)
@@ -85,6 +95,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
         el.style.borderRadius = '4px'
         el.style.fontSize = '12px'
         el.style.fontWeight = 'bold'
+        el.style.color = '#333333' // Added darker color
         el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)'
         el.style.pointerEvents = 'none'
         el.textContent = formattedArea
@@ -104,9 +115,11 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
         }
       } 
       else if (feature.geometry.type === 'LineString') {
+        featureType = 'LineString';
         // Calculate length for lines
         const length = turf.length(feature, { units: 'kilometers' }) * 1000 // Convert to meters
         const formattedLength = formatMeasurement(length, false)
+        measurement = formattedLength;
         
         // Get midpoint for label placement
         const line = feature.geometry.coordinates
@@ -121,6 +134,7 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
         el.style.borderRadius = '4px'
         el.style.fontSize = '12px'
         el.style.fontWeight = 'bold'
+        el.style.color = '#333333' // Added darker color
         el.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)'
         el.style.pointerEvents = 'none'
         el.textContent = formattedLength
@@ -134,7 +148,19 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
           lineLabelsRef.current[id] = marker
         }
       }
-    })  }, [formatMeasurement])
+
+      if (featureType && id && measurement && feature.geometry) {
+        currentDrawnFeatures.push({
+          id,
+          type: featureType,
+          measurement,
+          geometry: feature.geometry,
+        });
+      }
+    })
+
+    setMapData(prevData => ({ ...prevData, drawnFeatures: currentDrawnFeatures }))
+  }, [formatMeasurement, setMapData])
 
   // Handle map rotation
   const rotateMap = useCallback(() => {
@@ -498,11 +524,90 @@ export const Mapbox: React.FC<{ position?: { latitude: number; longitude: number
     // }
   }, [mapData.targetPosition, mapData.mapFeature, updateMapPosition]);
 
+  // Long-press handlers
+  const handleMouseDown = useCallback(() => {
+    // Only activate long press if not in real-time mode (as that mode has its own interactions)
+    if (mapType === MapToggleEnum.RealTimeMode) return;
+
+    isMouseDownRef.current = true;
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+    longPressTimerRef.current = setTimeout(() => {
+      if (isMouseDownRef.current && map.current && mapType !== MapToggleEnum.DrawingMode) {
+        console.log('Long press detected, activating drawing mode.');
+        setMapType(MapToggleEnum.DrawingMode);
+      }
+    }, 3000); // 3-second delay for long press
+  }, [mapType, setMapType]);
+
+  const handleMouseUp = useCallback(() => {
+    isMouseDownRef.current = false;
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  }, []);
+
+  // Cleanup for the main useEffect
+  useEffect(() => {
+    // ... existing useEffect logic ...
+    return () => {
+      // ... existing cleanup logic ...
+      if (longPressTimerRef.current) { // Cleanup timer on component unmount
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+      // ... existing cleanup logic for map and geolocation ...
+      if (map.current) {
+        map.current.off('moveend', captureMapCenter)
+
+        if (drawRef.current) {
+          try {
+            map.current.off('draw.create', updateMeasurementLabels)
+            map.current.off('draw.delete', updateMeasurementLabels)
+            map.current.off('draw.update', updateMeasurementLabels)
+            map.current.removeControl(drawRef.current)
+          } catch (e) {
+            console.log('Draw control already removed')
+          }
+        }
+
+        Object.values(polygonLabelsRef.current).forEach(marker => marker.remove())
+        Object.values(lineLabelsRef.current).forEach(marker => marker.remove())
+
+        stopRotation()
+        setIsMapLoaded(false)
+        map.current.remove()
+        map.current = null
+      }
+
+      if (geolocationWatchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(geolocationWatchIdRef.current)
+        geolocationWatchIdRef.current = null
+      }
+    };
+  }, [
+    handleUserInteraction,
+    startRotation,
+    stopRotation,
+    mapType, // mapType is already here, good.
+    updateMeasurementLabels,
+    setupGeolocationWatcher,
+    captureMapCenter,
+    setupDrawingTools,
+    setIsMapLoaded
+  ]);
+
+
   return (
     <div className="relative h-full w-full">
       <div
         ref={mapContainer}
         className="h-full w-full overflow-hidden rounded-l-lg"
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp} // Clear timer if mouse leaves container while pressed
       />
     </div>
   )

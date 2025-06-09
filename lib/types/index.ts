@@ -59,6 +59,7 @@ export type AIMessage = {
   content: string
   id: string
   name?: string
+  createdAt?: Date // Added optional createdAt timestamp
   type?:
     | 'response'
     | 'related'
@@ -69,4 +70,5 @@ export type AIMessage = {
     | 'tool'
     | 'followup'
     | 'end'
+    | 'drawing_context' // Added custom type for drawing context messages
 }
