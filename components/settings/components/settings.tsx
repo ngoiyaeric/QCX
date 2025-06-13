@@ -16,7 +16,7 @@ import { ModelSelectionForm } from "./model-selection-form"
 import { UserManagementForm } from './user-management-form';
 import { Form } from "@/components/ui/form"
 import { useToast } from "@/components/ui/hooks/use-toast"
-import { getSystemPrompt, saveSystemPrompt } from "lib/actions/chat" // Added import
+import { getSystemPrompt, saveSystemPrompt } from "../../../lib/actions/chat" // Added import
 
 // Define the form schema
 const settingsFormSchema = z.object({
