@@ -214,3 +214,12 @@
     right: 10px;
   }
 }
+
+/* Added for MapboxDraw controls */
+.mapboxgl-ctrl-group {
+  z-index: 20 !important; /* Higher than the map container's z-index */
+  pointer-events: auto !important;
+}
+.mapboxgl-ctrl-group button {
+  pointer-events: auto !important;
+}
