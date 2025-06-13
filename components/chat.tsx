@@ -111,7 +111,10 @@ export function Chat({ id }: ChatProps) {
           <ChatMessages messages={messages} />
           <ChatPanel messages={messages} input={input} setInput={setInput} />
         </div>
-        <div className="w-1/2 p-4 fixed h-[calc(100vh-0.5in)] top-0 right-0 mt-[0.5in]">
+        <div
+          className="w-1/2 p-4 fixed h-[calc(100vh-0.5in)] top-0 right-0 mt-[0.5in]"
+          style={{ zIndex: 10 }} // Added z-index
+        >
           {activeView ? <SettingsView /> : <Mapbox />}
         </div>
       </div>
