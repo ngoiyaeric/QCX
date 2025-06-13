@@ -147,3 +147,41 @@ export async function updateDrawingContext(chatId: string, drawnFeatures: any[])
     return { error: 'Failed to save updated chat' };
   }
 }
+
+export async function saveSystemPrompt(
+  userId: string,
+  prompt: string
+): Promise<{ success?: boolean; error?: string }> {
+  if (!userId) {
+    return { error: 'User ID is required' }
+  }
+
+  if (!prompt) {
+    return { error: 'Prompt is required' }
+  }
+
+  try {
+    await redis.set(`system_prompt:${userId}`, prompt)
+    return { success: true }
+  } catch (error) {
+    console.error('saveSystemPrompt: Error saving system prompt:', error)
+    return { error: 'Failed to save system prompt' }
+  }
+}
+
+export async function getSystemPrompt(
+  userId: string
+): Promise<string | null> {
+  if (!userId) {
+    console.error('getSystemPrompt: User ID is required')
+    return null
+  }
+
+  try {
+    const prompt = await redis.get<string>(`system_prompt:${userId}`)
+    return prompt
+  } catch (error) {
+    console.error('getSystemPrompt: Error retrieving system prompt:', error)
+    return null
+  }
+}

@@ -12,6 +12,7 @@ import { getTools } from './tools'
 import { getModel } from '../utils'
 
 export async function researcher(
+  dynamicSystemPrompt: string, // New parameter
   uiStream: ReturnType<typeof createStreamableUI>,
   streamText: ReturnType<typeof createStreamableValue<string>>,
   messages: CoreMessage[],
@@ -26,7 +27,8 @@ export async function researcher(
   )
 
   const currentDate = new Date().toLocaleString()
-  const system_prompt = `As a comprehensive AI assistant, you can search the web, retrieve information from URLs, and understand geospatial queries to assist the user and display information on a map.
+  // Default system prompt, used if dynamicSystemPrompt is not provided
+  const default_system_prompt = `As a comprehensive AI assistant, you can search the web, retrieve information from URLs, and understand geospatial queries to assist the user and display information on a map.
 Current date and time: ${currentDate}.
 
 Tool Usage Guide:
@@ -43,10 +45,12 @@ Tool Usage Guide:
 Always aim to directly address the user's question. If using information from a tool (like web search), cite the source URL.
 Match the language of your response to the user's language.`;
 
+     const systemToUse = dynamicSystemPrompt && dynamicSystemPrompt.trim() !== '' ? dynamicSystemPrompt : default_system_prompt;
+
      const result = await nonexperimental_streamText({
        model: getModel() as LanguageModel,
        maxTokens: 2500,
-       system: system_prompt, // Use the updated prompt
+       system: systemToUse, // Use the dynamic or default system prompt
        messages,
        tools: getTools({
       uiStream,

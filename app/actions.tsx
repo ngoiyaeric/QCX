@@ -13,7 +13,7 @@ import { Section } from '@/components/section';
 import { FollowupPanel } from '@/components/followup-panel';
 import { inquire, researcher, taskManager, querySuggestor } from '@/lib/agents';
 import { writer } from '@/lib/agents/writer';
-import { saveChat } from '@/lib/actions/chat';
+import { saveChat, getSystemPrompt } from '@/lib/actions/chat'; // Added getSystemPrompt
 import { Chat, AIMessage } from '@/lib/types';
 import { UserMessage } from '@/components/user-message';
 import { BotMessage } from '@/components/message';
@@ -31,6 +31,9 @@ type RelatedQueries = {
 
 async function submit(formData?: FormData, skip?: boolean) {
 'use server';
+
+  // TODO: Update agent function signatures in lib/agents/researcher.tsx and lib/agents/writer.tsx
+  // to accept currentSystemPrompt as the first argument.
 
   const aiState = getMutableAIState<typeof AI>();
   const uiStream = createStreamableUI();
@@ -90,6 +93,10 @@ async function submit(formData?: FormData, skip?: boolean) {
     });
   }
 
+  // TODO: Replace 'anonymous' with actual user ID from session/auth context
+  const userId = 'anonymous';
+  const currentSystemPrompt = (await getSystemPrompt(userId)) || ''; // Default to empty string if null
+
   async function processEvents() {
     let action: any = { object: { next: 'proceed' } };
     // If the user skips the task, we proceed to the search
@@ -134,6 +141,7 @@ async function submit(formData?: FormData, skip?: boolean) {
     ) {
       // Search the web and generate the answer
       const { fullResponse, hasError, toolResponses } = await researcher(
+        currentSystemPrompt,
         uiStream,
         streamText,
         messages,
@@ -176,7 +184,7 @@ async function submit(formData?: FormData, skip?: boolean) {
           : msg
       ) as CoreMessage[];
       const latestMessages = modifiedMessages.slice(maxMessages * -1);
-      answer = await writer(uiStream, streamText, latestMessages);
+      answer = await writer(currentSystemPrompt, uiStream, streamText, latestMessages);
     } else {
       streamText.done();
     }
