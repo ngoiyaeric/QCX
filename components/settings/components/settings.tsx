@@ -16,6 +16,7 @@ import { ModelSelectionForm } from "./model-selection-form"
 import { UserManagementForm } from './user-management-form';
 import { Form } from "@/components/ui/form"
 import { useToast } from "@/components/ui/hooks/use-toast"
+import { getSystemPrompt, saveSystemPrompt } from "../../../lib/actions/chat" // Added import
 
 // Define the form schema
 const settingsFormSchema = z.object({
@@ -68,20 +69,38 @@ export function Settings({ initialTab = "system-prompt" }: SettingsProps) {
     setCurrentTab(initialTab);
   }, [initialTab]);
 
+  // TODO: Replace 'anonymous' with actual user ID from session/auth context
+  const userId = 'anonymous';
+
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
     defaultValues,
   })
 
+  useEffect(() => {
+    async function fetchPrompt() {
+      const existingPrompt = await getSystemPrompt(userId);
+      if (existingPrompt) {
+        form.setValue("systemPrompt", existingPrompt, { shouldValidate: true, shouldDirty: false });
+      }
+    }
+    fetchPrompt();
+  }, [form, userId]);
+
   async function onSubmit(data: SettingsFormValues) {
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Save the system prompt
+      const saveResult = await saveSystemPrompt(userId, data.systemPrompt);
 
-      // Use the data parameter to avoid unused variable error
-      console.log("Submitted data:", data)
+      if (saveResult?.error) {
+        throw new Error(saveResult.error);
+      }
+
+      // Simulate other API calls if necessary or remove if only saving system prompt for this form
+      await new Promise((resolve) => setTimeout(resolve, 200)) // Shorter delay now
+      console.log("Submitted data (including system prompt):", data)
 
       // Success notification
       toast({
@@ -90,12 +109,12 @@ export function Settings({ initialTab = "system-prompt" }: SettingsProps) {
       })
 
       // Refresh the page to reflect changes
-      router.refresh()
-    } catch (error) {
+      // router.refresh(); // Consider if refresh is needed or if optimistic update is enough
+    } catch (error: any) {
       // Error notification
       toast({
         title: "Something went wrong",
-        description: "Your settings could not be saved. Please try again.",
+        description: error.message || "Your settings could not be saved. Please try again.",
         variant: "destructive",
       })
     } finally {
