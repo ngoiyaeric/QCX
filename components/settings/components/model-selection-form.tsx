@@ -20,8 +20,8 @@ interface ModelSelectionFormProps {
 
 const models = [
   {
-    id: "TerraMind",
-    name: "TerraMind",
+    id: "QCX-Terra",
+    name: "QCX-Terra",
     description: "Earth observation foundational model",
     icon: Earth,
     badge: "Recommended",
