@@ -37,13 +37,13 @@ export async function POST(request: NextRequest) {
     // A more robust `saveChat` might create the chat and first message in one go.
     // The `saveChat` in chat-db.ts is designed to handle this.
 
-    const firstMessage: NewMessage = {
+    const firstMessage: Omit<NewMessage, 'chatId'> = {
         // id: generateUUID(), // Drizzle schema now has defaultRandom for UUIDs
-        // chatId will be set by saveChat or after chat creation
+        // chatId is omitted as it will be set by saveChat
         userId: userId,
-        role: role,
+        role: role as NewMessage['role'], // Ensure role type matches schema expectation
         content: initialMessageContent,
-        // createdAt: new Date(), // Handled by defaultNow()
+        // createdAt: new Date(), // Handled by defaultNow() in schema, not strictly needed here
     };
 
     // The saveChat in chat-db.ts is designed to take initial messages.
