@@ -18,8 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
-import { HistoryItem } // Assuming HistoryItem will be updated to use the new Chat type
-  from '@/components/history-item'; // Adjust path if HistoryItem is moved or renamed
+import HistoryItem from '@/components/history-item'; // Adjust path if HistoryItem is moved or renamed
 import type { Chat as DrizzleChat } from '@/lib/actions/chat-db'; // Use the Drizzle-based Chat type
 
 interface ChatHistoryClientProps {

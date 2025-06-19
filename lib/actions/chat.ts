@@ -99,7 +99,7 @@ export async function saveChat(chat: OldChatType, userId: string): Promise<strin
   const newMessagesData: Omit<DbNewMessage, 'chatId'>[] = chat.messages.map(msg => ({
     id: msg.id, // Keep existing ID
     userId: effectiveUserId, // Ensure messages have a userId
-    role: msg.role as 'user' | 'assistant' | 'system' | 'tool', // Cast role
+    role: msg.role, // Allow all AIMessage roles to pass through
     content: msg.content,
     createdAt: msg.createdAt ? new Date(msg.createdAt) : new Date(),
     // attachments: (msg as any).attachments, // If AIMessage had attachments

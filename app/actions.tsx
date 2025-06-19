@@ -273,6 +273,8 @@ export const AI = createAI<AIState, UIState>({
   onGetUIState: async () => {
     'use server';
 
+    // TODO: This needs to be adapted to use server-side auth if needed for initial UI state based on user.
+    // For now, it only uses getAIState().
     const aiState = getAIState() as AIState;
     if (aiState) {
       const uiState = getUIStateFromAIState(aiState);
@@ -290,13 +292,13 @@ export const AI = createAI<AIState, UIState>({
 
     const { chatId, messages } = state;
     const createdAt = new Date();
-    const userId = 'anonymous';
+    // const userId = 'anonymous'; // Replaced with actual user ID
     const path = `/search/${chatId}`;
     const title =
       messages.length > 0
         ? JSON.parse(messages[0].content)?.input?.substring(0, 100) ||
-          'Untitled'
-        : 'Untitled';
+          'Untitled Chat' // Default title consistency
+        : 'Untitled Chat';
     // Add an 'end' message at the end to determine if the history needs to be reloaded
     const updatedMessages: AIMessage[] = [
       ...messages,
@@ -308,15 +310,28 @@ export const AI = createAI<AIState, UIState>({
       },
     ];
 
-    const chat: Chat = {
+
+    // Get the actual user ID using server-side auth
+    const { getCurrentUserIdOnServer } = await import('@/lib/auth/get-current-user');
+    const actualUserId = await getCurrentUserIdOnServer();
+
+    if (!actualUserId) {
+      console.error("onSetAIState: User not authenticated. Chat not saved.");
+      // Optionally, clear the AI state or handle appropriately
+      // For now, we just won't save if there's no user.
+      // Or, if chats for anonymous users are allowed with a guest ID, that logic would go here.
+      return;
+    }
+
+    const chat: Chat = { // Chat is OldChatType from @/lib/types
       id: chatId,
       createdAt,
-      userId,
+      userId: actualUserId, // Use the authenticated user's ID
       path,
       title,
       messages: updatedMessages,
     };
-    await saveChat(chat);
+    await saveChat(chat, actualUserId); // Pass actualUserId to saveChat
   },
 });
 
