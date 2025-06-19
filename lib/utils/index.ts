@@ -6,10 +6,16 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createAnthropic } from '@ai-sdk/anthropic'
 import { createAmazonBedrock } from '@ai-sdk/amazon-bedrock'
 import { createXai } from '@ai-sdk/xai';
+import { v4 as uuidv4 } from 'uuid';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+export function generateUUID(): string {
+  return uuidv4();
+}
+
 export function getModel() {
   const xaiApiKey = process.env.XAI_API_KEY
   const awsAccessKeyId = process.env.AWS_ACCESS_KEY_ID
