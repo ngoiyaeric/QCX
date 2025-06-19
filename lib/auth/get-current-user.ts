@@ -1,61 +1,84 @@
-import { supabase } from '@/lib/supabase/client'; // Assuming this is the client-side accessible Supabase client
-// For server-side contexts (e.g., Next.js Route Handlers or Server Actions),
-// you would typically use Supabase's server-side client libraries like '@supabase/ssr'
-// to correctly handle user sessions from cookies.
-// This initial version might be more suited for client-side calls or basic server use
-// where the Supabase client can infer the user from a session.
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import type { User, Session } from '@supabase/supabase-js'; // Import User and Session types
+
+// Ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are available
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 /**
- * Retrieves the current user's ID from Supabase.
- * This function is intended to be adaptable for both client and server contexts.
- * In a Next.js server environment (Route Handlers, Server Actions),
- * proper session handling (e.g., via @supabase/ssr) is crucial.
+ * Retrieves the Supabase user and session object in server-side contexts
+ * (Route Handlers, Server Actions, Server Components).
+ * Uses '@supabase/ssr' for cookie-based session management.
  *
- * For operations requiring strict server-side authentication, ensure this is called
- * in a context where the Supabase client has access to the user's session
- * (e.g., by passing cookies or using a server-side Supabase client instance).
- *
- * @returns {Promise<string | null>} The user ID if a session exists, otherwise null.
+ * @returns {Promise<{ user: User | null; session: Session | null; error: any | null }>}
  */
-export async function getCurrentUserId(): Promise<string | null> {
-  // Attempt to get the current session and user
-  // This works on the client-side directly.
-  // On the server-side (Node.js), this specific client instance might not have session context
-  // unless it's a special server-side client or session info is passed.
-  // PR #533 implies server-side usage, so @supabase/ssr would be the robust way for Next.js.
-  // For now, this provides the function signature and basic Supabase interaction.
+export async function getSupabaseUserAndSessionOnServer(): Promise<{ user: User | null; session: Session | null; error: any | null }> {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Supabase URL or Anon Key is not set for server-side auth.');
+    return { user: null, session: null, error: new Error('Missing Supabase environment variables') };
+  }
+
+  const cookieStore = cookies();
+  const supabase = createServerClient(
+    supabaseUrl,
+    supabaseAnonKey,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+        // The set and remove methods are only needed if you're updating auth state
+        // server-side (e.g. sign-in, sign-out, refresh session).
+        // For read-only operations like getting user/session, they might not be strictly necessary
+        // but it's good practice to include them if this client instance might be used for writes later.
+        set(name: string, value: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value, ...options });
+          } catch (error) {
+            // Handle potential errors if cookieStore is read-only (e.g. in certain RSC contexts)
+            console.warn(`Failed to set cookie ${name}:`, error);
+          }
+        },
+        remove(name: string, options: CookieOptions) {
+          try {
+            cookieStore.delete({ name, ...options });
+          } catch (error)
+          {
+            console.warn(`Failed to delete cookie ${name}:`, error);
+          }
+        },
+      },
+    }
+  );
+
   const { data: { session }, error } = await supabase.auth.getSession();
 
   if (error) {
-    console.error('Error getting Supabase session:', error.message);
-    return null;
+    console.error('Error getting Supabase session on server:', error.message);
+    return { user: null, session: null, error };
   }
 
-  if (session && session.user) {
-    return session.user.id;
+  if (!session) {
+    return { user: null, session: null, error: null };
   }
 
-  return null;
+  // The session object contains the user.
+  return { user: session.user, session, error: null };
 }
 
 /**
- * Retrieves the full current user object from Supabase.
- * Similar caveats about client-side vs server-side session handling apply.
+ * Retrieves the current user's ID in server-side contexts.
+ * Wrapper around getSupabaseUserAndSessionOnServer.
  *
- * @returns {Promise<User | null>} The Supabase user object if a session exists, otherwise null.
+ * @returns {Promise<string | null>} The user ID if a session exists, otherwise null.
  */
-// import { User } from '@supabase/supabase-js'; // Import User type
-// export async function getCurrentUser(): Promise<User | null> {
-//   const { data: { session }, error } = await supabase.auth.getSession();
-//
-//   if (error) {
-//     console.error('Error getting Supabase session:', error.message);
-//     return null;
-//   }
-//
-//   if (session && session.user) {
-//     return session.user;
-//   }
-//
-//   return null;
-// }
+export async function getCurrentUserIdOnServer(): Promise<string | null> {
+    const { user, error } = await getSupabaseUserAndSessionOnServer();
+    // Do not log full error object here, just message if needed, or rely on previous log.
+    if (error) {
+        // console.error("Error in getCurrentUserIdOnServer:", error.message); // Already logged in getSupabaseUserAndSessionOnServer
+        return null;
+    }
+    return user?.id || null;
+}

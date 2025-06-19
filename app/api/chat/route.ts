@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { saveChat, createMessage, NewChat, NewMessage } from '@/lib/actions/chat-db';
-import { getCurrentUserId } from '@/lib/auth/get-current-user';
+import { getCurrentUserIdOnServer } from '@/lib/auth/get-current-user';
 // import { generateUUID } from '@/lib/utils'; // Assuming generateUUID is in lib/utils as per PR context - not needed for PKs
 
 // This is a simplified POST handler. PR #533's version might be more complex,
@@ -8,7 +8,7 @@ import { getCurrentUserId } from '@/lib/auth/get-current-user';
 // For now, this focuses on the database interaction part.
 export async function POST(request: NextRequest) {
   try {
-    const userId = await getCurrentUserId();
+    const userId = await getCurrentUserIdOnServer();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

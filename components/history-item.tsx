@@ -3,11 +3,11 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Chat } from '@/lib/types'
+import type { Chat as DrizzleChat } from '@/lib/actions/chat-db';
 import { cn } from '@/lib/utils'
 
 type HistoryItemProps = {
-  chat: Chat
+  chat: DrizzleChat & { path: string };
 }
 
 const formatDateWithTime = (date: Date | string) => {

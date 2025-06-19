@@ -80,7 +80,7 @@ export async function getChatsPage(
  * @param messagesData - An array of messages to save with the chat.
  * @returns The saved chat ID.
  */
-export async function saveChat(chatData: NewChat, messagesData: NewMessage[]): Promise<string | null> {
+export async function saveChat(chatData: NewChat, messagesData: Omit<NewMessage, 'chatId'>[]): Promise<string | null> {
   if (!chatData.userId) {
     console.error('Cannot save chat without a userId');
     return null;
@@ -108,8 +108,8 @@ export async function saveChat(chatData: NewChat, messagesData: NewMessage[]): P
     }
 
     if (!chatId) {
-      tx.rollback(); // Should not happen if insert/select worked
-      return null;
+      // console.error('Failed to establish chatId within transaction.'); // Optional: for server logs
+      throw new Error('Failed to establish chatId for chat operation.');
     }
 
     // Save messages

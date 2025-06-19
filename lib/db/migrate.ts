@@ -12,9 +12,9 @@ async function runMigrations() {
 
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    // ssl: {
-    //   rejectUnauthorized: false, // Ensure this is appropriate for your Supabase connection
-    // },
+    ssl: {
+      rejectUnauthorized: false, // Ensure this is appropriate for your Supabase connection
+    },
     // max: 1, // Optional: restrict to 1 connection for migration
   });
 
@@ -33,4 +33,9 @@ async function runMigrations() {
   }
 }
 
-runMigrations();
+if (process.env.EXECUTE_MIGRATIONS === 'true') {
+  runMigrations();
+} else {
+  console.log('Skipping migrations. Set EXECUTE_MIGRATIONS=true to run them.');
+  console.log('To run migrations, use the "npm run db:migrate" or "bun run db:migrate" script, which sets this variable.');
+}

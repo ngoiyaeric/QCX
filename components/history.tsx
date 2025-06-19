@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { ChevronLeft, Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { History as HistoryIcon } from 'lucide-react'
-import { HistoryList } from './history-list'
+import { ChatHistoryClient } from './sidebar/chat-history-client' // Updated import
 import { Suspense } from 'react'
 import { HistorySkeleton } from './history-skelton'
 
@@ -40,7 +40,7 @@ export function History({ location }: HistoryProps) {
         </SheetHeader>
         <div className="my-2 h-full pb-12 md:pb-10">
           <Suspense fallback={<HistorySkeleton />}>
-            <HistoryList userId="anonymous" />
+            <ChatHistoryClient />
           </Suspense>
         </div>
       </SheetContent>
