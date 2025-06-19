@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { chats, messages, users } from '@/lib/db/schema';
-import { eq, desc, and, sql } from 'drizzle-orm';
+import { eq, desc, and, sql, asc } from 'drizzle-orm'; // Added asc
 import { alias } from 'drizzle-orm/pg-core';
 import { getCurrentUserId } from '@/lib/auth/get-current-user'; // We'll use this to ensure user-specific actions
 
@@ -187,6 +187,29 @@ export async function clearHistory(userId: string): Promise<boolean> {
   } catch (error) {
     console.error('Error clearing history:', error);
     return false;
+  }
+}
+
+/**
+ * Retrieves all messages for a given chat ID, ordered by creation time.
+ * @param chatId - The ID of the chat whose messages to retrieve.
+ * @returns An array of message objects.
+ */
+export async function getMessagesByChatId(chatId: string): Promise<Message[]> {
+  if (!chatId) {
+    console.warn('getMessagesByChatId called without chatId');
+    return [];
+  }
+  try {
+    const result = await db
+      .select()
+      .from(messages)
+      .where(eq(messages.chatId, chatId))
+      .orderBy(asc(messages.createdAt)); // Order messages chronologically
+    return result;
+  } catch (error) {
+    console.error(`Error fetching messages for chat ${chatId}:`, error);
+    return [];
   }
 }
 

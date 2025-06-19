@@ -9,7 +9,9 @@ import {
   clearHistory as dbClearHistory,
   saveChat as dbSaveChat,
   createMessage as dbCreateMessage,
+  getMessagesByChatId as dbGetMessagesByChatId, // Added
   type Chat as DrizzleChat,
+  type Message as DrizzleMessage, // Added
   type NewChat as DbNewChat,
   type NewMessage as DbNewMessage
 } from '@/lib/actions/chat-db'
@@ -51,6 +53,24 @@ export async function getChat(id: string, userId: string): Promise<DrizzleChat |
   } catch (error) {
     console.error(`Error fetching chat ${id} from DB:`, error)
     return null
+  }
+}
+
+/**
+ * Retrieves all messages for a specific chat.
+ * @param chatId The ID of the chat.
+ * @returns A promise that resolves to an array of DrizzleMessage objects.
+ */
+export async function getChatMessages(chatId: string): Promise<DrizzleMessage[]> {
+  if (!chatId) {
+    console.warn('getChatMessages called without chatId');
+    return [];
+  }
+  try {
+    return dbGetMessagesByChatId(chatId);
+  } catch (error) {
+    console.error(`Error fetching messages for chat ${chatId} in getChatMessages:`, error);
+    return [];
   }
 }
 
@@ -187,7 +207,9 @@ export async function updateDrawingContext(chatId: string, drawnFeatures: any[])
 // TODO: These Redis-based functions for system prompt need to be migrated
 // if their functionality is still required and intended to use the new DB.
 // For now, they are left as is, but will likely fail if Redis config is removed.
-const redis = new Redis({ // This will cause issues if REDIS_URL is not configured.
+// @ts-ignore - Ignoring Redis import error for now as it might be removed or replaced
+import { Redis } from '@upstash/redis'; // This will cause issues if REDIS_URL is not configured.
+const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL?.trim() || '',
   token: process.env.UPSTASH_REDIS_REST_TOKEN || ''
 });
