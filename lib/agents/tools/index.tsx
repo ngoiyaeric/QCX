@@ -7,9 +7,10 @@ import { geospatialTool, useGeospatialToolMcp } from './geospatial'; // Added im
 export interface ToolProps {
   uiStream: ReturnType<typeof createStreamableUI>
   fullResponse: string
+  mcp?: any // Made mcp optional
 }
 
-export const getTools = ({ uiStream, fullResponse }: ToolProps) => {
+export const getTools = ({ uiStream, fullResponse, mcp }: ToolProps) => {
   const tools: any = {
     search: searchTool({
       uiStream,
@@ -23,7 +24,7 @@ export const getTools = ({ uiStream, fullResponse }: ToolProps) => {
      geospatialQueryTool: geospatialTool({ 
        uiStream,
        fullResponse,
-       mcp: useGeospatialToolMcp()
+       mcp // Use the passed mcp
      })
   }
 
@@ -36,19 +37,3 @@ export const getTools = ({ uiStream, fullResponse }: ToolProps) => {
 
   return tools
 }
-
-export const useTools = ({ uiStream, fullResponse }: ToolProps) => {
-  const mcp = useGeospatialToolMcp();
-
-  const tools: any = {
-    search: searchTool({ uiStream, fullResponse }),
-    retrieve: retrieveTool({ uiStream, fullResponse }),
-    geospatialQueryTool: geospatialTool({ uiStream, fullResponse, mcp }),
-  };
-
-  if (process.env.SERPER_API_KEY) {
-    tools.videoSearch = videoSearchTool({ uiStream, fullResponse });
-  }
-
-  return tools;
-};

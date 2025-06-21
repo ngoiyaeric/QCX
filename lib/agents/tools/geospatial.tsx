@@ -1,4 +1,4 @@
-import { createStreamableValue } from 'ai/rsc';
+import { createStreamableValue } from 'ai/rsc'; // Ensuring this is the original path
 import { useMcp } from 'use-mcp/react';
 import { BotMessage } from '@/components/message';
 import { geospatialQuerySchema } from '@/lib/schema/geospatial';
