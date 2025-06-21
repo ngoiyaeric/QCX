@@ -2,12 +2,12 @@ import { createStreamableUI } from 'ai/rsc'
 import { retrieveTool } from './retrieve'
 import { searchTool } from './search'
 import { videoSearchTool } from './video-search'
-import { geospatialTool, useGeospatialToolMcp } from './geospatial'; // Added import
+import { geospatialTool, useGeospatialToolMcp } from './geospatial'
 
 export interface ToolProps {
   uiStream: ReturnType<typeof createStreamableUI>
   fullResponse: string
-  mcp?: any // Made mcp optional
+  mcp?: ReturnType<typeof useGeospatialToolMcp>
 }
 
 export const getTools = ({ uiStream, fullResponse, mcp }: ToolProps) => {
@@ -19,13 +19,11 @@ export const getTools = ({ uiStream, fullResponse, mcp }: ToolProps) => {
     retrieve: retrieveTool({
       uiStream,
       fullResponse
-       }),
-
-     geospatialQueryTool: geospatialTool({
-       uiStream,
-       fullResponse,
-       mcp // Use the passed mcp
-     })
+    }),
+    geospatialQueryTool: geospatialTool({
+      uiStream,
+      mcp: mcp || null
+    })
   }
 
   if (process.env.SERPER_API_KEY) {
