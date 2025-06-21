@@ -7,7 +7,7 @@ import { geospatialTool, useGeospatialToolMcp } from './geospatial'; // Added im
 export interface ToolProps {
   uiStream: ReturnType<typeof createStreamableUI>
   fullResponse: string
-  mcp?: any // Made mcp optional
+  mcp?: ReturnType<typeof useGeospatialToolMcp> // Made mcp optional for geospatial tool
 }
 
 export const getTools = ({ uiStream, fullResponse, mcp }: ToolProps) => {
@@ -19,13 +19,12 @@ export const getTools = ({ uiStream, fullResponse, mcp }: ToolProps) => {
     retrieve: retrieveTool({
       uiStream,
       fullResponse
-       }),
+    }),
 
-     geospatialQueryTool: geospatialTool({ 
-       uiStream,
-       fullResponse,
-       mcp // Use the passed mcp
-     })
+    geospatialQueryTool: geospatialTool({
+      uiStream,
+      mcp: mcp || null
+    })
   }
 
   if (process.env.SERPER_API_KEY) {
