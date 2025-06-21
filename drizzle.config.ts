@@ -12,7 +12,7 @@ export default {
   out: './drizzle/migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    url: process.env.DATABASE_URL, // Changed from connectionString to url
   },
   verbose: true,
   strict: true,
