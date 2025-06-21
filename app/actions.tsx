@@ -12,6 +12,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Section } from '@/components/section';
 import { FollowupPanel } from '@/components/followup-panel';
 import { inquire, researcher, taskManager, querySuggestor } from '@/lib/agents';
+import { useGeospatialToolMcp } from '@/lib/agents/tools/geospatial'; // Added import for the hook
 import { writer } from '@/lib/agents/writer';
 import { saveChat, getSystemPrompt } from '@/lib/actions/chat'; // Added getSystemPrompt
 import { Chat, AIMessage } from '@/lib/types';
@@ -29,7 +30,7 @@ type RelatedQueries = {
   items: { query: string }[];
 };
 
-async function submit(formData?: FormData, skip?: boolean) {
+async function submit(formData?: FormData, skip?: boolean, mcp?: any) { // Added mcp as a parameter
 'use server';
 
   // TODO: Update agent function signatures in lib/agents/researcher.tsx and lib/agents/writer.tsx
@@ -145,6 +146,7 @@ async function submit(formData?: FormData, skip?: boolean) {
         uiStream,
         streamText,
         messages,
+        mcp, // Pass mcp to researcher
         useSpecificAPI
       );
       answer = fullResponse;

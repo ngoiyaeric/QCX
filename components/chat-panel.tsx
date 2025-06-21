@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import type { AI, UIState } from '@/app/actions'
 import { useUIState, useActions } from 'ai/rsc'
+import { useGeospatialToolMcp } from '@/lib/agents/tools/geospatial' // Added import
 import { cn } from '@/lib/utils'
 import { UserMessage } from './user-message'
 import { Button } from './ui/button'
@@ -20,6 +21,7 @@ interface ChatPanelProps {
 export function ChatPanel({ messages, input, setInput }: ChatPanelProps) {
   const [, setMessages] = useUIState<typeof AI>()
   const { submit } = useActions()
+  const mcp = useGeospatialToolMcp() // Call the hook
   const [isButtonPressed, setIsButtonPressed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -56,7 +58,7 @@ export function ChatPanel({ messages, input, setInput }: ChatPanelProps) {
       }
     ])
     const formData = new FormData(e.currentTarget)
-    const responseMessage = await submit(formData)
+    const responseMessage = await submit(formData, undefined, mcp) // Pass mcp
     setMessages(currentMessages => [...currentMessages, responseMessage as any])
   }
 
