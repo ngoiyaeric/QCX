@@ -13,8 +13,6 @@ export type McpClient = ReturnType<typeof useMcp>;
 export function useGeospatialToolMcp() {
   const mcpServerUrl =
     'https://server.smithery.ai/mapbox-mcp-server/mcp?api_key=705b0222-a657-4cd2-b180-80c406cf6179&profile=smooth-lemur-vfUbUE';
-  // Alternative: Dynamic URL (uncomment if using environment variables)
-  // const mcpServerUrl = `https://server.smithery.ai/@ngoiyaeric/mapbox-mcp-server/mcp?profile=${process.env.SMITHERY_PROFILE_ID}&api_key=${process.env.SMITHERY_API_KEY}`;
   const mcp = useMcp({
     url: mcpServerUrl,
     debug: process.env.NODE_ENV === 'development',
@@ -175,104 +173,6 @@ export const geospatialTool = ({
         console.log(
           '\n[GeospatialTool] MCP client is ready; no explicit close method available for useMcp.'
         );
-      }
-    }
-                );
-              }
-            } catch (parseError) {
-              console.error(
-                '[GeospatialTool] ❌ Error parsing JSON from MCP response:',
-                parseError,
-                '\nRaw text was:',
-                lastContentItem.text
-              );
-            }
-          } else {
-            console.warn(
-              '[GeospatialTool] ⚠️ Could not find JSON block in the expected format in MCP response.'
-            );
-          }
-        } else {
-          console.warn(
-            '[GeospatialTool] ⚠️ Last content item from MCP is not a text block or is missing.'
-          );
-        }
-      } else {
-        console.warn(
-          '[GeospatialTool] ⚠️ Geocode result from MCP is not in the expected format (missing content array).',
-          geocodeResult
-        );
-      }
-    } catch (error) {
-      console.error('[GeospatialTool] ❌ MCP connection or tool call failed:', error);
-    }
-                mcpData = {
-                  location: {
-                    latitude: parsedJson.location.latitude,
-                    longitude: parsedJson.location.longitude,
-                    place_name: parsedJson.location.place_name,
-                    address: parsedJson.location.address,
-                  },
-                  mapUrl: parsedJson.mapUrl,
-                };
-                console.log(
-                  '✅ Successfully parsed MCP geocode data:',
-                  mcpData
-                );
-              } else {
-                console.warn(
-                  "⚠️ Parsed JSON from MCP does not contain expected 'location' field."
-                );
-              }
-            } catch (parseError) {
-              console.error(
-                '❌ Error parsing JSON from MCP response:',
-                parseError,
-                '\nRaw text was:',
-                lastContentItem.text
-              );
-            }
-          } else {
-            console.warn(
-              '⚠️ Could not find JSON block in the expected format in MCP response.'
-            );
-          }
-        } else {
-          console.warn(
-            '⚠️ Last content item from MCP is not a text block or is missing.'
-          );
-        }
-      } else {
-        console.warn(
-          '⚠️ Geocode result from MCP is not in the expected format (missing content array).',
-          geocodeResult
-        );
-      }
-    } catch (error) {
-      console.error('❌ MCP connection or tool call failed:', error);
-    } finally {
-      if (mcp.state === 'ready') {
-        console.log(
-          '\nMCP client is ready; no explicit close method available for useMcp.'
-        );
-      }
-    }
-
-    // Return a marker object for client-side processing
-    return {
-      type: 'MAP_QUERY_TRIGGER',
-      originalUserInput: query,
-      timestamp: new Date().toISOString(),
-      mcp_response: mcpData,
-    };
-  },
-});
-      }
-    } catch (error) {
-      console.error('❌ MCP connection or tool call failed:', error);
-    } finally {
-      if (mcp && mcp.state === 'ready') {
-        console.log('\n[GeospatialTool] MCP client is ready; no explicit close method available for useMcp.');
       }
     }
 
