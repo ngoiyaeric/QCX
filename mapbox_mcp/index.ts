@@ -9,7 +9,7 @@ import { useMcp } from 'use-mcp/react';
 // and is not directly passed by this client script during the connection setup for this particular example.
 const profileId = process.env.SMITHERY_PROFILE_ID;
 const apiKey = process.env.SMITHERY_API_KEY;
-const serverName = "@ngoiyaeric/mapbox-mcp-server"; // The unique name of your MCP server deployed on Smithery.
+const serverName = "mapbox-mcp-server"; // The unique name of your MCP server deployed on Smithery.
 
 async function testMCPConnection() {
   // Check for required environment variables for Smithery connection.
