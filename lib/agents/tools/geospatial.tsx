@@ -1,5 +1,5 @@
 import { createStreamableUI } from 'ai/rsc'; // createStreamableUI is often from ai/rsc
-import { createStreamableValue } from 'ai'; // createStreamableValue is often from 'ai' directly
+import { createStreamableValue } from 'ai/rsc'; // createStreamableValue is often from 'ai' directly
 import { BotMessage } from '@/components/message';
 import { geospatialQuerySchema } from '@/lib/schema/geospatial';
 
