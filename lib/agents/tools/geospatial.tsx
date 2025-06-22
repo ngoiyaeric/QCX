@@ -7,7 +7,6 @@ import { geospatialQuerySchema } from '@/lib/schema/geospatial';
 import { Client as MCPClientClass } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { createSmitheryUrl } from '@smithery/sdk';
-import type { ToolCallResultMessage } from '@modelcontextprotocol/sdk';
 
 
 // Define proper MCP type from the new SDK
@@ -155,10 +154,10 @@ export const geospatialTool = ({
         );
       }
 
-      const geocodeResult: ToolCallResultMessage = await mcpClient.callTool(
-        'geocode_location', // Ensure this tool name is correct
-        geocodeParams
-      );
+      const geocodeResult = await mcpClient.callTool({
+        name: 'geocode_location',
+        arguments: geocodeParams,
+      });
 
       if (process.env.NODE_ENV === 'development') {
          // console.log('[GeospatialTool] Raw geocode_location result:', JSON.stringify(geocodeResult, null, 2));
@@ -168,8 +167,8 @@ export const geospatialTool = ({
       // The new SDK's callTool likely returns a structured object.
       // We need to inspect `geocodeResult.tool_results` which should be an array.
       // Each item in tool_results would have `content` (often a string, potentially JSON string).
-      const toolResults = geocodeResult.tool_results;
-      if (toolResults && toolResults.length > 0 && toolResults[0].content) {
+      const toolResults = Array.isArray(geocodeResult.tool_results) ? geocodeResult.tool_results : [];
+      if (toolResults.length > 0 && toolResults[0].content) {
         // Assuming the relevant JSON is in the first tool_result's content
         // The content might be a string that itself contains a JSON block.
         let contentToParse = toolResults[0].content;
