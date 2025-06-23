@@ -1,263 +1,301 @@
-import { createStreamableUI } from 'ai/rsc'; // createStreamableUI is often from ai/rsc
-import { createStreamableValue } from 'ai/rsc'; // createStreamableValue is often from 'ai' directly
+/**
+ * Fixed geospatial tool with improved error handling and schema
+ */
+import { createStreamableUI, createStreamableValue } from 'ai/rsc';
 import { BotMessage } from '@/components/message';
 import { geospatialQuerySchema } from '@/lib/schema/geospatial';
-
-// New MCP Client imports
 import { Client as MCPClientClass } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { createSmitheryUrl } from '@smithery/sdk';
 
+export type McpClient = MCPClientClass;
 
-// Define proper MCP type from the new SDK
-export type McpClient = MCPClientClass; // Renamed to avoid conflict with 'Client'
-
-// Helper function to get and connect the new MCP client
 async function getConnectedMcpClient(): Promise<McpClient | null> {
+  // More detailed environment variable validation
   const apiKey = process.env.NEXT_PUBLIC_SMITHERY_API_KEY;
   const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const profileId = process.env.NEXT_PUBLIC_SMITHERY_PROFILE_ID;
 
-  if (!apiKey) {
-    console.error('[GeospatialTool] Environment variable NEXT_PUBLIC_SMITHERY_API_KEY is not set.');
-    return null;
-  }
-  if (!mapboxAccessToken) {
-    console.error('[GeospatialTool] Environment variable NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN is not set.');
-    return null;
-  }
-  if (!profileId) {
-    console.error('[GeospatialTool] Environment variable NEXT_PUBLIC_SMITHERY_PROFILE_ID is not set.');
+  console.log('[GeospatialTool] Environment check:', {
+    apiKey: apiKey ? `${apiKey.substring(0, 8)}...` : 'MISSING',
+    mapboxAccessToken: mapboxAccessToken ? `${mapboxAccessToken.substring(0, 8)}...` : 'MISSING',
+    profileId: profileId ? `${profileId.substring(0, 8)}...` : 'MISSING',
+  });
+
+  if (!apiKey || !mapboxAccessToken || !profileId) {
+    console.error('[GeospatialTool] Missing required environment variables');
     return null;
   }
 
-  const config = {
-    mapboxAccessToken: mapboxAccessToken
-  };
+  // Validate environment variables format
+  if (!apiKey.trim() || !mapboxAccessToken.trim() || !profileId.trim()) {
+    console.error('[GeospatialTool] Empty environment variables detected');
+    return null;
+  }
 
-  const mcpServerBaseUrl = "https://server.smithery.ai/mapbox-mcp-server";
+   let config;
+  try {
+    // Try to load the config file with better error handling
+     const mapboxMcpConfig = await import('QCX/mapbox_mcp_config.json');
 
-  const smitheryUrlOptions = {
-    config,
-    apiKey,
-    profileId
-  };
+    config = { 
+      ...mapboxMcpConfig.default || mapboxMcpConfig, 
+      mapboxAccessToken 
+    };
+    console.log('[GeospatialTool] Config loaded successfully');
+  } catch (configError: any) {
+    console.error('[GeospatialTool] Failed to load mapbox config:', configError.message);
+    // Fallback to a basic config
+    config = {
+      mapboxAccessToken,
+      version: '1.0.0',
+      name: 'mapbox-mcp-server'
+    };
+    console.log('[GeospatialTool] Using fallback config');
+  }
+
+  const mcpServerBaseUrl = 'https://server.smithery.ai/mapbox-mcp-server/mcp';
+  const smitheryUrlOptions = { config, apiKey, profileId };
 
   let serverUrlToUse;
   try {
     serverUrlToUse = createSmitheryUrl(mcpServerBaseUrl, smitheryUrlOptions);
-  } catch (e: any) {
-    console.error('[GeospatialTool] Error creating Smithery URL:', e.message);
+    const urlDisplay = serverUrlToUse.toString().split('?')[0];
+    console.log('[GeospatialTool] MCP Server URL created:', urlDisplay);
+    
+    // Validate the URL
+    if (!serverUrlToUse.href || !serverUrlToUse.href.startsWith('https://')) {
+      throw new Error('Invalid server URL generated');
+    }
+  } catch (urlError: any) {
+    console.error('[GeospatialTool] Error creating Smithery URL:', urlError.message);
+    console.error('[GeospatialTool] URL options:', { 
+      baseUrl: mcpServerBaseUrl,
+      hasConfig: !!config,
+      hasApiKey: !!apiKey,
+      hasProfileId: !!profileId
+    });
     return null;
   }
 
-  // Server-side logging
-  // console.log(`[GeospatialTool] Generated MCP Server URL (parameters hidden for security): ${serverUrlToUse.split('?')[0]}...`);
-
-
-  const transport = new StreamableHTTPClientTransport(serverUrlToUse);
-  const client = new MCPClientClass({ // Use the aliased MCPClientClass
-    name: "GeospatialToolClient",
-    version: "1.0.0"
-  });
+  let transport;
+  let client;
+  
+  try {
+    transport = new StreamableHTTPClientTransport(serverUrlToUse);
+    console.log('[GeospatialTool] Transport created successfully');
+  } catch (transportError: any) {
+    console.error('[GeospatialTool] Failed to create transport:', transportError.message);
+    return null;
+  }
 
   try {
-    // Server-side logging
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[GeospatialTool] Attempting to connect to MCP server...');
-    }
-    await client.connect(transport);
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[GeospatialTool] Successfully connected to MCP server.');
-      // const tools = await client.listTools();
-      // console.log(`[GeospatialTool] Available tools: ${tools.map(t => t.name).join(", ")}`);
-    }
-    return client;
-  } catch (error) {
-    console.error('[GeospatialTool] MCP connection failed:', error);
-    // Attempt to close client, though connect might have failed before it's fully open
+    client = new MCPClientClass({ 
+      name: 'GeospatialToolClient', 
+      version: '1.0.0' 
+    });
+    console.log('[GeospatialTool] MCP Client instance created');
+  } catch (clientError: any) {
+    console.error('[GeospatialTool] Failed to create MCP client:', clientError.message);
+    return null;
+  }
+
+  try {
+    console.log('[GeospatialTool] Attempting to connect to MCP server...');
+    
+    await Promise.race([
+      client.connect(transport),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Connection timeout after 15 seconds')), 15000);
+      }),
+    ]);
+    
+    console.log('[GeospatialTool] Successfully connected to MCP server');
+    
+    // Test the connection by listing available tools
     try {
-      await client.close();
-    } catch (closeError) {
-      // console.error('[GeospatialTool] Error closing MCP client after connection failure:', closeError);
+      const tools = await client.listTools();
+      console.log('[GeospatialTool] Available tools:', tools.tools?.map(t => t.name) || []);
+    } catch (listError: any) {
+      console.warn('[GeospatialTool] Could not list tools:', listError.message);
     }
+    
+    return client;
+  } catch (connectionError: any) {
+    console.error('[GeospatialTool] MCP connection failed:', connectionError.message);
+    console.error('[GeospatialTool] Connection error details:', {
+      name: connectionError.name,
+      stack: connectionError.stack?.split('\n')[0],
+      serverUrl: serverUrlToUse?.toString().split('?')[0],
+    });
+    
+    await closeClient(client);
     return null;
   }
 }
 
+async function closeClient(client: MCPClientClass | null) {
+  if (!client) return;
+  
+  try {
+    await Promise.race([
+      client.close(),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Close timeout after 5 seconds')), 5000);
+      }),
+    ]);
+    console.log('[GeospatialTool] MCP client closed successfully');
+  } catch (error: any) {
+    console.error('[GeospatialTool] Error closing MCP client:', error.message);
+  }
+}
 
 export const geospatialTool = ({
   uiStream,
 }: {
   uiStream: ReturnType<typeof createStreamableUI>;
-  // mcp: McpClient | null; // MCP client will now be managed internally by the tool
 }) => ({
-  description: `Use this tool for any queries that involve locations, places, addresses, distances between places, directions, or finding points of interest on a map. This includes questions like:
-- 'Where is [place name/address]?'
-- 'Show me [place name/address] on the map.'
-- 'What's the latitude and longitude of [place name]?'
-- 'How far is it from [location A] to [location B]?'
-- 'Give me directions from [location A] to [location B].'
-- 'Find cafes near [current location/specified location].'
-- 'What's around the [specific landmark]?'
-- Any query that implies needing a map or spatial understanding.`,
+  description: `Use this tool for location-based queries including:
+- Finding specific places, addresses, or landmarks
+- Getting coordinates for locations
+- Distance calculations between places
+- Direction queries
+- Map-related requests
+- Geographic information lookup`,
   parameters: geospatialQuerySchema,
-  execute: async ({ query }: { query: string }) => {
+  execute: async ({ query, queryType, includeMap }: { 
+    query: string; 
+    queryType?: string; 
+    includeMap?: boolean; 
+  }) => {
+    console.log('[GeospatialTool] Execute called with:', { query, queryType, includeMap });
+    
     const uiFeedbackStream = createStreamableValue<string>();
-    uiFeedbackStream.done(`Geospatial query: "${query}". Contacting mapping service...`);
+    uiFeedbackStream.done(`Processing geospatial query: "${query}". Connecting to mapping service...`);
     uiStream.append(<BotMessage content={uiFeedbackStream.value} />);
 
     const mcpClient = await getConnectedMcpClient();
-
+    
     if (!mcpClient) {
-      // console.warn is fine for server-side logs
-      console.warn('[GeospatialTool] MCP client could not be initialized or connected.');
-      const errorStream = createStreamableValue<string>();
-      errorStream.done('Geospatial functionality is currently unavailable.');
-      uiStream.append(<BotMessage content={errorStream.value} />);
+      const errorMessage = 'Geospatial functionality is currently unavailable. Please check your configuration and try again.';
+      uiFeedbackStream.done(errorMessage);
+      uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
       return {
         type: 'MAP_QUERY_TRIGGER',
         originalUserInput: query,
         timestamp: new Date().toISOString(),
         mcp_response: null,
-        error: 'MCP client initialization failed',
+        error: 'MCP client initialization failed - check environment variables and network connectivity',
       };
     }
 
-    // Server-side logging (won't appear in chat)
-    if (process.env.NODE_ENV === 'development') {
-      console.log(
-        `[GeospatialTool] Using NEXT_PUBLIC_SMITHERY_PROFILE_ID: "${process.env.NEXT_PUBLIC_SMITHERY_PROFILE_ID}"`
-      );
-      // API key is not logged directly for security, even masked, if using createSmitheryUrl correctly
-    }
-
-    let mcpData:
-      | {
-          location: {
-            latitude?: number;
-            longitude?: number;
-            place_name?: string;
-            address?: string;
-          };
-          mapUrl?: string;
-        }
-      | null = null;
+    let mcpData: { 
+      location: { 
+        latitude?: number; 
+        longitude?: number; 
+        place_name?: string; 
+        address?: string; 
+      }; 
+      mapUrl?: string; 
+    } | null = null;
     let toolError: string | null = null;
 
     try {
-      const geocodeParams = { query, includeMapPreview: true };
-      if (process.env.NODE_ENV === 'development') {
-        console.log(
-          '[GeospatialTool] Calling "geocode_location" tool with params:',
-          geocodeParams
-        );
-      }
+      uiFeedbackStream.done(`Connected to mapping service. Processing "${query}"...`);
+      uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
 
-      const geocodeResult = await mcpClient.callTool({
-        name: 'geocode_location',
-        arguments: geocodeParams,
-      });
+      // Determine the appropriate tool to call based on query type
+      const toolName = queryType === 'directions' ? 'get_directions' : 'geocode_location';
+      const toolArgs = { 
+        query, 
+        includeMapPreview: includeMap !== false // default to true
+      };
 
-      if (process.env.NODE_ENV === 'development') {
-         // console.log('[GeospatialTool] Raw geocode_location result:', JSON.stringify(geocodeResult, null, 2));
-      }
+      console.log('[GeospatialTool] Calling tool:', toolName, 'with args:', toolArgs);
 
-      // Process tool_results from MCP
-      // The new SDK's callTool likely returns a structured object.
-      // We need to inspect `geocodeResult.tool_results` which should be an array.
-      // Each item in tool_results would have `content` (often a string, potentially JSON string).
+      const geocodeResultUnknown = await Promise.race([
+        mcpClient.callTool({
+          name: toolName,
+          arguments: toolArgs,
+        }),
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Tool call timeout after 20 seconds')), 20000);
+        }),
+      ]);
+
+      console.log('[GeospatialTool] Raw tool result:', geocodeResultUnknown);
+
+      // Narrow the type of geocodeResult
+      const geocodeResult = geocodeResultUnknown as { tool_results?: Array<{ content?: unknown }> };
+
       const toolResults = Array.isArray(geocodeResult.tool_results) ? geocodeResult.tool_results : [];
-      if (toolResults.length > 0 && toolResults[0].content) {
-        // Assuming the relevant JSON is in the first tool_result's content
-        // The content might be a string that itself contains a JSON block.
-        let contentToParse = toolResults[0].content;
-        if (typeof contentToParse === 'string') {
-            const jsonRegex = /```json\n([\s\S]*?)\n```/;
-            const match = contentToParse.match(jsonRegex);
-            if (match?.[1]) {
-                contentToParse = match[1]; // Extract content from Markdown code block
-            }
+      if (toolResults.length === 0 || !toolResults[0]?.content) {
+        throw new Error('No content returned from mapping service');
+      }
+
+      let content = toolResults[0].content;
+      
+      // Handle different content formats
+      if (typeof content === 'string') {
+        // Try to extract JSON from markdown code blocks
+        const jsonRegex = /```(?:json)?\n?([\s\S]*?)\n?```/;
+        const match = content.match(jsonRegex);
+        if (match) {
+          content = match[1].trim();
         }
-
+        
+        // Try to parse as JSON
         try {
-          // If contentToParse is already an object due to MCP parsing, this might not be needed.
-          // If it's a string, it needs parsing.
-          const parsedJson = typeof contentToParse === 'string' ? JSON.parse(contentToParse) : contentToParse;
-
-          if (parsedJson.location) {
-            mcpData = {
-              location: {
-                latitude: parsedJson.location.latitude,
-                longitude: parsedJson.location.longitude,
-                place_name: parsedJson.location.place_name,
-                address: parsedJson.location.address,
-              },
-              mapUrl: parsedJson.mapUrl, // Assuming mapUrl is at the top level of parsedJson
-            };
-            if (process.env.NODE_ENV === 'development') {
-              console.log('[GeospatialTool] Successfully parsed MCP geocode data:', mcpData);
-            }
-          } else {
-            console.warn(
-              "[GeospatialTool] Parsed JSON from MCP does not contain expected 'location' field. Response:", parsedJson
-            );
-            toolError = "Unexpected data structure from mapping service.";
+          if (typeof content === 'string') {
+            content = JSON.parse(content);
           }
-        } catch (parseError: any) {
-          console.error(
-            '[GeospatialTool] Error parsing JSON from MCP response:',
-            parseError.message,
-            '\nRaw content was:',
-            toolResults[0].content
-          );
-          toolError = "Failed to parse response from mapping service.";
+        } catch (parseError) {
+          console.warn('[GeospatialTool] Content is not JSON, using as string:', content);
+        }
+      }
+
+      // Handle the parsed content
+      if (typeof content === 'object' && content !== null) {
+        const parsedData = content as any;
+        
+        if (parsedData.location) {
+          mcpData = {
+            location: {
+              latitude: parsedData.location.latitude,
+              longitude: parsedData.location.longitude,
+              place_name: parsedData.location.place_name || parsedData.location.name,
+              address: parsedData.location.address || parsedData.location.formatted_address,
+            },
+            mapUrl: parsedData.mapUrl || parsedData.map_url,
+          };
+        } else {
+          throw new Error("Response missing required 'location' field");
         }
       } else {
-        console.warn(
-          '[GeospatialTool] Geocode result from MCP is not in the expected format or content is missing.',
-          geocodeResult
-        );
-        toolError = "No valid result from mapping service.";
+        throw new Error("Unexpected response format from mapping service");
       }
+
+      uiFeedbackStream.done(`Successfully processed location query for: ${mcpData.location.place_name || query}`);
+      uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
+
     } catch (error: any) {
-      console.error('[GeospatialTool] MCP tool call failed:', error.message);
-      toolError = `Error calling mapping service: ${error.message}`;
+      console.error('[GeospatialTool] Tool execution failed:', error.message);
+      console.error('[GeospatialTool] Error stack:', error.stack);
+      toolError = `Mapping service error: ${error.message}`;
+      
+      uiFeedbackStream.done(toolError);
+      uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
     } finally {
-      if (mcpClient) {
-        try {
-          await Promise.race([
-            mcpClient.close(),
-            new Promise((_, reject) =>
-              setTimeout(() => reject(new Error('Close timeout')), 5000)
-            )
-          ]);
-          if (process.env.NODE_ENV === 'development') {
-            console.log('[GeospatialTool] MCP client closed successfully.');
-          }
-        } catch (e: any) {
-          console.error('[GeospatialTool] Error closing MCP client:', e.message);
-          // Force cleanup if possible
-          try {
-            (mcpClient as any).transport?.close?.();
-          } catch {}
-        }
-      }
+      await closeClient(mcpClient);
     }
-
-    if (toolError && !mcpData) {
-      const errorStream = createStreamableValue<string>();
-      errorStream.done(toolError);
-      uiStream.update(<BotMessage content={errorStream.value} />); // Update instead of append if appropriate
-    }
-
 
     return {
       type: 'MAP_QUERY_TRIGGER',
       originalUserInput: query,
+      queryType: queryType || 'geocode',
       timestamp: new Date().toISOString(),
       mcp_response: mcpData,
-      error: toolError, // Include error information if any
+      error: toolError,
     };
   },
 });
