@@ -226,12 +226,21 @@ export const geospatialTool = ({
     } finally {
       if (mcpClient) {
         try {
-          await mcpClient.close();
+          await Promise.race([
+            mcpClient.close(),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Close timeout')), 5000)
+            )
+          ]);
           if (process.env.NODE_ENV === 'development') {
-            // console.log('[GeospatialTool] MCP client closed.');
+            console.log('[GeospatialTool] MCP client closed successfully.');
           }
         } catch (e: any) {
           console.error('[GeospatialTool] Error closing MCP client:', e.message);
+          // Force cleanup if possible
+          try {
+            (mcpClient as any).transport?.close?.();
+          } catch {}
         }
       }
     }
