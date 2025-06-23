@@ -35,15 +35,20 @@ export async function getSupabaseUserAndSessionOnServer(): Promise<{
       user_metadata: { name: 'Dev User' },
       aud: 'authenticated',
       created_at: new Date().toISOString(),
-      // Add any other fields your application might expect on the user object
+      email: 'dev@example.com',
+      email_confirmed_at: new Date().toISOString(),
+      confirmed_at: new Date().toISOString(),
+      last_sign_in_at: new Date().toISOString(),
+      role: 'authenticated',
+      updated_at: new Date().toISOString(),
     };
     const mockSession: Session = {
       access_token: 'mock-access-token',
       refresh_token: 'mock-refresh-token',
       expires_in: 3600,
+      expires_at: Math.floor(Date.now() / 1000) + 3600,
       token_type: 'bearer',
       user: mockUser,
-      // Add any other fields your application might expect on the session object
     };
     return { user: mockUser, session: mockSession, error: null };
   }
