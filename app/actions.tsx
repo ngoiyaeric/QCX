@@ -12,7 +12,8 @@ import { Spinner } from '@/components/ui/spinner';
 import { Section } from '@/components/section';
 import { FollowupPanel } from '@/components/followup-panel';
 import { inquire, researcher, taskManager, querySuggestor } from '@/lib/agents';
-import { useGeospatialToolMcp } from '@/lib/agents/tools/geospatial'; // Added import for the hook
+// Removed import of useGeospatialToolMcp as it no longer exists and was incorrectly used here.
+// The geospatialTool (if used by agents like researcher) now manages its own MCP client.
 import { writer } from '@/lib/agents/writer';
 import { saveChat, getSystemPrompt } from '@/lib/actions/chat'; // Added getSystemPrompt
 import { Chat, AIMessage } from '@/lib/types';
@@ -30,7 +31,8 @@ type RelatedQueries = {
   items: { query: string }[];
 };
 
-async function submit(formData?: FormData, skip?: boolean, mcp?: any) { // Added mcp as a parameter
+// Removed mcp parameter from submit, as geospatialTool now handles its client.
+async function submit(formData?: FormData, skip?: boolean) {
 'use server';
 
   // TODO: Update agent function signatures in lib/agents/researcher.tsx and lib/agents/writer.tsx
@@ -141,12 +143,13 @@ async function submit(formData?: FormData, skip?: boolean, mcp?: any) { // Added
         : answer.length === 0 && !errorOccurred
     ) {
       // Search the web and generate the answer
+      // Removed mcp argument from researcher call
       const { fullResponse, hasError, toolResponses } = await researcher(
         currentSystemPrompt,
         uiStream,
         streamText,
         messages,
-        mcp, // Pass mcp to researcher
+        // mcp, // mcp instance is no longer passed down
         useSpecificAPI
       );
       answer = fullResponse;

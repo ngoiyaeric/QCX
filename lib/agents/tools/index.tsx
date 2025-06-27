@@ -2,15 +2,16 @@ import { createStreamableUI } from 'ai/rsc'
 import { retrieveTool } from './retrieve'
 import { searchTool } from './search'
 import { videoSearchTool } from './video-search'
-import { geospatialTool, useGeospatialToolMcp } from './geospatial'
+import { geospatialTool } from './geospatial' // Removed useGeospatialToolMcp import
 
 export interface ToolProps {
   uiStream: ReturnType<typeof createStreamableUI>
   fullResponse: string
-  mcp?: ReturnType<typeof useGeospatialToolMcp>
+  // mcp?: any; // Removed mcp property as it's no longer passed down for geospatialTool
 }
 
-export const getTools = ({ uiStream, fullResponse, mcp }: ToolProps) => {
+// Removed mcp from parameters
+export const getTools = ({ uiStream, fullResponse }: ToolProps) => {
   const tools: any = {
     search: searchTool({
       uiStream,
@@ -20,9 +21,10 @@ export const getTools = ({ uiStream, fullResponse, mcp }: ToolProps) => {
       uiStream,
       fullResponse
     }),
+    // geospatialTool now only requires uiStream
     geospatialQueryTool: geospatialTool({
-      uiStream,
-      mcp: mcp || null
+      uiStream
+      // mcp: mcp || null // Removed mcp argument
     })
   }
 

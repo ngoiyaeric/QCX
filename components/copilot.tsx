@@ -8,7 +8,7 @@ import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { ArrowRight, Check, FastForward, Sparkles } from 'lucide-react'
 import { useActions, useStreamableValue, useUIState } from 'ai/rsc'
-import { useGeospatialToolMcp } from '@/lib/agents/tools/geospatial' // Added import
+// Removed import of useGeospatialToolMcp as it's no longer used/available
 import type { AI } from '@/app/actions'
 import {
 
@@ -32,7 +32,7 @@ export const Copilot: React.FC<CopilotProps> = ({ inquiry }: CopilotProps) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
   const [, setMessages] = useUIState<typeof AI>()
   const { submit } = useActions()
-  const mcp = useGeospatialToolMcp() // Call the hook
+  // Removed mcp instance as it's no longer passed to submit
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
@@ -79,7 +79,8 @@ export const Copilot: React.FC<CopilotProps> = ({ inquiry }: CopilotProps) => {
       ? undefined
       : new FormData(e.target as HTMLFormElement)
 
-    const response = await submit(formData, skip, mcp) // Pass mcp
+    // Removed mcp argument from submit call
+    const response = await submit(formData, skip)
     setMessages(currentMessages => [...currentMessages, response])
   }
 
