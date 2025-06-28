@@ -54,7 +54,7 @@ async function getConnectedMcpClient(): Promise<McpClient | null> {
     console.log('[GeospatialTool] Using fallback config');
   }
 
-  const mcpServerBaseUrl = 'https://server.smithery.ai/mapbox-mcp-server/mcp';
+  const mcpServerBaseUrl = 'https://server.smithery.ai/mapbox-mcp-server';
   const smitheryUrlOptions = { config, apiKey, profileId };
 
   let serverUrlToUse;
