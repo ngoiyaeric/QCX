@@ -20,9 +20,9 @@ interface ModelSelectionFormProps {
 
 const models = [
   {
-    id: "QCX-Terra-500B",
-    name: "QCX-Terra-500B",
-    description: "Earth observation foundational model",
+    id: "QCX-Terra",
+    name: "QCX-Terra",
+    description: "Geospatial foundational model",
     icon: Earth,
     badge: "Recommended",
     badgeVariant: "default" as const,
