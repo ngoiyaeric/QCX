@@ -55,9 +55,9 @@ async function getConnectedMcpClient(): Promise<McpClient | null> {
   }
 
 
-  //const mcpServerBaseUrl = 'https://server.smithery.ai/mapbox-mcp-server/mcp?api_key=705b0222-a657-4cd2-b180-80c406cf6179&profile=smooth-lemur-vfUbUE';
+
 const smitheryUrlOptions = { config, apiKey, profileId };
-const mcpServerBaseUrl = `https://server.smithery.ai/@ngoiyaeric/mapbox-mcp-server/mcp?api_key=${smitheryUrlOptions.apiKey}&profile=${smitheryUrlOptions.profileId}`;
+const mcpServerBaseUrl = `https://server.smithery.ai/mapbox-mcp-server/mcp?api_key=${smitheryUrlOptions.apiKey}&profile=${smitheryUrlOptions.profileId}`;
 
   let serverUrlToUse;
   try {
