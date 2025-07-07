@@ -202,12 +202,25 @@ export const geospatialTool = ({
       uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
 
       const toolName = queryType === 'directions' ? 'mapbox_directions' : 'mapbox_geocoding';
-      const toolArgs = { 
-        query, 
-        includeMapPreview: includeMap !== false
-      };
+      
+      // Fixed: Use the correct parameter name expected by the MCP tool
+      let toolArgs;
+      if (queryType === 'directions') {
+        const parts = query.split(' to ');
+        toolArgs = { 
+          origin: parts[0]?.trim() || query,
+          destination: parts[1]?.trim() || query,
+          includeMapPreview: includeMap !== false
+        };
+      } else {
+        toolArgs = { 
+          searchText: query,  // This is the correct parameter name for geocoding
+          includeMapPreview: includeMap !== false
+        };
+      }
 
       console.log('[GeospatialTool] Calling tool:', toolName, 'with args:', toolArgs);
+      console.log('[GeospatialTool] Tool args stringified:', JSON.stringify(toolArgs, null, 2));
 
       // Retry logic for tool call
       const MAX_RETRIES = 3;
@@ -215,6 +228,7 @@ export const geospatialTool = ({
       let geocodeResultUnknown;
       while (retryCount < MAX_RETRIES) {
         try {
+          console.log('[GeospatialTool] About to call tool with:', { name: toolName, arguments: toolArgs });
           geocodeResultUnknown = await Promise.race([
             mcpClient.callTool({ name: toolName, arguments: toolArgs }),
             new Promise((_, reject) => {
@@ -234,10 +248,79 @@ export const geospatialTool = ({
 
       console.log('[GeospatialTool] Raw tool result:', geocodeResultUnknown);
 
-      const geocodeResult = geocodeResultUnknown as { tool_results?: Array<{ content?: unknown }> };
+      const geocodeResult = geocodeResultUnknown as { 
+        tool_results?: Array<{ content?: unknown }>;
+        content?: Array<{ type: string; text: string }>;
+        isError?: boolean;
+      };
+      
+      // Handle error response format - check if this is an error response
+      if (geocodeResult.isError && geocodeResult.content) {
+        const errorContent = geocodeResult.content[0]?.text || 'Unknown error';
+        console.error('[GeospatialTool] MCP tool returned error:', errorContent);
+        
+        // Parse the error to see if it's a validation error
+        try {
+          const errorText = errorContent.replace('Error: ', '');
+          const errorObj = JSON.parse(errorText);
+          if (Array.isArray(errorObj) && errorObj[0]?.code === 'invalid_type') {
+            const missingParam = errorObj[0]?.path?.[0];
+            throw new Error(`MCP tool validation error: Missing required parameter '${missingParam}'. Current args: ${JSON.stringify(toolArgs)}`);
+          }
+        } catch (parseError) {
+          // If we can't parse the error, use the original
+        }
+        
+        throw new Error(`MCP tool error: ${errorContent}`);
+      }
+      
+      // Handle successful response with tool_results
       const toolResults = Array.isArray(geocodeResult.tool_results) ? geocodeResult.tool_results : [];
       
+      // Handle case where result is directly in content array (some MCP servers return this format)
+      if (toolResults.length === 0 && geocodeResult.content && Array.isArray(geocodeResult.content)) {
+        const directContent = geocodeResult.content[0];
+        if (directContent && directContent.type === 'text' && directContent.text) {
+          // Try to parse the text content as JSON
+          try {
+            const parsedContent = JSON.parse(directContent.text);
+            if (parsedContent.location) {
+              mcpData = {
+                location: {
+                  latitude: parsedContent.location.latitude,
+                  longitude: parsedContent.location.longitude,
+                  place_name: parsedContent.location.place_name || parsedContent.location.name,
+                  address: parsedContent.location.address || parsedContent.location.formatted_address,
+                },
+                mapUrl: parsedContent.mapUrl || parsedContent.map_url,
+              };
+              
+              feedbackMessage = `Successfully processed location query for: ${mcpData.location.place_name || query}`;
+              uiFeedbackStream.update(feedbackMessage);
+              
+              // Skip the rest of the processing since we found the data
+              return {
+                type: 'MAP_QUERY_TRIGGER',
+                originalUserInput: query,
+                queryType: queryType || 'geocode',
+                timestamp: new Date().toISOString(),
+                mcp_response: mcpData,
+                error: null,
+              };
+            }
+          } catch (parseError) {
+            console.warn('[GeospatialTool] Could not parse direct content as JSON:', directContent.text);
+          }
+        }
+      }
+      
       if (toolResults.length === 0 || !toolResults[0]?.content) {
+        console.error('[GeospatialTool] No valid content in response:', {
+          hasToolResults: toolResults.length > 0,
+          hasContent: !!geocodeResult.content,
+          contentType: Array.isArray(geocodeResult.content) ? 'array' : typeof geocodeResult.content,
+          fullResult: geocodeResult
+        });
         throw new Error('No content returned from mapping service');
       }
 
