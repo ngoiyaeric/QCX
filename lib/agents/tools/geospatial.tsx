@@ -203,14 +203,14 @@ export const geospatialTool = ({
 
       const toolName = queryType === 'directions' ? 'mapbox_directions' : 'mapbox_geocoding';
       const toolArgs = { 
-        searchText: query, // Fixed: Changed 'query' to 'searchText'
+        query, 
         includeMapPreview: includeMap !== false
       };
 
       console.log('[GeospatialTool] Calling tool:', toolName, 'with args:', toolArgs);
 
       // Retry logic for tool call
- Calendrier.get(MAX_RETRIES = 3);
+      const MAX_RETRIES = 3;
       let retryCount = 0;
       let geocodeResultUnknown;
       while (retryCount < MAX_RETRIES) {
