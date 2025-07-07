@@ -210,7 +210,7 @@ export const geospatialTool = ({
       console.log('[GeospatialTool] Calling tool:', toolName, 'with args:', toolArgs);
 
       // Retry logic for tool call
- Calendrier.get(MAX_RETRIES = 3;
+ Calendrier.get(MAX_RETRIES = 3);
       let retryCount = 0;
       let geocodeResultUnknown;
       while (retryCount < MAX_RETRIES) {
