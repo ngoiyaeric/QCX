@@ -11,7 +11,6 @@ import { createSmitheryUrl } from '@smithery/sdk';
 export type McpClient = MCPClientClass;
 
 async function getConnectedMcpClient(): Promise<McpClient | null> {
-  // More detailed environment variable validation
   const apiKey = process.env.NEXT_PUBLIC_SMITHERY_API_KEY;
   const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const profileId = process.env.NEXT_PUBLIC_SMITHERY_PROFILE_ID;
@@ -27,17 +26,14 @@ async function getConnectedMcpClient(): Promise<McpClient | null> {
     return null;
   }
 
-  // Validate environment variables format
   if (!apiKey.trim() || !mapboxAccessToken.trim() || !profileId.trim()) {
     console.error('[GeospatialTool] Empty environment variables detected');
     return null;
   }
 
-   let config;
+  let config;
   try {
-    // Try to load the config file with better error handling
-     const mapboxMcpConfig = await import('QCX/mapbox_mcp_config.json');
-
+    const mapboxMcpConfig = await import('QCX/mapbox_mcp_config.json');
     config = { 
       ...mapboxMcpConfig.default || mapboxMcpConfig, 
       mapboxAccessToken 
@@ -45,7 +41,6 @@ async function getConnectedMcpClient(): Promise<McpClient | null> {
     console.log('[GeospatialTool] Config loaded successfully');
   } catch (configError: any) {
     console.error('[GeospatialTool] Failed to load mapbox config:', configError.message);
-    // Fallback to a basic config
     config = {
       mapboxAccessToken,
       version: '1.0.0',
@@ -54,10 +49,8 @@ async function getConnectedMcpClient(): Promise<McpClient | null> {
     console.log('[GeospatialTool] Using fallback config');
   }
 
-
-
-const smitheryUrlOptions = { config, apiKey, profileId };
-const mcpServerBaseUrl = `https://server.smithery.ai/mapbox-mcp-server/mcp?api_key=${smitheryUrlOptions.apiKey}&profile=${smitheryUrlOptions.profileId}`;
+  const smitheryUrlOptions = { config, apiKey, profileId };
+  const mcpServerBaseUrl = `https://server.smithery.ai/mapbox-mcp-server/mcp?api_key=${smitheryUrlOptions.apiKey}&profile=${smitheryUrlOptions.profileId}`;
 
   let serverUrlToUse;
   try {
@@ -65,7 +58,6 @@ const mcpServerBaseUrl = `https://server.smithery.ai/mapbox-mcp-server/mcp?api_k
     const urlDisplay = serverUrlToUse.toString().split('?')[0];
     console.log('[GeospatialTool] MCP Server URL created:', urlDisplay);
     
-    // Validate the URL
     if (!serverUrlToUse.href || !serverUrlToUse.href.startsWith('https://')) {
       throw new Error('Invalid server URL generated');
     }
@@ -114,7 +106,6 @@ const mcpServerBaseUrl = `https://server.smithery.ai/mapbox-mcp-server/mcp?api_k
     
     console.log('[GeospatialTool] Successfully connected to MCP server');
     
-    // Test the connection by listing available tools
     try {
       const tools = await client.listTools();
       console.log('[GeospatialTool] Available tools:', tools.tools?.map(t => t.name) || []);
@@ -173,14 +164,17 @@ export const geospatialTool = ({
     console.log('[GeospatialTool] Execute called with:', { query, queryType, includeMap });
     
     const uiFeedbackStream = createStreamableValue<string>();
-    uiFeedbackStream.done(`Processing geospatial query: "${query}". Connecting to mapping service...`);
     uiStream.append(<BotMessage content={uiFeedbackStream.value} />);
+
+    let feedbackMessage = `Processing geospatial query: "${query}". Connecting to mapping service...`;
+    uiFeedbackStream.update(feedbackMessage);
 
     const mcpClient = await getConnectedMcpClient();
     
     if (!mcpClient) {
-      const errorMessage = 'Geospatial functionality is currently unavailable. Please check your configuration and try again.';
-      uiFeedbackStream.done(errorMessage);
+      feedbackMessage = 'Geospatial functionality is currently unavailable. Please check your configuration and try again.';
+      uiFeedbackStream.update(feedbackMessage);
+      uiFeedbackStream.done();
       uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
       return {
         type: 'MAP_QUERY_TRIGGER',
@@ -203,50 +197,59 @@ export const geospatialTool = ({
     let toolError: string | null = null;
 
     try {
-      uiFeedbackStream.done(`Connected to mapping service. Processing "${query}"...`);
+      feedbackMessage = `Connected to mapping service. Processing "${query}"...`;
+      uiFeedbackStream.update(feedbackMessage);
       uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
 
-      // Determine the appropriate tool to call based on query type
-      const toolName = queryType === 'directions' ? 'get_directions' : 'geocode_location';
+      const toolName = queryType === 'directions' ? 'mapbox_directions' : 'mapbox_geocoding';
       const toolArgs = { 
         query, 
-        includeMapPreview: includeMap !== false // default to true
+        includeMapPreview: includeMap !== false
       };
 
       console.log('[GeospatialTool] Calling tool:', toolName, 'with args:', toolArgs);
 
-      const geocodeResultUnknown = await Promise.race([
-        mcpClient.callTool({
-          name: toolName,
-          arguments: toolArgs,
-        }),
-        new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Tool call timeout after 20 seconds')), 20000);
-        }),
-      ]);
+      // Retry logic for tool call
+      const MAX_RETRIES = 3;
+      let retryCount = 0;
+      let geocodeResultUnknown;
+      while (retryCount < MAX_RETRIES) {
+        try {
+          geocodeResultUnknown = await Promise.race([
+            mcpClient.callTool({ name: toolName, arguments: toolArgs }),
+            new Promise((_, reject) => {
+              setTimeout(() => reject(new Error('Tool call timeout after 30 seconds')), 30000);
+            }),
+          ]);
+          break;
+        } catch (error: any) {
+          retryCount++;
+          if (retryCount === MAX_RETRIES) {
+            throw error;
+          }
+          console.warn(`[GeospatialTool] Retry ${retryCount}/${MAX_RETRIES} after error: ${error.message}`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
 
       console.log('[GeospatialTool] Raw tool result:', geocodeResultUnknown);
 
-      // Narrow the type of geocodeResult
       const geocodeResult = geocodeResultUnknown as { tool_results?: Array<{ content?: unknown }> };
-
       const toolResults = Array.isArray(geocodeResult.tool_results) ? geocodeResult.tool_results : [];
+      
       if (toolResults.length === 0 || !toolResults[0]?.content) {
         throw new Error('No content returned from mapping service');
       }
 
       let content = toolResults[0].content;
       
-      // Handle different content formats
       if (typeof content === 'string') {
-        // Try to extract JSON from markdown code blocks
         const jsonRegex = /```(?:json)?\n?([\s\S]*?)\n?```/;
         const match = content.match(jsonRegex);
         if (match) {
           content = match[1].trim();
         }
         
-        // Try to parse as JSON
         try {
           if (typeof content === 'string') {
             content = JSON.parse(content);
@@ -256,7 +259,6 @@ export const geospatialTool = ({
         }
       }
 
-      // Handle the parsed content
       if (typeof content === 'object' && content !== null) {
         const parsedData = content as any;
         
@@ -277,18 +279,19 @@ export const geospatialTool = ({
         throw new Error("Unexpected response format from mapping service");
       }
 
-      uiFeedbackStream.done(`Successfully processed location query for: ${mcpData.location.place_name || query}`);
-      uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
+      feedbackMessage = `Successfully processed location query for: ${mcpData.location.place_name || query}`;
+      uiFeedbackStream.update(feedbackMessage);
 
     } catch (error: any) {
       console.error('[GeospatialTool] Tool execution failed:', error.message);
       console.error('[GeospatialTool] Error stack:', error.stack);
       toolError = `Mapping service error: ${error.message}`;
-      
-      uiFeedbackStream.done(toolError);
-      uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
+      feedbackMessage = toolError;
+      uiFeedbackStream.update(feedbackMessage);
     } finally {
       await closeClient(mcpClient);
+      uiFeedbackStream.done();
+      uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
     }
 
     return {
