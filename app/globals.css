@@ -121,7 +121,8 @@
     display: flex;
     gap: 20px;
     padding: 0 10px;
-    min-width: max-content;
+    min-width: 100%;
+    justify-content: space-between;
   }
 
   /*
