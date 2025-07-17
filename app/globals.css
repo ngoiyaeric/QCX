@@ -81,7 +81,7 @@
 }
 
 /* Mobile layout specific styles */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .mobile-layout-container {
     display: flex;
     flex-direction: column;
@@ -121,7 +121,8 @@
     display: flex;
     gap: 20px;
     padding: 0 10px;
-    min-width: max-content;
+    min-width: 100%;
+    justify-content: space-between;
   }
 
   /*
