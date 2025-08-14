@@ -203,7 +203,7 @@ export const geospatialTool = ({
 
       const toolName = queryType === 'directions' ? 'mapbox_directions' : 'mapbox_geocoding';
       const toolArgs = { 
-        query, 
+        searchText: query, 
         includeMapPreview: includeMap !== false
       };
 
