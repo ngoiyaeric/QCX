@@ -3,7 +3,7 @@ import { Settings } from "@/components/settings/components/settings"
 import { SettingsSkeleton } from "@/components/settings/components/settings-skeleton"
 import { useProfileToggle, ProfileToggleEnum } from "@/components/profile-toggle-context"
 import { Button } from "@/components/ui/button"
-import { X } from "lucide-react"
+import { Minus } from "lucide-react"
 
 export default function SettingsView() {
   const { toggleProfileSection, activeView } = useProfileToggle();
@@ -23,7 +23,7 @@ export default function SettingsView() {
           <p className="text-muted-foreground">Manage your planetary copilot preferences and user access</p>
         </div>
         <Button variant="ghost" size="icon" onClick={handleClose}>
-          <X className="h-6 w-6" />
+          <Minus className="h-6 w-6" />
           <span className="sr-only">Close settings</span>
         </Button>
       </div>
