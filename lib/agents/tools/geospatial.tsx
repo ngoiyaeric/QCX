@@ -204,10 +204,10 @@ export const geospatialTool = ({
       let toolName;
       switch (queryType) {
         case 'directions':
-          toolName = 'mapbox_directions';
+          toolName = 'mapbox_directions_by_places';
           break;
         case 'distance':
-          toolName = 'mapbox_matrix';
+          toolName = 'mapbox_matrix_by_places';
           break;
         case 'geocode':
         case 'reverse':
@@ -250,7 +250,13 @@ export const geospatialTool = ({
 
       console.log('[GeospatialTool] Raw tool result:', toolCallResult);
 
-      const serviceResponse = toolCallResult as { content?: Array<{ text?: string }> };
+      const serviceResponse = toolCallResult as { content?: Array<{ text?: string }>, isError?: boolean };
+
+      if (serviceResponse.isError) {
+        const errorMessage = serviceResponse.content?.[0]?.text || 'Unknown error from mapping service';
+        throw new Error(errorMessage);
+      }
+
       const responseContent = serviceResponse?.content;
 
       if (!responseContent || responseContent.length === 0 || !responseContent[0].text) {
