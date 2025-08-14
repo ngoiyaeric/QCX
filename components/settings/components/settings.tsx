@@ -141,7 +141,7 @@ export function Settings({ initialTab = "system-prompt" }: SettingsProps) {
               <Tabs.Trigger value="user-management" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 data-[state=active]:bg-primary/80">User Management</Tabs.Trigger>
             </Tabs.List>
 
-            <Tabs.Content value="system-prompt">
+            <Tabs.Content value="system-prompt" className="mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle>System Prompt</CardTitle>
@@ -153,7 +153,7 @@ export function Settings({ initialTab = "system-prompt" }: SettingsProps) {
               </Card>
             </Tabs.Content>
 
-            <Tabs.Content value="model">
+            <Tabs.Content value="model" className="mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Model Selection</CardTitle>
@@ -165,7 +165,7 @@ export function Settings({ initialTab = "system-prompt" }: SettingsProps) {
               </Card>
             </Tabs.Content>
 
-            <Tabs.Content value="user-management">
+            <Tabs.Content value="user-management" className="mt-6">
               <UserManagementForm form={form} />
             </Tabs.Content>
           </Tabs.Root>
