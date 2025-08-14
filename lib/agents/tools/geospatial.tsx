@@ -201,7 +201,23 @@ export const geospatialTool = ({
       uiFeedbackStream.update(feedbackMessage);
       uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
 
-      const toolName = queryType === 'directions' ? 'mapbox_directions' : 'mapbox_geocoding';
+      let toolName;
+      switch (queryType) {
+        case 'directions':
+          toolName = 'mapbox_directions';
+          break;
+        case 'distance':
+          toolName = 'mapbox_matrix';
+          break;
+        case 'geocode':
+        case 'reverse':
+        case 'search':
+        case 'map':
+        default:
+          toolName = 'mapbox_geocoding';
+          break;
+      }
+
       const toolArgs = { 
         searchText: query, 
         includeMapPreview: includeMap !== false
@@ -212,10 +228,10 @@ export const geospatialTool = ({
       // Retry logic for tool call
       const MAX_RETRIES = 3;
       let retryCount = 0;
-      let geocodeResultUnknown;
+      let toolCallResult;
       while (retryCount < MAX_RETRIES) {
         try {
-          geocodeResultUnknown = await Promise.race([
+          toolCallResult = await Promise.race([
             mcpClient.callTool({ name: toolName, arguments: toolArgs }),
             new Promise((_, reject) => {
               setTimeout(() => reject(new Error('Tool call timeout after 30 seconds')), 30000);
@@ -232,16 +248,16 @@ export const geospatialTool = ({
         }
       }
 
-      console.log('[GeospatialTool] Raw tool result:', geocodeResultUnknown);
+      console.log('[GeospatialTool] Raw tool result:', toolCallResult);
 
-      const geocodeResult = geocodeResultUnknown as { tool_results?: Array<{ content?: unknown }> };
-      const toolResults = Array.isArray(geocodeResult.tool_results) ? geocodeResult.tool_results : [];
-      
-      if (toolResults.length === 0 || !toolResults[0]?.content) {
+      const serviceResponse = toolCallResult as { content?: Array<{ text?: string }> };
+      const responseContent = serviceResponse?.content;
+
+      if (!responseContent || responseContent.length === 0 || !responseContent[0].text) {
         throw new Error('No content returned from mapping service');
       }
 
-      let content = toolResults[0].content;
+      let content: any = responseContent[0].text;
       
       if (typeof content === 'string') {
         const jsonRegex = /```(?:json)?\n?([\s\S]*?)\n?```/;
