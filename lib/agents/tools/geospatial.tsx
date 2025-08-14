@@ -156,12 +156,18 @@ export const geospatialTool = ({
 - Map-related requests
 - Geographic information lookup`,
   parameters: geospatialQuerySchema,
-  execute: async ({ query, queryType, includeMap }: { 
-    query: string; 
-    queryType?: string; 
-    includeMap?: boolean; 
+  execute: async ({
+    query,
+    queryType,
+    includeMap,
+    destination,
+  }: {
+    query: string;
+    queryType?: string;
+    includeMap?: boolean;
+    destination?: string;
   }) => {
-    console.log('[GeospatialTool] Execute called with:', { query, queryType, includeMap });
+    console.log('[GeospatialTool] Execute called with:', { query, queryType, includeMap, destination });
     
     const uiFeedbackStream = createStreamableValue<string>();
     uiStream.append(<BotMessage content={uiFeedbackStream.value} />);
@@ -218,10 +224,16 @@ export const geospatialTool = ({
           break;
       }
 
-      const toolArgs = { 
-        searchText: query, 
-        includeMapPreview: includeMap !== false
-      };
+      let toolArgs;
+      if (toolName === 'mapbox_directions_by_places' || toolName === 'mapbox_matrix_by_places') {
+        const places = [query];
+        if (destination) {
+          places.push(destination);
+        }
+        toolArgs = { places, includeMapPreview: includeMap !== false };
+      } else {
+        toolArgs = { searchText: query, includeMapPreview: includeMap !== false };
+      }
 
       console.log('[GeospatialTool] Calling tool:', toolName, 'with args:', toolArgs);
 
