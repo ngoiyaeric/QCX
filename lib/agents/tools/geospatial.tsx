@@ -296,7 +296,22 @@ export const geospatialTool = ({
       if (typeof content === 'object' && content !== null) {
         const parsedData = content as any;
         
-        if (parsedData.location) {
+        // Handle geocoding/directions/distance results which are in a 'results' array
+        if (parsedData.results && Array.isArray(parsedData.results) && parsedData.results.length > 0) {
+          // For now, just take the first result.
+          const firstResult = parsedData.results[0];
+          mcpData = {
+            location: {
+              latitude: firstResult.coordinates?.latitude,
+              longitude: firstResult.coordinates?.longitude,
+              place_name: firstResult.name || firstResult.place_name,
+              address: firstResult.full_address || firstResult.address,
+            },
+            mapUrl: parsedData.mapUrl,
+          };
+        }
+        // Handle old/other format that might have a 'location' field directly
+        else if (parsedData.location) {
           mcpData = {
             location: {
               latitude: parsedData.location.latitude,
@@ -307,7 +322,7 @@ export const geospatialTool = ({
             mapUrl: parsedData.mapUrl || parsedData.map_url,
           };
         } else {
-          throw new Error("Response missing required 'location' field");
+          throw new Error("Response missing required 'location' or 'results' field");
         }
       } else {
         throw new Error("Unexpected response format from mapping service");
