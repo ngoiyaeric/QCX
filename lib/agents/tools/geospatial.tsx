@@ -7,9 +7,32 @@ import { geospatialQuerySchema } from '@/lib/schema/geospatial';
 import { Client as MCPClientClass } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { createSmitheryUrl } from '@smithery/sdk';
+import { z } from 'zod';
 
+// Types
 export type McpClient = MCPClientClass;
 
+interface Location {
+  latitude?: number;
+  longitude?: number;
+  place_name?: string;
+  address?: string;
+}
+
+interface McpResponse {
+  location: Location;
+  mapUrl?: string;
+}
+
+interface MapboxConfig {
+  mapboxAccessToken: string;
+  version: string;
+  name: string;
+}
+
+/**
+ * Establish connection to the MCP server with proper environment validation.
+ */
 async function getConnectedMcpClient(): Promise<McpClient | null> {
   const apiKey = process.env.NEXT_PUBLIC_SMITHERY_API_KEY;
   const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -21,60 +44,42 @@ async function getConnectedMcpClient(): Promise<McpClient | null> {
     profileId: profileId ? `${profileId.substring(0, 8)}...` : 'MISSING',
   });
 
-  if (!apiKey || !mapboxAccessToken || !profileId) {
-    console.error('[GeospatialTool] Missing required environment variables');
+  if (!apiKey || !mapboxAccessToken || !profileId || !apiKey.trim() || !mapboxAccessToken.trim() || !profileId.trim()) {
+    console.error('[GeospatialTool] Missing or empty required environment variables');
     return null;
   }
 
-  if (!apiKey.trim() || !mapboxAccessToken.trim() || !profileId.trim()) {
-    console.error('[GeospatialTool] Empty environment variables detected');
-    return null;
-  }
-
+  // Load config from file or fallback
   let config;
   try {
     const mapboxMcpConfig = await import('QCX/mapbox_mcp_config.json');
-    config = { 
-      ...mapboxMcpConfig.default || mapboxMcpConfig, 
-      mapboxAccessToken 
-    };
+    config = { ...mapboxMcpConfig.default || mapboxMcpConfig, mapboxAccessToken };
     console.log('[GeospatialTool] Config loaded successfully');
   } catch (configError: any) {
     console.error('[GeospatialTool] Failed to load mapbox config:', configError.message);
-    config = {
-      mapboxAccessToken,
-      version: '1.0.0',
-      name: 'mapbox-mcp-server'
-    };
+    config = { mapboxAccessToken, version: '1.0.0', name: 'mapbox-mcp-server' };
     console.log('[GeospatialTool] Using fallback config');
   }
 
+  // Build Smithery URL
   const smitheryUrlOptions = { config, apiKey, profileId };
   const mcpServerBaseUrl = `https://server.smithery.ai/@ngoiyaeric/mapbox-mcp-server/mcp?api_key=${smitheryUrlOptions.apiKey}&profile=${smitheryUrlOptions.profileId}`;
-
   let serverUrlToUse;
   try {
     serverUrlToUse = createSmitheryUrl(mcpServerBaseUrl, smitheryUrlOptions);
     const urlDisplay = serverUrlToUse.toString().split('?')[0];
     console.log('[GeospatialTool] MCP Server URL created:', urlDisplay);
-    
+
     if (!serverUrlToUse.href || !serverUrlToUse.href.startsWith('https://')) {
       throw new Error('Invalid server URL generated');
     }
   } catch (urlError: any) {
     console.error('[GeospatialTool] Error creating Smithery URL:', urlError.message);
-    console.error('[GeospatialTool] URL options:', { 
-      baseUrl: mcpServerBaseUrl,
-      hasConfig: !!config,
-      hasApiKey: !!apiKey,
-      hasProfileId: !!profileId
-    });
     return null;
   }
 
+  // Create transport
   let transport;
-  let client;
-  
   try {
     transport = new StreamableHTTPClientTransport(serverUrlToUse);
     console.log('[GeospatialTool] Transport created successfully');
@@ -83,59 +88,49 @@ async function getConnectedMcpClient(): Promise<McpClient | null> {
     return null;
   }
 
+  // Create client
+  let client;
   try {
-    client = new MCPClientClass({ 
-      name: 'GeospatialToolClient', 
-      version: '1.0.0' 
-    });
+    client = new MCPClientClass({ name: 'GeospatialToolClient', version: '1.0.0' });
     console.log('[GeospatialTool] MCP Client instance created');
   } catch (clientError: any) {
     console.error('[GeospatialTool] Failed to create MCP client:', clientError.message);
     return null;
   }
 
+  // Connect to server
   try {
     console.log('[GeospatialTool] Attempting to connect to MCP server...');
-    
     await Promise.race([
       client.connect(transport),
-      new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Connection timeout after 15 seconds')), 15000);
-      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Connection timeout after 15 seconds')), 15000)),
     ]);
-    
     console.log('[GeospatialTool] Successfully connected to MCP server');
-    
-    try {
-      const tools = await client.listTools();
-      console.log('[GeospatialTool] Available tools:', tools.tools?.map(t => t.name) || []);
-    } catch (listError: any) {
-      console.warn('[GeospatialTool] Could not list tools:', listError.message);
-    }
-    
-    return client;
-  } catch (connectionError: any) {
-    console.error('[GeospatialTool] MCP connection failed:', connectionError.message);
-    console.error('[GeospatialTool] Connection error details:', {
-      name: connectionError.name,
-      stack: connectionError.stack?.split('\n')[0],
-      serverUrl: serverUrlToUse?.toString().split('?')[0],
-    });
-    
-    await closeClient(client);
+  } catch (connectError: any) {
+    console.error('[GeospatialTool] MCP connection failed:', connectError.message);
     return null;
   }
+
+  // List tools
+  try {
+    const tools = await client.listTools();
+    console.log('[GeospatialTool] Available tools:', tools.tools?.map(t => t.name) || []);
+  } catch (listError: any) {
+    console.warn('[GeospatialTool] Could not list tools:', listError.message);
+  }
+
+  return client;
 }
 
-async function closeClient(client: MCPClientClass | null) {
+/**
+ * Safely close the MCP client with timeout.
+ */
+async function closeClient(client: McpClient | null) {
   if (!client) return;
-  
   try {
     await Promise.race([
       client.close(),
-      new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Close timeout after 5 seconds')), 5000);
-      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Close timeout after 5 seconds')), 5000)),
     ]);
     console.log('[GeospatialTool] MCP client closed successfully');
   } catch (error: any) {
@@ -143,11 +138,10 @@ async function closeClient(client: MCPClientClass | null) {
   }
 }
 
-export const geospatialTool = ({
-  uiStream,
-}: {
-  uiStream: ReturnType<typeof createStreamableUI>;
-}) => ({
+/**
+ * Main geospatial tool executor.
+ */
+export const geospatialTool = ({ uiStream }: { uiStream: ReturnType<typeof createStreamableUI> }) => ({
   description: `Use this tool for location-based queries including:
 - Finding specific places, addresses, or landmarks
 - Getting coordinates for locations
@@ -156,88 +150,62 @@ export const geospatialTool = ({
 - Map-related requests
 - Geographic information lookup`,
   parameters: geospatialQuerySchema,
-  execute: async ({
-    query,
-    queryType,
-    includeMap,
-    destination,
-  }: {
-    query: string;
-    queryType?: string;
-    includeMap?: boolean;
-    destination?: string;
-  }) => {
-    console.log('[GeospatialTool] Execute called with:', { query, queryType, includeMap, destination });
-    
+  execute: async (params: z.infer<typeof geospatialQuerySchema>) => {
+    const { queryType, includeMap = true } = params;
+    console.log('[GeospatialTool] Execute called with:', params);
+
     const uiFeedbackStream = createStreamableValue<string>();
     uiStream.append(<BotMessage content={uiFeedbackStream.value} />);
 
-    let feedbackMessage = `Processing geospatial query: "${query}". Connecting to mapping service...`;
+    let feedbackMessage = `Processing geospatial query (type: ${queryType})... Connecting to mapping service...`;
     uiFeedbackStream.update(feedbackMessage);
 
     const mcpClient = await getConnectedMcpClient();
-    
     if (!mcpClient) {
-      feedbackMessage = 'Geospatial functionality is currently unavailable. Please check your configuration and try again.';
+      feedbackMessage = 'Geospatial functionality is unavailable. Please check configuration.';
       uiFeedbackStream.update(feedbackMessage);
       uiFeedbackStream.done();
       uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
-      return {
-        type: 'MAP_QUERY_TRIGGER',
-        originalUserInput: query,
-        timestamp: new Date().toISOString(),
-        mcp_response: null,
-        error: 'MCP client initialization failed - check environment variables and network connectivity',
-      };
+      return { type: 'MAP_QUERY_TRIGGER', originalUserInput: JSON.stringify(params), timestamp: new Date().toISOString(), mcp_response: null, error: 'MCP client initialization failed' };
     }
 
-    let mcpData: { 
-      location: { 
-        latitude?: number; 
-        longitude?: number; 
-        place_name?: string; 
-        address?: string; 
-      }; 
-      mapUrl?: string; 
-    } | null = null;
+    let mcpData: McpResponse | null = null;
     let toolError: string | null = null;
 
     try {
-      feedbackMessage = `Connected to mapping service. Processing "${query}"...`;
+      feedbackMessage = `Connected to mapping service. Processing ${queryType} query...`;
       uiFeedbackStream.update(feedbackMessage);
-      uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
 
-      let toolName;
-      switch (queryType) {
-        case 'directions':
-          toolName = 'mapbox_directions_by_places';
-          break;
-        case 'distance':
-          toolName = 'mapbox_matrix_by_places';
-          break;
-        case 'geocode':
-        case 'reverse':
-        case 'search':
-        case 'map':
-        default:
-          toolName = 'mapbox_geocoding';
-          break;
-      }
-
-      let toolArgs;
-      if (toolName === 'mapbox_directions_by_places' || toolName === 'mapbox_matrix_by_places') {
-        const places = [query];
-        if (destination) {
-          places.push(destination);
+      // Pick appropriate tool
+      const toolName = await (async () => {
+        const { tools } = await mcpClient.listTools().catch(() => ({ tools: [] }));
+        const names = new Set(tools?.map((t: any) => t.name) || []);
+        const prefer = (...cands: string[]) => cands.find(n => names.has(n));
+        switch (queryType) {
+          case 'directions':
+          case 'distance': return prefer('calculate_distance', 'mapbox_matrix', 'mapbox_directions') || 'mapbox_matrix';
+          case 'search': return prefer('search_nearby_places', 'mapbox_geocoding') || 'mapbox_geocoding';
+          case 'map': return prefer('generate_map_link', 'mapbox_geocoding') || 'mapbox_geocoding';
+          case 'reverse':
+          case 'geocode': return prefer('geocode_location', 'mapbox_geocoding') || 'mapbox_geocoding';
         }
-        toolArgs = { places, includeMapPreview: includeMap !== false };
-      } else {
-        toolArgs = { searchText: query, includeMapPreview: includeMap !== false };
-      }
+      })();
+
+      // Build arguments
+      const toolArgs = (() => {
+        switch (queryType) {
+          case 'directions':
+          case 'distance': return { places: [params.origin, params.destination], includeMapPreview: includeMap, mode: params.mode || 'driving' };
+          case 'reverse': return { searchText: `${params.coordinates.latitude},${params.coordinates.longitude}`, includeMapPreview: includeMap, maxResults: params.maxResults || 5 };
+          case 'search': return { searchText: params.query, includeMapPreview: includeMap, maxResults: params.maxResults || 5, ...(params.coordinates && { proximity: `${params.coordinates.latitude},${params.coordinates.longitude}` }), ...(params.radius && { radius: params.radius }) };
+          case 'geocode':
+          case 'map': return { searchText: params.location, includeMapPreview: includeMap, maxResults: queryType === 'geocode' ? params.maxResults || 5 : undefined };
+        }
+      })();
 
       console.log('[GeospatialTool] Calling tool:', toolName, 'with args:', toolArgs);
 
-      // Retry logic for tool call
+      // Retry logic
       const MAX_RETRIES = 3;
       let retryCount = 0;
       let toolCallResult;
@@ -245,111 +213,57 @@ export const geospatialTool = ({
         try {
           toolCallResult = await Promise.race([
             mcpClient.callTool({ name: toolName, arguments: toolArgs }),
-            new Promise((_, reject) => {
-              setTimeout(() => reject(new Error('Tool call timeout after 30 seconds')), 30000);
-            }),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Tool call timeout')), 30000)),
           ]);
           break;
         } catch (error: any) {
           retryCount++;
-          if (retryCount === MAX_RETRIES) {
-            throw error;
-          }
-          console.warn(`[GeospatialTool] Retry ${retryCount}/${MAX_RETRIES} after error: ${error.message}`);
+          if (retryCount === MAX_RETRIES) throw new Error(`Tool call failed after ${MAX_RETRIES} retries: ${error.message}`);
+          console.warn(`[GeospatialTool] Retry ${retryCount}/${MAX_RETRIES}: ${error.message}`);
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
 
-      console.log('[GeospatialTool] Raw tool result:', toolCallResult);
+      // Extract & parse content
+      const serviceResponse = toolCallResult as { content?: Array<{ text?: string | null } | { [k: string]: any }> };
+      const blocks = serviceResponse?.content || [];
+      const textBlocks = blocks.map(b => (typeof b.text === 'string' ? b.text : null)).filter((t): t is string => !!t && t.trim().length > 0);
+      if (textBlocks.length === 0) throw new Error('No content returned from mapping service');
 
-      const serviceResponse = toolCallResult as { content?: Array<{ text?: string }>, isError?: boolean };
+      let content: any = textBlocks.find(t => t.startsWith('```json')) || textBlocks[0];
+      const jsonRegex = /```(?:json)?\n?([\s\S]*?)\n?```/;
+      const match = content.match(jsonRegex);
+      if (match) content = match[1].trim();
 
-      if (serviceResponse.isError) {
-        const errorMessage = serviceResponse.content?.[0]?.text || 'Unknown error from mapping service';
-        throw new Error(errorMessage);
-      }
+      try { content = JSON.parse(content); }
+      catch { console.warn('[GeospatialTool] Content is not JSON, using as string:', content); }
 
-      const responseContent = serviceResponse?.content;
-
-      if (!responseContent || responseContent.length === 0 || !responseContent[0].text) {
-        throw new Error('No content returned from mapping service');
-      }
-
-      let content: any = responseContent[0].text;
-      
-      if (typeof content === 'string') {
-        const jsonRegex = /```(?:json)?\n?([\s\S]*?)\n?```/;
-        const match = content.match(jsonRegex);
-        if (match) {
-          content = match[1].trim();
-        }
-        
-        try {
-          if (typeof content === 'string') {
-            content = JSON.parse(content);
-          }
-        } catch (parseError) {
-          console.warn('[GeospatialTool] Content is not JSON, using as string:', content);
-        }
-      }
-
+      // Process results
       if (typeof content === 'object' && content !== null) {
         const parsedData = content as any;
-        
-        // Handle geocoding/directions/distance results which are in a 'results' array
-        if (parsedData.results && Array.isArray(parsedData.results) && parsedData.results.length > 0) {
-          // For now, just take the first result.
+        if (parsedData.results?.length > 0) {
           const firstResult = parsedData.results[0];
-          mcpData = {
-            location: {
-              latitude: firstResult.coordinates?.latitude,
-              longitude: firstResult.coordinates?.longitude,
-              place_name: firstResult.name || firstResult.place_name,
-              address: firstResult.full_address || firstResult.address,
-            },
-            mapUrl: parsedData.mapUrl,
-          };
-        }
-        // Handle old/other format that might have a 'location' field directly
-        else if (parsedData.location) {
-          mcpData = {
-            location: {
-              latitude: parsedData.location.latitude,
-              longitude: parsedData.location.longitude,
-              place_name: parsedData.location.place_name || parsedData.location.name,
-              address: parsedData.location.address || parsedData.location.formatted_address,
-            },
-            mapUrl: parsedData.mapUrl || parsedData.map_url,
-          };
+          mcpData = { location: { latitude: firstResult.coordinates?.latitude, longitude: firstResult.coordinates?.longitude, place_name: firstResult.name || firstResult.place_name, address: firstResult.full_address || firstResult.address }, mapUrl: parsedData.mapUrl };
+        } else if (parsedData.location) {
+          mcpData = { location: { latitude: parsedData.location.latitude, longitude: parsedData.location.longitude, place_name: parsedData.location.place_name || parsedData.location.name, address: parsedData.location.address || parsedData.location.formatted_address }, mapUrl: parsedData.mapUrl || parsedData.map_url };
         } else {
           throw new Error("Response missing required 'location' or 'results' field");
         }
-      } else {
-        throw new Error("Unexpected response format from mapping service");
-      }
+      } else throw new Error('Unexpected response format from mapping service');
 
-      feedbackMessage = `Successfully processed location query for: ${mcpData.location.place_name || query}`;
+      feedbackMessage = `Successfully processed ${queryType} query for: ${mcpData.location.place_name || JSON.stringify(params)}`;
       uiFeedbackStream.update(feedbackMessage);
 
     } catch (error: any) {
-      console.error('[GeospatialTool] Tool execution failed:', error.message);
-      console.error('[GeospatialTool] Error stack:', error.stack);
       toolError = `Mapping service error: ${error.message}`;
-      feedbackMessage = toolError;
-      uiFeedbackStream.update(feedbackMessage);
+      uiFeedbackStream.update(toolError);
+      console.error('[GeospatialTool] Tool execution failed:', error);
     } finally {
       await closeClient(mcpClient);
       uiFeedbackStream.done();
       uiStream.update(<BotMessage content={uiFeedbackStream.value} />);
     }
 
-    return {
-      type: 'MAP_QUERY_TRIGGER',
-      originalUserInput: query,
-      queryType: queryType || 'geocode',
-      timestamp: new Date().toISOString(),
-      mcp_response: mcpData,
-      error: toolError,
-    };
+    return { type: 'MAP_QUERY_TRIGGER', originalUserInput: JSON.stringify(params), queryType, timestamp: new Date().toISOString(), mcp_response: mcpData, error: toolError };
   },
 });
