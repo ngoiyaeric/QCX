@@ -157,17 +157,19 @@ export function ChatPanel({ messages, input, setInput }: ChatPanelProps) {
                 Math.max(8, newBorder) + 'px'
             }}
           />
-          <Button
-            type="button"
-            variant={'ghost'}
-            size={'icon'}
-            className={cn(
-              'absolute top-1/2 transform -translate-y-1/2',
-              isMobile ? 'right-8' : 'right-10'
-            )}
-          >
-            <Paperclip size={isMobile ? 18 : 20} />
-          </Button>
+          {!isMobile && (
+            <Button
+              type="button"
+              variant={'ghost'}
+              size={'icon'}
+              className={cn(
+                'absolute top-1/2 transform -translate-y-1/2',
+                isMobile ? 'right-8' : 'right-10'
+              )}
+            >
+              <Paperclip size={isMobile ? 18 : 20} />
+            </Button>
+          )}
           <Button
             type="submit"
             size={'icon'}
