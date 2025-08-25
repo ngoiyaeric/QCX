@@ -139,7 +139,7 @@ async function submit(formData?: FormData, skip?: boolean) {
     // If not using a tool, this model generates the answer
     while (
       useSpecificAPI
-        ? toolOutputs.length === 0 && answer.length === 0
+        ? answer.length === 0
         : answer.length === 0 && !errorOccurred
     ) {
       // Search the web and generate the answer
