@@ -128,6 +128,16 @@
     flex-shrink: 0;
   }
 
+  /* Tablet overrides (spaced-out) */
+  @media (min-width: 768px) {
+    .mobile-icons-bar-content {
+      min-width: 0;
+      width: 100%;
+      justify-content: space-between;
+      gap: 0; /* Remove gap if using space-between */
+    }
+  }
+
   /*
   .mobile-chat-section {
     flex: 1; 
