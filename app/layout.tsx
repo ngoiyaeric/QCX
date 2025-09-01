@@ -57,7 +57,7 @@ export default function RootLayout({
           <ProfileToggleProvider>
             <ThemeProvider
               attribute="class"
-              defaultTheme="system"
+              defaultTheme="earth"
               enableSystem
               disableTransitionOnChange
               themes={['light', 'dark', 'earth']}
