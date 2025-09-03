@@ -8,7 +8,7 @@
 [**Sign Up**](https://tally.so/r/wkWqkd) &nbsp;|&nbsp; [**Community**](https://discord.com/invite/NqGY9EWjWj) &nbsp;|&nbsp; [**X**](https://x.com/tryqcx)
 
 </div>
-Planetary Copilot
+Planet Computer
 (in progress)
 
 <img width="1277" alt="Screen Shot 2024-06-18 at 4 27 51 PM" src="https://github.com/QueueLab/MapGPT/assets/115367894/01584e12-b3f5-41c9-8009-a16642568798">
