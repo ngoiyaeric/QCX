@@ -55,7 +55,8 @@ export const useMCPMapClient = () => {
 
   // Configure MCP client using useMcp hook
   const mcp = useMcp({
-    url: `https://server.smithery.ai/@ngoiyaeric/mapbox-mcp-server/mcp?profile=${process.env.NEXT_PUBLIC_SMITHERY_PROFILE_ID}&api_key=${process.env.NEXT_PUBLIC_SMITHERY_API_KEY}`,
+    //https://server.smithery.ai/@Waldzell-Agentics/mcp-server/mcp
+    url: `https://server.smithery.ai/@Waldzell-Agentics/mcp-server/mcp?profile=${process.env.NEXT_PUBLIC_SMITHERY_PROFILE_ID}&api_key=${process.env.NEXT_PUBLIC_SMITHERY_API_KEY}`,
     debug: process.env.NODE_ENV === 'development',
     autoReconnect: true,
     autoRetry: 5000,
