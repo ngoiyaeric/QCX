@@ -8,6 +8,8 @@ import { type ComponentProps, type ElementRef, forwardRef, memo } from 'react';
 export type ResponseProps = ComponentProps<typeof Streamdown>;
 type ResponseRef = ElementRef<typeof Streamdown>;
 
+
+
 const ResponseBase = forwardRef<ResponseRef, ResponseProps>(function Response(
   { className, ...props },
   ref
