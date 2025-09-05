@@ -19,7 +19,9 @@ export function Reasoning({ className, isStreaming, children }: ReasoningProps) 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className={className}>
       <CollapsibleTrigger asChild>
-        <Button variant="ghost">Toggle Reasoning</Button>
+        <Button variant="ghost">
+          {isOpen ? 'Hide reasoning' : 'Show reasoning'}
+        </Button>
       </CollapsibleTrigger>
       <CollapsibleContent>
       <div role="status" aria-live={isStreaming ? 'polite' : 'off'}>
