@@ -29,11 +29,22 @@ export function Reasoning({ className, isStreaming, children }: ReasoningProps) 
     </Collapsible>
   );
 }
-
-export function ReasoningTrigger() {
-  return <Button variant="ghost">Show Reasoning</Button>;
+export function ReasoningTrigger(props: ComponentProps<typeof Button>) {
+  return <Button variant="ghost" {...props}>Show Reasoning</Button>;
 }
 
-export function ReasoningContent({ children }: { children: React.ReactNode }) {
-  return <div className="p-4 border rounded-md">{children}</div>;
-}
+
+export function ReasoningContent({
+  className,
+  children,
+  ...rest
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={['p-4 border rounded-md', className].filter(Boolean).join(' ')}
+      {...rest}
+    >
+      {children}
+    </div>
+  );
+ }
