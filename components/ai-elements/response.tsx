@@ -18,7 +18,7 @@ const ResponseBase = forwardRef<ResponseRef, ResponseProps>(function Response(
     <Streamdown
       ref={ref}
       className={cn(
-        'size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
+        'w-full h-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
         className
       )}
       {...props}
