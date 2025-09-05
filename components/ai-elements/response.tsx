@@ -1,21 +1,29 @@
 'use client';
 
 import { cn } from '@/lib/utils/index';
-import { type ComponentProps, memo } from 'react';
 import { Streamdown } from 'streamdown';
+import { type ComponentProps, type ElementRef, forwardRef, memo } from 'react';
 
-type ResponseProps = ComponentProps<typeof Streamdown>;
 
-export const Response = memo(
-  ({ className, ...props }: ResponseProps) => (
+export type ResponseProps = ComponentProps<typeof Streamdown>;
+type ResponseRef = ElementRef<typeof Streamdown>;
+
+const ResponseBase = forwardRef<ResponseRef, ResponseProps>(function Response(
+  { className, ...props },
+  ref
+) {
+  return (
     <Streamdown
+      ref={ref}
       className={cn(
         'size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
         className
       )}
       {...props}
     />
-  ),
-);
+  );
+});
+
+export const Response = memo(ResponseBase);
 
 Response.displayName = 'Response';
