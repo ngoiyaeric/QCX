@@ -15,10 +15,12 @@ export async function taskManager(messages: CoreMessage[]) {
     For example, if the user asks, "What are the key features of the latest iPhone model?", you may choose to "proceed" as the query is clear and can be answered effectively with web research alone.
     However, if the user asks, "What's the best smartphone for my needs?", you may opt to "inquire" and present a form asking about their specific requirements, budget, and preferred features to provide a more tailored recommendation.
     Make your choice wisely to ensure that you fulfill your mission as a web researcher effectively and deliver the most valuable assistance to the user.
+    Provide a brief reasoning for your decision in the 'reasoning' field. Keep it to 1–2 sentences; avoid step-by-step chain-of-thought and sensitive data.
     `,
       messages,
       schema: nextActionSchema
     })
+    
 
     return result
   } catch (error) {
