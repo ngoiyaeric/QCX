@@ -22,7 +22,9 @@ export function Reasoning({ className, isStreaming, children }: ReasoningProps) 
         <Button variant="ghost">Toggle Reasoning</Button>
       </CollapsibleTrigger>
       <CollapsibleContent>
-        {children}
+      <div role="status" aria-live={isStreaming ? 'polite' : 'off'}>
++          {children}
++        </div>
       </CollapsibleContent>
     </Collapsible>
   );
