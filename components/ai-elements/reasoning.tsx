@@ -12,9 +12,9 @@ interface ReasoningProps {
 export function Reasoning({ className, isStreaming, children }: ReasoningProps) {
   const [isOpen, setIsOpen] = useState(isStreaming);
 
-  useEffect(() => {
-    setIsOpen(isStreaming);
-  }, [isStreaming]);
+ +useEffect(() => {
++  if (isStreaming) setIsOpen(true);
++}, [isStreaming]);
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className={className}>
