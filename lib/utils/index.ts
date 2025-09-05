@@ -16,7 +16,24 @@ export function generateUUID(): string {
   return uuidv4();
 }
 
-export function getModel() {
+export function getModel(modelId: string = 'default') {
+  if (modelId !== 'default') {
+    if (modelId === 'deepseek-r1') {
+      const deepseekKey = process.env.DEEPSEEK_API_KEY;
+      if (deepseekKey) {
+        const deepseek = createOpenAI({
+          baseURL: 'https://api.deepseek.com/v1',
+          apiKey: deepseekKey,
+        });
+        return deepseek('deepseek-r1');
+      } else {
+        console.warn("DeepSeek API key not set, falling back to default");
+      }
+    } else {
+      console.warn("Unknown modelId " + modelId + ", falling back to default");
+    }
+  }
+
   const xaiApiKey = process.env.XAI_API_KEY
   const awsAccessKeyId = process.env.AWS_ACCESS_KEY_ID
   const awsSecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY

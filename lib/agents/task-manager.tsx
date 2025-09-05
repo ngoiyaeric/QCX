@@ -6,7 +6,7 @@ import { getModel } from '../utils'
 export async function taskManager(messages: CoreMessage[]) {
   try {
     const result = await generateObject({
-      model: getModel() as LanguageModel,
+      model: getModel('deepseek-r1') as LanguageModel,
       system: `As a professional web researcher, your primary objective is to fully comprehend the user's query, conduct thorough web searches to gather the necessary information, and provide an appropriate response.
     To achieve this, you must first analyze the user's input and determine the optimal course of action. You have two options at your disposal:
     1. "proceed": If the provided information is sufficient to address the query effectively, choose this option to proceed with the research and formulate a response.
@@ -15,6 +15,7 @@ export async function taskManager(messages: CoreMessage[]) {
     For example, if the user asks, "What are the key features of the latest iPhone model?", you may choose to "proceed" as the query is clear and can be answered effectively with web research alone.
     However, if the user asks, "What's the best smartphone for my needs?", you may opt to "inquire" and present a form asking about their specific requirements, budget, and preferred features to provide a more tailored recommendation.
     Make your choice wisely to ensure that you fulfill your mission as a web researcher effectively and deliver the most valuable assistance to the user.
+    Provide a brief reasoning for your decision in the 'reasoning' field.
     `,
       messages,
       schema: nextActionSchema
