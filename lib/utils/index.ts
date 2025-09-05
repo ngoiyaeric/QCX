@@ -47,7 +47,7 @@ export function getModel(modelId: string = 'default') {
     })
     // Optionally, add a check for credit status or skip xAI if credits are exhausted
     try {
-      return xai('grok-3-fast-beta')
+      return xai('grok-4-latest')
     } catch (error) {
       console.warn('xAI API unavailable, falling back to OpenAI:')
     }
